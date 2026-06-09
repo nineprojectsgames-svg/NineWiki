@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zenless Zone Zero — Wiki de Builds</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0a0c10;
+    --surface:   #0f1219;
+    --surface2:  #161b26;
+    --border:    #1e2535;
+    --accent:    #f5c400;
+    --accent2:   #ff6b1a;
+    --accent3:   #00d4ff;
+    --text:      #c8d0e0;
+    --text-dim:  #5a6478;
+    --text-bright: #edf0f7;
+    --red:       #ff3e5e;
+    --green:     #00e5a0;
+    --rank-s:    #f5c400;
+    --rank-a:    #aa66ff;
+    --rank-b:    #44aaff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── SCANLINES OVERLAY ──────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,.08) 2px,
+      rgba(0,0,0,.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ─── HEADER ─────────────────────────────────────────── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,12,16,.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; gap: 1.5rem;
+    height: 60px;
+  }
+  .logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.4rem; font-weight: 700;
+    letter-spacing: .12em;
+    color: var(--accent);
+    text-shadow: 0 0 20px rgba(245,196,0,.4);
+    white-space: nowrap;
+  }
+  .logo span { color: var(--accent2); }
+  .header-game {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .72rem;
+    color: var(--text-dim);
+    letter-spacing: .08em;
+    border: 1px solid var(--border);
+    padding: .2rem .6rem;
+    border-radius: 2px;
+  }
+  .header-right {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  #search-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .8rem;
+    padding: .4rem .8rem;
+    border-radius: 3px;
+    width: 200px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  #search-input:focus { border-color: var(--accent); }
+  #search-input::placeholder { color: var(--text-dim); }
+
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+  .status-dot.loading { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .status-dot.error   { background: var(--red);   box-shadow: 0 0 8px var(--red); animation: none; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  /* ─── LAYOUT ─────────────────────────────────────────── */
+  .layout { display: flex; min-height: calc(100vh - 60px); }
+
+  /* ─── SIDEBAR ────────────────────────────────────────── */
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 0;
+    position: sticky; top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .sidebar-section {
+    padding: 0 1rem .5rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .65rem;
+    color: var(--text-dim);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: .5rem;
+  }
+  .char-nav-item {
+    display: flex; align-items: center; gap: .6rem;
+    padding: .5rem 1rem;
+    cursor: pointer;
+    transition: background .15s;
+    border-left: 3px solid transparent;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .95rem; font-weight: 600;
+    letter-spacing: .04em;
+    color: var(--text);
+  }
+  .char-nav-item:hover { background: var(--surface2); color: var(--text-bright); }
+  .char-nav-item.active {
+    border-left-color: var(--accent);
+    background: rgba(245,196,0,.06);
+    color: var(--accent);
+  }
+  .char-nav-item img {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    flex-shrink: 0;
+  }
+  .nav-rank-badge {
+    margin-left: auto;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .65rem;
+    padding: .1rem .35rem;
+    border-radius: 2px;
+    background: rgba(245,196,0,.12);
+    color: var(--rank-s);
+    border: 1px solid rgba(245,196,0,.25);
+  }
+
+  /* ─── MAIN ───────────────────────────────────────────── */
+  main {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+  }
+
+  /* ─── STATES ─────────────────────────────────────────── */
+  .state-screen {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 50vh; gap: 1rem;
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text-dim);
+  }
+  .state-screen .big-icon { font-size: 3rem; }
+  .state-screen h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.4rem; font-weight: 700;
+    color: var(--text-bright); letter-spacing: .08em;
+  }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ─── CHARACTER CARD ─────────────────────────────────── */
+  .char-card {
+    max-width: 960px;
+    animation: fadeIn .3s ease;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+  /* header band */
+  .char-header {
+    display: flex; align-items: flex-start; gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom: 2px solid var(--accent);
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .char-header::before {
+    content: '';
+    position: absolute; top: 0; right: 0;
+    width: 300px; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(245,196,0,.03));
+    pointer-events: none;
+  }
+  .char-avatar {
+    width: 88px; height: 88px;
+    border-radius: 4px;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+    background: var(--surface2);
+    flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(245,196,0,.2);
+  }
+  .char-info { flex: 1; }
+  .char-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2rem; font-weight: 700;
+    letter-spacing: .08em;
+    color: var(--text-bright);
+    text-shadow: 0 0 30px rgba(245,196,0,.15);
+    line-height: 1;
+    margin-bottom: .4rem;
+  }
+  .char-tags {
+    display: flex; flex-wrap: wrap; gap: .4rem;
+    margin-bottom: .8rem;
+  }
+  .tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .68rem;
+    padding: .15rem .5rem;
+    border-radius: 2px;
+    letter-spacing: .06em;
+  }
+  .tag-faction  { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.3); color: var(--accent3); }
+  .tag-element  { background: rgba(255,107,26,.1); border: 1px solid rgba(255,107,26,.3); color: var(--accent2); }
+  .tag-role     { background: rgba(245,196,0,.1);  border: 1px solid rgba(245,196,0,.3);  color: var(--accent); }
+  .tag-rarity   { background: rgba(170,102,255,.1); border: 1px solid rgba(170,102,255,.3); color: var(--rank-a); }
+
+  .char-score-big {
+    display: flex; align-items: center;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 3rem; font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    gap: .3rem;
+    align-self: center;
+    text-shadow: 0 0 30px rgba(245,196,0,.5);
+    flex-shrink: 0;
+  }
+  .char-score-big .score-label {
+    font-size: .75rem; font-weight: 400;
+    color: var(--text-dim);
+    letter-spacing: .08em;
+    align-self: flex-end;
+    padding-bottom: .4rem;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* ─── GRID 2 COLS ────────────────────────────────────── */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+  .span-2 { grid-column: span 2; }
+
+  /* ─── PANEL ──────────────────────────────────────────── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.1rem 1.2rem;
+  }
+  .panel-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .68rem;
+    letter-spacing: .12em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: .9rem;
+    display: flex; align-items: center; gap: .5rem;
+  }
+  .panel-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  /* ─── RANKING BARS ───────────────────────────────────── */
+  .rank-list { display: flex; flex-direction: column; gap: .65rem; }
+  .rank-row { display: flex; align-items: center; gap: .75rem; }
+  .rank-label {
+    font-family: 'Barlow', sans-serif;
+    font-size: .8rem; font-weight: 600;
+    color: var(--text);
+    width: 175px; flex-shrink: 0;
+    letter-spacing: .02em;
+  }
+  .rank-bar-track {
+    flex: 1; height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .rank-bar-fill {
+    height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width .8s cubic-bezier(.25,.46,.45,.94);
+    box-shadow: 0 0 6px rgba(245,196,0,.4);
+  }
+  .rank-value {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .75rem;
+    color: var(--accent);
+    width: 22px; text-align: right; flex-shrink: 0;
+  }
+  .rank-row.zero .rank-bar-fill { background: var(--border); box-shadow: none; }
+  .rank-row.zero .rank-value { color: var(--text-dim); }
+
+  /* ─── NECESSITY BADGES ───────────────────────────────── */
+  .necessity {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .72rem;
+    padding: .2rem .65rem;
+    border-radius: 2px;
+    letter-spacing: .06em;
+    font-weight: 700;
+    margin-top: .3rem;
+  }
+  .nec-0  { background: rgba(90,100,120,.2); border: 1px solid rgba(90,100,120,.4); color: var(--text-dim); }
+  .nec-1  { background: rgba(0,229,160,.08); border: 1px solid rgba(0,229,160,.3); color: var(--green); }
+  .nec-2  { background: rgba(68,170,255,.08); border: 1px solid rgba(68,170,255,.3); color: var(--rank-b); }
+  .nec-3  { background: rgba(245,196,0,.08); border: 1px solid rgba(245,196,0,.3); color: var(--accent); }
+  .nec-4  { background: rgba(255,107,26,.12); border: 1px solid rgba(255,107,26,.4); color: var(--accent2); }
+  .nec-5  { background: rgba(255,62,94,.12); border: 1px solid rgba(255,62,94,.4); color: var(--red); }
+
+  /* ─── INFO ROWS ──────────────────────────────────────── */
+  .info-row {
+    display: flex; flex-direction: column; gap: .25rem;
+    padding: .55rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-key {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .65rem; letter-spacing: .1em;
+    color: var(--text-dim); text-transform: uppercase;
+  }
+  .info-val {
+    font-size: .88rem; color: var(--text-bright);
+    font-weight: 400;
+  }
+  .info-val .reason {
+    color: var(--text-dim); font-size: .82rem; font-weight: 300;
+    display: block; margin-top: .1rem;
+  }
+
+  /* ─── WEAPON LIST ────────────────────────────────────── */
+  .weapon-chain {
+    display: flex; align-items: center; flex-wrap: wrap; gap: .4rem;
+    margin-top: .2rem;
+  }
+  .weapon-item {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .9rem; font-weight: 600;
+    color: var(--text-bright);
+    padding: .2rem .5rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+  }
+  .weapon-item.best {
+    border-color: rgba(245,196,0,.4);
+    color: var(--accent);
+    background: rgba(245,196,0,.06);
+  }
+  .weapon-sep {
+    color: var(--accent2); font-weight: 700; font-size: 1rem;
+  }
+
+  /* ─── DISK SETS ──────────────────────────────────────── */
+  .disk-set {
+    padding: .5rem .7rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    margin-bottom: .5rem;
+    font-size: .85rem;
+    display: flex; align-items: center; gap: .5rem;
+  }
+  .disk-set .rank-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .65rem;
+    color: var(--accent);
+    background: rgba(245,196,0,.1);
+    padding: .1rem .3rem;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ─── STATS TABLE ────────────────────────────────────── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .5rem;
+    margin-top: .2rem;
+  }
+  .stat-cell {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: .5rem .6rem;
+    border-radius: 2px;
+  }
+  .stat-cell .slot-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .6rem; color: var(--accent2);
+    letter-spacing: .08em; margin-bottom: .2rem;
+  }
+  .stat-cell .stat-name {
+    font-size: .82rem; font-weight: 600;
+    color: var(--text-bright);
+    line-height: 1.3;
+  }
+  .substats-list {
+    display: flex; flex-wrap: wrap; gap: .3rem;
+    margin-top: .5rem;
+  }
+  .substat-chip {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .67rem;
+    padding: .15rem .45rem;
+    background: rgba(0,212,255,.06);
+    border: 1px solid rgba(0,212,255,.2);
+    color: var(--accent3);
+    border-radius: 2px;
+  }
+
+  /* ─── STATS NUMERIC ──────────────────────────────────── */
+  .stat-numbers {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: .5rem; margin-top: .2rem;
+  }
+  .stat-num-cell {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: .5rem .7rem;
+    border-radius: 2px;
+  }
+  .stat-num-cell .sn-key {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .62rem; color: var(--text-dim);
+    letter-spacing: .08em; margin-bottom: .15rem;
+  }
+  .stat-num-cell .sn-val {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem; font-weight: 700;
+    color: var(--text-bright);
+  }
+  .stat-num-cell.ideal .sn-val {
+    color: var(--accent);
+    text-shadow: 0 0 10px rgba(245,196,0,.3);
+  }
+
+  /* ─── TIPS ───────────────────────────────────────────── */
+  .tip-item {
+    display: flex; gap: .65rem;
+    padding: .55rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: .86rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .tip-item:last-child { border-bottom: none; }
+  .tip-bullet {
+    color: var(--accent2);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .8rem; flex-shrink: 0;
+    margin-top: .05rem;
+  }
+
+  /* ─── DUPE INFO ──────────────────────────────────────── */
+  .dupe-item {
+    padding: .5rem .7rem;
+    background: var(--surface2);
+    border-left: 3px solid var(--accent);
+    margin-bottom: .5rem;
+    font-size: .85rem;
+    color: var(--text-bright);
+  }
+  .dupe-item .dupe-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .62rem;
+    color: var(--accent2);
+    letter-spacing: .08em;
+    margin-bottom: .2rem;
+  }
+
+  /* ─── EMPTY/PLACEHOLDER ──────────────────────────────── */
+  .empty-val {
+    font-style: italic;
+    color: var(--text-dim);
+    font-size: .82rem;
+  }
+
+  /* ─── WELCOME SCREEN ─────────────────────────────────── */
+  .welcome {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 50vh; text-align: center;
+    gap: 1rem;
+  }
+  .welcome-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2.2rem; font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--text-bright);
+  }
+  .welcome-title span { color: var(--accent); text-shadow: 0 0 20px rgba(245,196,0,.4); }
+  .welcome-sub {
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .8rem;
+    letter-spacing: .05em;
+  }
+
+  /* ─── SCROLLBAR ──────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+  /* ─── RESPONSIVE ─────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .span-2 { grid-column: span 1; }
+    main { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════════════════ -->
+<header>
+  <div class="logo">ZZZ<span>WIKI</span></div>
+  <div class="header-game">ZENLESS ZONE ZERO — BUILDS</div>
+  <div class="header-right">
+    <input type="text" id="search-input" placeholder="Buscar personaje…" />
+    <div class="status-dot loading" id="status-dot" title="Cargando datos…"></div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ══════════════════════════════════════════════════════
+       SIDEBAR
+  ══════════════════════════════════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Personajes</div>
+    <div id="char-nav"></div>
+  </aside>
+
+  <!-- ══════════════════════════════════════════════════════
+       MAIN
+  ══════════════════════════════════════════════════════════ -->
+  <main id="main-content">
+    <div class="state-screen" id="loading-screen">
+      <div class="spinner"></div>
+      <h2>CARGANDO DATOS</h2>
+      <div>Conectando con la base de datos…</div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// CONFIGURACIÓN — pegá acá el ID de tu Google Sheet
+// ══════════════════════════════════════════════════════════
+const SHEET_CONFIG = {
+  // Reemplazá con el ID de tu Google Spreadsheet
+  // Lo encontrás en la URL: docs.google.com/spreadsheets/d/[ESTE_ID]/edit
+  sheetId: '1hvggH2H5F27AyvaQnZs9CAPu6V78TZBa2SKq445Jad8',
+
+  // Nombre de la hoja (pestaña) con builds de Zenless Zone Zero
+  // Por defecto "Zenless Builds" — cambialo si le pusiste otro nombre
+  sheetName: 'Zenless Builds',
+};
+
+// Mapa de filas: qué guarda cada fila (empezando desde B2 = fila 0)
+const ROW_KEYS = [
+  'nombre',           // 0  — B2
+  'imagen',           // 1  — B3 (URL de imagen, opcional)
+  'faccion',          // 2  — B4
+  'elemento',         // 3  — B5
+  'rol',              // 4  — B6
+  'rareza',           // 5  — B7
+  // Scores (0-10, poner 0 para ignorar)
+  'sc_utilidad',      // 6  — B8
+  'sc_facilidad_build',// 7 — B9
+  'sc_build_value',   // 8  — B10
+  'sc_pull_value',    // 9  — B11
+  'sc_gameplay',      // 10 — B12
+  'sc_f2p_friendly',  // 11 — B13
+  'sc_consistencia',  // 12 — B14
+  // Necesidades
+  'nec_arma',         // 13 — B15 (Nada/Poca/Media/Mucha/Obligatoria)
+  'nec_dupes',        // 14 — B16
+  // Dupes info (separados por | si son varios)
+  'mejores_dupes',    // 15 — B17
+  // Team
+  'mejores_compas',   // 16 — B18 (Nombre - Razón, separados por |)
+  'mejor_bangbu',     // 17 — B19 (Nombre - Razón, separados por |)
+  // W-Engines
+  'w_engines',        // 18 — B20 (Arma1>Arma2>Arma3)
+  // Discos
+  'sets_discos',      // 19 — B21 (Set A + Set B > Set C + Set D, separados por |)
+  // Stats discos
+  'disco_slot4',      // 20 — B22
+  'disco_slot5',      // 21 — B23
+  'disco_slot6',      // 22 — B24
+  'disco_sub',        // 23 — B25 (separadas por ,)
+  // Stats recomendadas
+  'stats_basicas',    // 24 — B26 (Stat: valor, separadas por |)
+  'stats_ideales',    // 25 — B27
+  // Consejos
+  'consejos',         // 26 — B28 (separados por |)
+];
+
+const SCORE_LABELS = {
+  sc_utilidad:       'Utilidad',
+  sc_facilidad_build:'Facilidad de Buildeo',
+  sc_build_value:    'Build Value',
+  sc_pull_value:     'Pull Value',
+  sc_gameplay:       'Facilidad de Gameplay',
+  sc_f2p_friendly:   'F2P Friendly',
+  sc_consistencia:   'Consistencia',
+};
+
+const NEC_LEVELS = ['Nada','Poca','Media','Mucha','Obligatoria'];
+
+// ══════════════════════════════════════════════════════════
+// FETCH + PARSE
+// ══════════════════════════════════════════════════════════
+async function fetchSheetData() {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_CONFIG.sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_CONFIG.sheetName)}`;
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const text = await resp.text();
+  return parseCSV(text);
+}
+
+function parseCSV(text) {
+  const lines = text.split('\n');
+  // Parseo CSV respetando comillas
+  const rows = lines.map(line => {
+    const cols = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '"') {
+        if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+        else inQ = !inQ;
+      } else if (line[i] === ',' && !inQ) {
+        cols.push(cur.trim()); cur = '';
+      } else cur += line[i];
+    }
+    cols.push(cur.trim());
+    return cols;
+  });
+  return rows;
+}
+
+function buildCharacters(rows) {
+  // La hoja tiene fila 0 = headers ignorados, columna 0 = labels ignoradas
+  // Datos empiezan en rows[1][1] (B2 = primer personaje, primer campo)
+  const chars = [];
+  if (rows.length < 2) return chars;
+
+  const labelRow = rows.slice(1); // filas de datos (desde fila 2 en sheets, index 1 en array)
+  // Cuántos personajes: columnas desde índice 1
+  const numCols = Math.max(...labelRow.map(r => r.length)) - 1;
+
+  for (let col = 1; col <= numCols; col++) {
+    const char = {};
+    ROW_KEYS.forEach((key, rowIdx) => {
+      const rowData = labelRow[rowIdx];
+      char[key] = rowData ? (rowData[col] || '') : '';
+    });
+    if (char.nombre && char.nombre.trim()) chars.push(char);
+  }
+  return chars;
+}
+
+// ══════════════════════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════════════════════
+function calcPromedio(char) {
+  const scores = Object.keys(SCORE_LABELS).map(k => parseFloat(char[k]) || 0);
+  const nonZero = scores.filter(v => v > 0);
+  if (!nonZero.length) return null;
+  return (nonZero.reduce((a,b) => a+b, 0) / nonZero.length).toFixed(1);
+}
+
+function necClass(val) {
+  const idx = NEC_LEVELS.findIndex(n => n.toLowerCase() === val.toLowerCase().trim());
+  if (idx < 0) return 'nec-0';
+  return `nec-${idx+1}`;
+}
+
+function splitPipe(str) {
+  return str.split('|').map(s => s.trim()).filter(Boolean);
+}
+
+function empty(v) { return !v || !v.trim(); }
+
+// ══════════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════════
+let allChars = [];
+let activeIdx = -1;
+
+function renderSidebar(chars) {
+  const nav = document.getElementById('char-nav');
+  nav.innerHTML = '';
+  chars.forEach((c, i) => {
+    const avg = calcPromedio(c);
+    const item = document.createElement('div');
+    item.className = 'char-nav-item' + (i === activeIdx ? ' active' : '');
+    item.innerHTML = `
+      <img src="${c.imagen || ''}" alt="${c.nombre}" onerror="this.style.display='none'">
+      <span>${c.nombre}</span>
+      ${avg ? `<span class="nav-rank-badge">${avg}</span>` : ''}
+    `;
+    item.addEventListener('click', () => selectChar(i));
+    nav.appendChild(item);
+  });
+}
+
+function selectChar(idx) {
+  activeIdx = idx;
+  renderSidebar(allChars);
+  renderChar(allChars[idx]);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderChar(c) {
+  const avg = calcPromedio(c);
+  const main = document.getElementById('main-content');
+
+  // Scores
+  const scoreRows = Object.entries(SCORE_LABELS).map(([key, label]) => {
+    const val = parseFloat(c[key]) || 0;
+    const pct = (val / 10) * 100;
+    return `
+      <div class="rank-row ${val === 0 ? 'zero' : ''}">
+        <div class="rank-label">${label}</div>
+        <div class="rank-bar-track">
+          <div class="rank-bar-fill" style="width:${pct}%"></div>
+        </div>
+        <div class="rank-value">${val > 0 ? val : '—'}</div>
+      </div>`;
+  }).join('');
+
+  // W-Engines
+  const engines = c.w_engines ? c.w_engines.split('>').map(s => s.trim()).filter(Boolean) : [];
+  const engineHTML = engines.length
+    ? engines.map((e, i) => `
+        <span class="weapon-item ${i===0?'best':''}">${e}</span>
+        ${i < engines.length-1 ? '<span class="weapon-sep">›</span>' : ''}
+      `).join('')
+    : '<span class="empty-val">Sin datos</span>';
+
+  // Disk sets
+  const sets = splitPipe(c.sets_discos);
+  const setsHTML = sets.length
+    ? sets.map((s, i) => `<div class="disk-set"><span class="rank-num">${i+1}</span>${s}</div>`).join('')
+    : '<span class="empty-val">Sin datos</span>';
+
+  // Compas
+  const compas = splitPipe(c.mejores_compas);
+  const compasHTML = compas.length
+    ? compas.map(s => {
+        const [name, ...rest] = s.split('-');
+        return `<div class="info-row">
+          <div class="info-val">${name.trim()}<span class="reason">${rest.join('-').trim()}</span></div>
+        </div>`;
+      }).join('')
+    : '<div class="info-row"><div class="info-val empty-val">Sin datos</div></div>';
+
+  // Bangbu
+  const bangbus = splitPipe(c.mejor_bangbu);
+  const bangbuHTML = bangbus.length
+    ? bangbus.map(s => {
+        const [name, ...rest] = s.split('-');
+        return `<div class="info-row">
+          <div class="info-val">${name.trim()}<span class="reason">${rest.join('-').trim()}</span></div>
+        </div>`;
+      }).join('')
+    : '<div class="info-row"><div class="info-val empty-val">Sin datos</div></div>';
+
+  // Dupes
+  const dupes = splitPipe(c.mejores_dupes);
+  const dupesHTML = dupes.length
+    ? dupes.map(d => `<div class="dupe-item">${d}</div>`).join('')
+    : '<span class="empty-val">Sin datos</span>';
+
+  // Stats básicas / ideales
+  function renderStats(str, ideal = false) {
+    const items = splitPipe(str);
+    if (!items.length) return '<span class="empty-val">Sin datos</span>';
+    return `<div class="stat-numbers">` + items.map(s => {
+      const [k, v] = s.split(':');
+      return `<div class="stat-num-cell ${ideal?'ideal':''}">
+        <div class="sn-key">${(k||'').trim()}</div>
+        <div class="sn-val">${(v||'').trim()}</div>
+      </div>`;
+    }).join('') + '</div>';
+  }
+
+  // Consejos
+  const tips = splitPipe(c.consejos);
+  const tipsHTML = tips.length
+    ? tips.map(t => `<div class="tip-item"><span class="tip-bullet">◆</span><span>${t}</span></div>`).join('')
+    : '<div class="tip-item"><span class="tip-bullet">◆</span><span class="empty-val">Sin datos</span></div>';
+
+  // Substats
+  const subs = (c.disco_sub || '').split(',').map(s => s.trim()).filter(Boolean);
+  const subsHTML = subs.length
+    ? `<div class="substats-list">${subs.map(s => `<span class="substat-chip">${s}</span>`).join('')}</div>`
+    : '';
+
+  // Tags
+  const tags = [
+    c.rareza   && `<span class="tag tag-rarity">${c.rareza}</span>`,
+    c.elemento && `<span class="tag tag-element">${c.elemento}</span>`,
+    c.rol      && `<span class="tag tag-role">${c.rol}</span>`,
+    c.faccion  && `<span class="tag tag-faction">${c.faccion}</span>`,
+  ].filter(Boolean).join('');
+
+  main.innerHTML = `
+  <div class="char-card">
+
+    <!-- HEADER -->
+    <div class="char-header">
+      <img class="char-avatar" src="${c.imagen||''}" alt="${c.nombre}"
+           onerror="this.style.display='none'">
+      <div class="char-info">
+        <div class="char-name">${c.nombre}</div>
+        <div class="char-tags">${tags}</div>
+      </div>
+      ${avg ? `<div class="char-score-big">${avg}<div class="score-label">/ 10</div></div>` : ''}
+    </div>
+
+    <!-- SCORES + NECESIDADES -->
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title">Puntuaciones</div>
+        <div class="rank-list">${scoreRows}</div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Necesidades</div>
+        <div class="info-row">
+          <div class="info-key">W-Engine (arma signature)</div>
+          <div class="info-val">
+            <span class="necessity ${necClass(c.nec_arma||'nada')}">${c.nec_arma||'—'}</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-key">Dupes / Copias</div>
+          <div class="info-val">
+            <span class="necessity ${necClass(c.nec_dupes||'nada')}">${c.nec_dupes||'—'}</span>
+          </div>
+        </div>
+        <br>
+        <div class="panel-title">Mejores Dupes</div>
+        ${dupesHTML}
+      </div>
+    </div>
+
+    <!-- EQUIPO -->
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title">Mejores Compañeros</div>
+        ${compasHTML}
+      </div>
+      <div class="panel">
+        <div class="panel-title">Mejor Bangbú</div>
+        ${bangbuHTML}
+      </div>
+    </div>
+
+    <!-- W-ENGINES + DISCOS -->
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title">W-Engines</div>
+        <div class="weapon-chain">${engineHTML}</div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Sets de Discos</div>
+        ${setsHTML}
+      </div>
+    </div>
+
+    <!-- STATS DISCOS -->
+    <div class="panel" style="margin-bottom:1.2rem">
+      <div class="panel-title">Stats de Discos</div>
+      <div class="stats-grid">
+        <div class="stat-cell">
+          <div class="slot-label">SLOT 4</div>
+          <div class="stat-name">${c.disco_slot4||'—'}</div>
+        </div>
+        <div class="stat-cell">
+          <div class="slot-label">SLOT 5</div>
+          <div class="stat-name">${c.disco_slot5||'—'}</div>
+        </div>
+        <div class="stat-cell">
+          <div class="slot-label">SLOT 6</div>
+          <div class="stat-name">${c.disco_slot6||'—'}</div>
+        </div>
+      </div>
+      ${subsHTML ? `
+        <div style="margin-top:.75rem">
+          <div class="info-key" style="margin-bottom:.3rem">SUBSTATS PRIORITARIAS</div>
+          ${subsHTML}
+        </div>` : ''}
+    </div>
+
+    <!-- STATS BÁSICAS / IDEALES -->
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title">Stats Básicas</div>
+        ${renderStats(c.stats_basicas, false)}
+      </div>
+      <div class="panel">
+        <div class="panel-title">Stats Ideales</div>
+        ${renderStats(c.stats_ideales, true)}
+      </div>
+    </div>
+
+    <!-- CONSEJOS -->
+    <div class="panel" style="margin-bottom:2rem">
+      <div class="panel-title">Consejos &amp; Habilidades</div>
+      ${tipsHTML}
+    </div>
+
+  </div>`;
+
+  // Animar barras después de render
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.rank-bar-fill').forEach(el => {
+      const w = el.style.width;
+      el.style.width = '0';
+      requestAnimationFrame(() => { el.style.width = w; });
+    });
+  });
+}
+
+function renderWelcome(chars) {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="welcome">
+      <div class="welcome-title">BIENVENIDO A <span>ZZZWIKI</span></div>
+      <div class="welcome-sub">Seleccioná un personaje en el panel izquierdo</div>
+      <div style="color:var(--text-dim);font-size:.8rem;margin-top:.5rem">
+        ${chars.length} personaje${chars.length!==1?'s':''} cargado${chars.length!==1?'s':''}
+      </div>
+    </div>`;
+}
+
+function renderError(msg) {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="state-screen">
+      <div class="big-icon">⚠</div>
+      <h2>ERROR AL CARGAR</h2>
+      <div>${msg}</div>
+      <div style="margin-top:1rem;font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--text-dim)">
+        Verificá que el Sheet ID sea correcto y que la hoja esté publicada como CSV
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// SEARCH
+// ══════════════════════════════════════════════════════════
+document.getElementById('search-input').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  const filtered = q
+    ? allChars.filter(c => c.nombre.toLowerCase().includes(q))
+    : allChars;
+  renderSidebar_filtered(filtered);
+});
+
+function renderSidebar_filtered(chars) {
+  const nav = document.getElementById('char-nav');
+  nav.innerHTML = '';
+  chars.forEach(c => {
+    const i = allChars.indexOf(c);
+    const avg = calcPromedio(c);
+    const item = document.createElement('div');
+    item.className = 'char-nav-item' + (i === activeIdx ? ' active' : '');
+    item.innerHTML = `
+      <img src="${c.imagen || ''}" alt="${c.nombre}" onerror="this.style.display='none'">
+      <span>${c.nombre}</span>
+      ${avg ? `<span class="nav-rank-badge">${avg}</span>` : ''}
+    `;
+    item.addEventListener('click', () => selectChar(i));
+    nav.appendChild(item);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+async function init() {
+  const dot = document.getElementById('status-dot');
+  try {
+    const rows = await fetchSheetData();
+    allChars = buildCharacters(rows);
+    dot.className = 'status-dot'; // verde = ok
+
+    if (!allChars.length) {
+      renderError('No se encontraron personajes. Verificá que la hoja tenga datos desde B2.');
+      return;
+    }
+
+    renderSidebar(allChars);
+    renderWelcome(allChars);
+  } catch (err) {
+    dot.className = 'status-dot error';
+    renderError(err.message || 'Error desconocido');
+    console.error(err);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
