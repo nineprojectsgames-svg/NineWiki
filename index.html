@@ -626,42 +626,33 @@ const SHEET_CONFIG = {
 
 // Mapa de filas: qué guarda cada fila (empezando desde B2 = fila 0)
 const ROW_KEYS = [
-  'nombre',           // 0  — B2
-  'imagen',           // 1  — B3 (URL de imagen, opcional)
-  'faccion',          // 2  — B4
-  'elemento',         // 3  — B5
-  'rol',              // 4  — B6
-  'rareza',           // 5  — B7
-  // Scores (0-10, poner 0 para ignorar)
-  'sc_utilidad',      // 6  — B8
-  'sc_facilidad_build',// 7 — B9
-  'sc_build_value',   // 8  — B10
-  'sc_pull_value',    // 9  — B11
-  'sc_gameplay',      // 10 — B12
-  'sc_f2p_friendly',  // 11 — B13
-  'sc_consistencia',  // 12 — B14
-  // Necesidades
-  'nec_arma',         // 13 — B15 (Nada/Poca/Media/Mucha/Obligatoria)
-  'nec_dupes',        // 14 — B16
-  // Dupes info (separados por | si son varios)
-  'mejores_dupes',    // 15 — B17
-  // Team
-  'mejores_compas',   // 16 — B18 (Nombre - Razón, separados por |)
-  'mejor_bangbu',     // 17 — B19 (Nombre - Razón, separados por |)
-  // W-Engines
-  'w_engines',        // 18 — B20 (Arma1>Arma2>Arma3)
-  // Discos
-  'sets_discos',      // 19 — B21 (Set A + Set B > Set C + Set D, separados por |)
-  // Stats discos
-  'disco_slot4',      // 20 — B22
-  'disco_slot5',      // 21 — B23
-  'disco_slot6',      // 22 — B24
-  'disco_sub',        // 23 — B25 (separadas por ,)
-  // Stats recomendadas
-  'stats_basicas',    // 24 — B26 (Stat: valor, separadas por |)
-  'stats_ideales',    // 25 — B27
-  // Consejos
-  'consejos',         // 26 — B28 (separados por |)
+  'nombre',
+  'imagen',
+  'faccion',
+  'elemento',
+  'rol',
+  'rareza',
+  'sc_utilidad',
+  'sc_facilidad_build',
+  'sc_build_value',
+  'sc_pull_value',
+  'sc_gameplay',
+  'sc_f2p_friendly',
+  'sc_consistencia',
+  'nec_arma',
+  'nec_dupes',
+  'mejores_dupes',
+  'mejores_compas',
+  'mejor_bangbu',
+  'w_engines',
+  'sets_discos',
+  'disco_slot4',
+  'disco_slot5',
+  'disco_slot6',
+  'disco_sub',
+  'stats_basicas',
+  'stats_ideales',
+  'consejos',
 ];
 
 const SCORE_LABELS = {
@@ -808,7 +799,7 @@ function renderChar(c) {
     : '<span class="empty-val">Sin datos</span>';
 
   // Disk sets
-  const sets = splitPipe(c.sets_discos);
+  const sets = (c.sets_discos || '').split('>').map(s => s.trim()).filter(Boolean);
   const setsHTML = sets.length
     ? sets.map((s, i) => `<div class="disk-set"><span class="rank-num">${i+1}</span>${s}</div>`).join('')
     : '<span class="empty-val">Sin datos</span>';
