@@ -671,17 +671,19 @@ const NEC_LEVELS = ['Nada','Poca','Media','Mucha','Obligatoria'];
 // FETCH + PARSE
 // ══════════════════════════════════════════════════════════
 async function fetchSheetData() {
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_CONFIG.sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_CONFIG.sheetName)}`;
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_CONFIG.sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_CONFIG.sheetName)}&tq=select%20*`;
   const resp = await fetch(url);
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   const text = await resp.text();
-  // Google devuelve JSON con un wrapper: google.visualization.Query.setResponse({...})
   const json = JSON.parse(text.slice(47, -2));
-  const rows = json.table.rows;
 
-  return rows.map(row =>
+  // Recuperar también los headers que Google separa
+  const headers = json.table.cols.map(col => col.label || '');
+  const rows = json.table.rows.map(row =>
     row.c.map(cell => (cell && cell.v !== null && cell.v !== undefined) ? String(cell.v) : '')
   );
+
+  return [headers, ...rows];
 }
 
 function buildCharacters(rows) {
