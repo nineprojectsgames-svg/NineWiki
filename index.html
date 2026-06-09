@@ -671,32 +671,17 @@ const NEC_LEVELS = ['Nada','Poca','Media','Mucha','Obligatoria'];
 // FETCH + PARSE
 // ══════════════════════════════════════════════════════════
 async function fetchSheetData() {
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_CONFIG.sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_CONFIG.sheetName)}`;
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_CONFIG.sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_CONFIG.sheetName)}`;
   const resp = await fetch(url);
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   const text = await resp.text();
-  return parseCSV(text);
-}
+  // Google devuelve JSON con un wrapper: google.visualization.Query.setResponse({...})
+  const json = JSON.parse(text.slice(47, -2));
+  const rows = json.table.rows;
 
-function parseCSV(text) {
-  const rows = [];
-  let row = [], cur = '', inQ = false, i = 0;
-  while (i < text.length) {
-    const ch = text[i];
-    if (inQ) {
-      if (ch === '"' && text[i+1] === '"') { cur += '"'; i += 2; continue; }
-      if (ch === '"') { inQ = false; i++; continue; }
-      // salto de línea DENTRO de comillas = parte del valor, no nueva fila
-      cur += ch; i++; continue;
-    }
-    if (ch === '"') { inQ = true; i++; continue; }
-    if (ch === ',') { row.push(cur.trim()); cur = ''; i++; continue; }
-    if (ch === '\n') { row.push(cur.trim()); rows.push(row); row = []; cur = ''; i++; continue; }
-    if (ch === '\r') { i++; continue; }
-    cur += ch; i++;
-  }
-  if (cur || row.length) { row.push(cur.trim()); rows.push(row); }
-  return rows;
+  return rows.map(row =>
+    row.c.map(cell => (cell && cell.v !== null && cell.v !== undefined) ? String(cell.v) : '')
+  );
 }
 
 function buildCharacters(rows) {
