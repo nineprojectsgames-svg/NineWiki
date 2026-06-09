@@ -708,7 +708,7 @@ function buildCharacters(rows) {
   if (rows.length < 2) return [];
 
   // Cuántos personajes hay (columnas desde índice 1)
-  const dataRows = rows.slice(2); // desde fila 2 en adelante
+  const dataRows = rows.slice(1); // desde fila 2 en adelante
   const numChars = Math.max(...dataRows.map(r => r.length)) - 1;
 
   const chars = [];
