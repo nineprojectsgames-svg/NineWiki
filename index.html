@@ -679,40 +679,44 @@ async function fetchSheetData() {
 }
 
 function parseCSV(text) {
-  const lines = text.split('\n');
-  // Parseo CSV respetando comillas
-  const rows = lines.map(line => {
-    const cols = [];
-    let cur = '', inQ = false;
-    for (let i = 0; i < line.length; i++) {
-      if (line[i] === '"') {
-        if (inQ && line[i+1] === '"') { cur += '"'; i++; }
-        else inQ = !inQ;
-      } else if (line[i] === ',' && !inQ) {
-        cols.push(cur.trim()); cur = '';
-      } else cur += line[i];
+  const rows = [];
+  let row = [], cur = '', inQ = false, i = 0;
+  while (i < text.length) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"' && text[i+1] === '"') { cur += '"'; i += 2; continue; }
+      if (ch === '"') { inQ = false; i++; continue; }
+      // salto de línea DENTRO de comillas = parte del valor, no nueva fila
+      cur += ch; i++; continue;
     }
-    cols.push(cur.trim());
-    return cols;
-  });
+    if (ch === '"') { inQ = true; i++; continue; }
+    if (ch === ',') { row.push(cur.trim()); cur = ''; i++; continue; }
+    if (ch === '\n') { row.push(cur.trim()); rows.push(row); row = []; cur = ''; i++; continue; }
+    if (ch === '\r') { i++; continue; }
+    cur += ch; i++;
+  }
+  if (cur || row.length) { row.push(cur.trim()); rows.push(row); }
   return rows;
 }
 
 function buildCharacters(rows) {
-  // La hoja tiene fila 0 = headers ignorados, columna 0 = labels ignoradas
-  // Datos empiezan en rows[1][1] (B2 = primer personaje, primer campo)
+  // rows[0] = fila 1 del sheet (vacía, ignorar)
+  // rows[1] = fila 2: ["Nombre", "Nicole Demara", "Otro personaje", ...]
+  // rows[2] = fila 3: ["Imagen (URL)", "https://...", ...]
+  // etc.
+
+  if (rows.length < 2) return [];
+
+  // Cuántos personajes hay (columnas desde índice 1)
+  const dataRows = rows.slice(1); // desde fila 2 en adelante
+  const numChars = Math.max(...dataRows.map(r => r.length)) - 1;
+
   const chars = [];
-  if (rows.length < 2) return chars;
-
-  const labelRow = rows.slice(1); // filas de datos (desde fila 2 en sheets, index 1 en array)
-  // Cuántos personajes: columnas desde índice 1
-  const numCols = Math.max(...labelRow.map(r => r.length)) - 1;
-
-  for (let col = 1; col <= numCols; col++) {
+  for (let col = 1; col <= numChars; col++) {
     const char = {};
-    ROW_KEYS.forEach((key, rowIdx) => {
-      const rowData = labelRow[rowIdx];
-      char[key] = rowData ? (rowData[col] || '') : '';
+    ROW_KEYS.forEach((key, i) => {
+      const row = dataRows[i];
+      char[key] = row ? (row[col] || '').trim() : '';
     });
     if (char.nombre && char.nombre.trim()) chars.push(char);
   }
