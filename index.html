@@ -1050,6 +1050,10 @@ async function init() {
     if (!allChars.length) {
       renderError('No se encontraron personajes. Verificá que la hoja tenga datos desde B2.');
       return;
+
+console.log('Filas raw:', rows.slice(0, 5));
+console.log('Chars parseados:', allChars);
+
     }
 
     renderSidebar(allChars);
