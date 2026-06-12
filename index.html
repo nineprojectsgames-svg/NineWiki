@@ -25,9 +25,7 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
-
   body {
     background: var(--bg);
     color: var(--text);
@@ -37,23 +35,13 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-
-  /* ─── SCANLINES OVERLAY ──────────────────────────────── */
   body::before {
     content: '';
     position: fixed; inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,.08) 2px,
-      rgba(0,0,0,.08) 4px
-    );
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.08) 2px, rgba(0,0,0,.08) 4px);
     pointer-events: none;
     z-index: 9999;
   }
-
-  /* ─── HEADER ─────────────────────────────────────────── */
   header {
     position: sticky; top: 0; z-index: 100;
     background: rgba(10,12,16,.92);
@@ -63,661 +51,734 @@
     display: flex; align-items: center; gap: 1.5rem;
     height: 60px;
   }
-  .logo {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.4rem; font-weight: 700;
-    letter-spacing: .12em;
-    color: var(--accent);
-    text-shadow: 0 0 20px rgba(245,196,0,.4);
-    white-space: nowrap;
-  }
+  .logo { font-family: 'Rajdhani', sans-serif; font-size: 1.4rem; font-weight: 700; letter-spacing: .12em; color: var(--accent); text-shadow: 0 0 20px rgba(245,196,0,.4); white-space: nowrap; }
   .logo span { color: var(--accent2); }
-  .header-game {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .72rem;
-    color: var(--text-dim);
-    letter-spacing: .08em;
-    border: 1px solid var(--border);
-    padding: .2rem .6rem;
-    border-radius: 2px;
-  }
-  .header-right {
-    margin-left: auto;
-    display: flex; align-items: center; gap: 1rem;
-  }
-  #search-input {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .8rem;
-    padding: .4rem .8rem;
-    border-radius: 3px;
-    width: 200px;
-    outline: none;
-    transition: border-color .2s;
-  }
+  .header-game { font-family: 'Share Tech Mono', monospace; font-size: .72rem; color: var(--text-dim); letter-spacing: .08em; border: 1px solid var(--border); padding: .2rem .6rem; border-radius: 2px; }
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
+  #search-input { background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'Share Tech Mono', monospace; font-size: .8rem; padding: .4rem .8rem; border-radius: 3px; width: 200px; outline: none; transition: border-color .2s; }
   #search-input:focus { border-color: var(--accent); }
   #search-input::placeholder { color: var(--text-dim); }
-
-  .status-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 8px var(--green);
-    animation: pulse 2s infinite;
-  }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
   .status-dot.loading { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
   .status-dot.error   { background: var(--red);   box-shadow: 0 0 8px var(--red); animation: none; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-
-  /* ─── LAYOUT ─────────────────────────────────────────── */
   .layout { display: flex; min-height: calc(100vh - 60px); }
-
-  /* ─── SIDEBAR ────────────────────────────────────────── */
-  .sidebar {
-    width: 220px; flex-shrink: 0;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    padding: 1.5rem 0;
-    position: sticky; top: 60px;
-    height: calc(100vh - 60px);
-    overflow-y: auto;
-  }
+  .sidebar { width: 220px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); padding: 1.5rem 0; position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto; }
   .sidebar::-webkit-scrollbar { width: 4px; }
   .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  .sidebar-section {
-    padding: 0 1rem .5rem;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .65rem;
-    color: var(--text-dim);
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: .5rem;
-  }
-  .char-nav-item {
-    display: flex; align-items: center; gap: .6rem;
-    padding: .5rem 1rem;
-    cursor: pointer;
-    transition: background .15s;
-    border-left: 3px solid transparent;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: .95rem; font-weight: 600;
-    letter-spacing: .04em;
-    color: var(--text);
-  }
+  .sidebar-section { padding: 0 1rem .5rem; font-family: 'Share Tech Mono', monospace; font-size: .65rem; color: var(--text-dim); letter-spacing: .12em; text-transform: uppercase; border-bottom: 1px solid var(--border); margin-bottom: .5rem; }
+  .char-nav-item { display: flex; align-items: center; gap: .6rem; padding: .5rem 1rem; cursor: pointer; transition: background .15s; border-left: 3px solid transparent; font-family: 'Rajdhani', sans-serif; font-size: .95rem; font-weight: 600; letter-spacing: .04em; color: var(--text); }
   .char-nav-item:hover { background: var(--surface2); color: var(--text-bright); }
-  .char-nav-item.active {
-    border-left-color: var(--accent);
-    background: rgba(245,196,0,.06);
-    color: var(--accent);
-  }
-  .char-nav-item img {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    flex-shrink: 0;
-  }
-  .nav-rank-badge {
-    margin-left: auto;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .65rem;
-    padding: .1rem .35rem;
-    border-radius: 2px;
-    background: rgba(245,196,0,.12);
-    color: var(--rank-s);
-    border: 1px solid rgba(245,196,0,.25);
-  }
-
-  /* ─── MAIN ───────────────────────────────────────────── */
-  main {
-    flex: 1;
-    padding: 2rem;
-    overflow-y: auto;
-  }
-
-  /* ─── STATES ─────────────────────────────────────────── */
-  .state-screen {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    min-height: 50vh; gap: 1rem;
-    font-family: 'Share Tech Mono', monospace;
-    color: var(--text-dim);
-  }
+  .char-nav-item.active { border-left-color: var(--accent); background: rgba(245,196,0,.06); color: var(--accent); }
+  .char-nav-item img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); background: var(--surface2); flex-shrink: 0; }
+  .nav-rank-badge { margin-left: auto; font-family: 'Share Tech Mono', monospace; font-size: .65rem; padding: .1rem .35rem; border-radius: 2px; background: rgba(245,196,0,.12); color: var(--rank-s); border: 1px solid rgba(245,196,0,.25); }
+  main { flex: 1; padding: 2rem; overflow-y: auto; }
+  .state-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50vh; gap: 1rem; font-family: 'Share Tech Mono', monospace; color: var(--text-dim); }
   .state-screen .big-icon { font-size: 3rem; }
-  .state-screen h2 {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.4rem; font-weight: 700;
-    color: var(--text-bright); letter-spacing: .08em;
-  }
-  .spinner {
-    width: 36px; height: 36px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin .8s linear infinite;
-  }
+  .state-screen h2 { font-family: 'Rajdhani', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--text-bright); letter-spacing: .08em; }
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ─── CHARACTER CARD ─────────────────────────────────── */
-  .char-card {
-    max-width: 960px;
-    animation: fadeIn .3s ease;
-  }
+  .char-card { max-width: 960px; animation: fadeIn .3s ease; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
-
-  /* header band */
-  .char-header {
-    display: flex; align-items: flex-start; gap: 1.5rem;
-    padding: 1.5rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-bottom: 2px solid var(--accent);
-    margin-bottom: 1.5rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .char-header::before {
-    content: '';
-    position: absolute; top: 0; right: 0;
-    width: 300px; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(245,196,0,.03));
-    pointer-events: none;
-  }
-  .char-avatar {
-    width: 88px; height: 88px;
-    border-radius: 4px;
-    object-fit: cover;
-    border: 2px solid var(--accent);
-    background: var(--surface2);
-    flex-shrink: 0;
-    box-shadow: 0 0 20px rgba(245,196,0,.2);
-  }
+  .char-header { display: flex; align-items: flex-start; gap: 1.5rem; padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-bottom: 2px solid var(--accent); margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+  .char-header::before { content: ''; position: absolute; top: 0; right: 0; width: 300px; height: 100%; background: linear-gradient(90deg, transparent, rgba(245,196,0,.03)); pointer-events: none; }
+  .char-avatar { width: 88px; height: 88px; border-radius: 4px; object-fit: cover; border: 2px solid var(--accent); background: var(--surface2); flex-shrink: 0; box-shadow: 0 0 20px rgba(245,196,0,.2); }
   .char-info { flex: 1; }
-  .char-name {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 2rem; font-weight: 700;
-    letter-spacing: .08em;
-    color: var(--text-bright);
-    text-shadow: 0 0 30px rgba(245,196,0,.15);
-    line-height: 1;
-    margin-bottom: .4rem;
-  }
-  .char-tags {
-    display: flex; flex-wrap: wrap; gap: .4rem;
-    margin-bottom: .8rem;
-  }
-  .tag {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .68rem;
-    padding: .15rem .5rem;
-    border-radius: 2px;
-    letter-spacing: .06em;
-  }
+  .char-name { font-family: 'Rajdhani', sans-serif; font-size: 2rem; font-weight: 700; letter-spacing: .08em; color: var(--text-bright); text-shadow: 0 0 30px rgba(245,196,0,.15); line-height: 1; margin-bottom: .4rem; }
+  .char-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .8rem; }
+  .tag { font-family: 'Share Tech Mono', monospace; font-size: .68rem; padding: .15rem .5rem; border-radius: 2px; letter-spacing: .06em; }
   .tag-faction  { background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.3); color: var(--accent3); }
   .tag-element  { background: rgba(255,107,26,.1); border: 1px solid rgba(255,107,26,.3); color: var(--accent2); }
   .tag-role     { background: rgba(245,196,0,.1);  border: 1px solid rgba(245,196,0,.3);  color: var(--accent); }
   .tag-rarity   { background: rgba(170,102,255,.1); border: 1px solid rgba(170,102,255,.3); color: var(--rank-a); }
-
-  .char-score-big {
-    display: flex; align-items: center;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 3rem; font-weight: 700;
-    color: var(--accent);
-    line-height: 1;
-    gap: .3rem;
-    align-self: center;
-    text-shadow: 0 0 30px rgba(245,196,0,.5);
-    flex-shrink: 0;
-  }
-  .char-score-big .score-label {
-    font-size: .75rem; font-weight: 400;
-    color: var(--text-dim);
-    letter-spacing: .08em;
-    align-self: flex-end;
-    padding-bottom: .4rem;
-    font-family: 'Share Tech Mono', monospace;
-  }
-
-  /* ─── GRID 2 COLS ────────────────────────────────────── */
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.2rem;
-    margin-bottom: 1.2rem;
-  }
-  .grid-3 {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 1.2rem;
-    margin-bottom: 1.2rem;
-  }
+  .char-score-big { display: flex; align-items: center; font-family: 'Rajdhani', sans-serif; font-size: 3rem; font-weight: 700; color: var(--accent); line-height: 1; gap: .3rem; align-self: center; text-shadow: 0 0 30px rgba(245,196,0,.5); flex-shrink: 0; }
+  .char-score-big .score-label { font-size: .75rem; font-weight: 400; color: var(--text-dim); letter-spacing: .08em; align-self: flex-end; padding-bottom: .4rem; font-family: 'Share Tech Mono', monospace; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
   .span-2 { grid-column: span 2; }
-
-  /* ─── PANEL ──────────────────────────────────────────── */
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 1.1rem 1.2rem;
-  }
-  .panel-title {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .68rem;
-    letter-spacing: .12em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: .9rem;
-    display: flex; align-items: center; gap: .5rem;
-  }
-  .panel-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--border), transparent);
-  }
-
-  /* ─── RANKING BARS ───────────────────────────────────── */
+  .panel { background: var(--surface); border: 1px solid var(--border); padding: 1.1rem 1.2rem; }
+  .panel-title { font-family: 'Share Tech Mono', monospace; font-size: .68rem; letter-spacing: .12em; color: var(--accent); text-transform: uppercase; margin-bottom: .9rem; display: flex; align-items: center; gap: .5rem; }
+  .panel-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
   .rank-list { display: flex; flex-direction: column; gap: .65rem; }
   .rank-row { display: flex; align-items: center; gap: .75rem; }
-  .rank-label {
-    font-family: 'Barlow', sans-serif;
-    font-size: .8rem; font-weight: 600;
-    color: var(--text);
-    width: 175px; flex-shrink: 0;
-    letter-spacing: .02em;
-  }
-  .rank-bar-track {
-    flex: 1; height: 6px;
-    background: var(--surface2);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .rank-bar-fill {
-    height: 100%; border-radius: 3px;
-    background: linear-gradient(90deg, var(--accent2), var(--accent));
-    transition: width .8s cubic-bezier(.25,.46,.45,.94);
-    box-shadow: 0 0 6px rgba(245,196,0,.4);
-  }
-  .rank-value {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .75rem;
-    color: var(--accent);
-    width: 22px; text-align: right; flex-shrink: 0;
-  }
+  .rank-label { font-family: 'Barlow', sans-serif; font-size: .8rem; font-weight: 600; color: var(--text); width: 175px; flex-shrink: 0; letter-spacing: .02em; }
+  .rank-bar-track { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .rank-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width .8s cubic-bezier(.25,.46,.45,.94); box-shadow: 0 0 6px rgba(245,196,0,.4); }
+  .rank-value { font-family: 'Share Tech Mono', monospace; font-size: .75rem; color: var(--accent); width: 22px; text-align: right; flex-shrink: 0; }
   .rank-row.zero .rank-bar-fill { background: var(--border); box-shadow: none; }
   .rank-row.zero .rank-value { color: var(--text-dim); }
-
-  /* ─── NECESSITY BADGES ───────────────────────────────── */
-  .necessity {
-    display: inline-block;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .72rem;
-    padding: .2rem .65rem;
-    border-radius: 2px;
-    letter-spacing: .06em;
-    font-weight: 700;
-    margin-top: .3rem;
-  }
+  .necessity { display: inline-block; font-family: 'Share Tech Mono', monospace; font-size: .72rem; padding: .2rem .65rem; border-radius: 2px; letter-spacing: .06em; font-weight: 700; margin-top: .3rem; }
   .nec-0  { background: rgba(90,100,120,.2); border: 1px solid rgba(90,100,120,.4); color: var(--text-dim); }
   .nec-1  { background: rgba(0,229,160,.08); border: 1px solid rgba(0,229,160,.3); color: var(--green); }
   .nec-2  { background: rgba(68,170,255,.08); border: 1px solid rgba(68,170,255,.3); color: var(--rank-b); }
   .nec-3  { background: rgba(245,196,0,.08); border: 1px solid rgba(245,196,0,.3); color: var(--accent); }
   .nec-4  { background: rgba(255,107,26,.12); border: 1px solid rgba(255,107,26,.4); color: var(--accent2); }
   .nec-5  { background: rgba(255,62,94,.12); border: 1px solid rgba(255,62,94,.4); color: var(--red); }
-
-  /* ─── INFO ROWS ──────────────────────────────────────── */
-  .info-row {
-    display: flex; flex-direction: column; gap: .25rem;
-    padding: .55rem 0;
-    border-bottom: 1px solid var(--border);
-  }
+  .info-row { display: flex; flex-direction: column; gap: .25rem; padding: .55rem 0; border-bottom: 1px solid var(--border); }
   .info-row:last-child { border-bottom: none; }
-  .info-key {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .65rem; letter-spacing: .1em;
-    color: var(--text-dim); text-transform: uppercase;
-  }
-  .info-val {
-    font-size: .88rem; color: var(--text-bright);
-    font-weight: 400;
-  }
-  .info-val .reason {
-    color: var(--text-dim); font-size: .82rem; font-weight: 300;
-    display: block; margin-top: .1rem;
-  }
-
-  /* ─── WEAPON LIST ────────────────────────────────────── */
-  .weapon-chain {
-    display: flex; align-items: center; flex-wrap: wrap; gap: .4rem;
-    margin-top: .2rem;
-  }
-  .weapon-item {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: .9rem; font-weight: 600;
-    color: var(--text-bright);
-    padding: .2rem .5rem;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-  }
-  .weapon-item.best {
-    border-color: rgba(245,196,0,.4);
-    color: var(--accent);
-    background: rgba(245,196,0,.06);
-  }
-  .weapon-sep {
-    color: var(--accent2); font-weight: 700; font-size: 1rem;
-  }
-
-  /* ─── DISK SETS ──────────────────────────────────────── */
-  .disk-set {
-    padding: .5rem .7rem;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    margin-bottom: .5rem;
-    font-size: .85rem;
-    display: flex; align-items: center; gap: .5rem;
-  }
-  .disk-set .rank-num {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .65rem;
-    color: var(--accent);
-    background: rgba(245,196,0,.1);
-    padding: .1rem .3rem;
-    border-radius: 2px;
-    flex-shrink: 0;
-  }
-
-  /* ─── STATS TABLE ────────────────────────────────────── */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: .5rem;
-    margin-top: .2rem;
-  }
-  .stat-cell {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    padding: .5rem .6rem;
-    border-radius: 2px;
-  }
-  .stat-cell .slot-label {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .6rem; color: var(--accent2);
-    letter-spacing: .08em; margin-bottom: .2rem;
-  }
-  .stat-cell .stat-name {
-    font-size: .82rem; font-weight: 600;
-    color: var(--text-bright);
-    line-height: 1.3;
-  }
-  .substats-list {
-    display: flex; flex-wrap: wrap; gap: .3rem;
-    margin-top: .5rem;
-  }
-  .substat-chip {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .67rem;
-    padding: .15rem .45rem;
-    background: rgba(0,212,255,.06);
-    border: 1px solid rgba(0,212,255,.2);
-    color: var(--accent3);
-    border-radius: 2px;
-  }
-
-  /* ─── STATS NUMERIC ──────────────────────────────────── */
-  .stat-numbers {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: .5rem; margin-top: .2rem;
-  }
-  .stat-num-cell {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    padding: .5rem .7rem;
-    border-radius: 2px;
-  }
-  .stat-num-cell .sn-key {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .62rem; color: var(--text-dim);
-    letter-spacing: .08em; margin-bottom: .15rem;
-  }
-  .stat-num-cell .sn-val {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.05rem; font-weight: 700;
-    color: var(--text-bright);
-  }
-  .stat-num-cell.ideal .sn-val {
-    color: var(--accent);
-    text-shadow: 0 0 10px rgba(245,196,0,.3);
-  }
-
-  /* ─── TIPS ───────────────────────────────────────────── */
-  .tip-item {
-    display: flex; gap: .65rem;
-    padding: .55rem 0;
-    border-bottom: 1px solid var(--border);
-    font-size: .86rem;
-    color: var(--text);
-    line-height: 1.5;
-  }
+  .info-key { font-family: 'Share Tech Mono', monospace; font-size: .65rem; letter-spacing: .1em; color: var(--text-dim); text-transform: uppercase; }
+  .info-val { font-size: .88rem; color: var(--text-bright); font-weight: 400; }
+  .info-val .reason { color: var(--text-dim); font-size: .82rem; font-weight: 300; display: block; margin-top: .1rem; }
+  .weapon-chain { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; margin-top: .2rem; }
+  .weapon-item { font-family: 'Rajdhani', sans-serif; font-size: .9rem; font-weight: 600; color: var(--text-bright); padding: .2rem .5rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 2px; }
+  .weapon-item.best { border-color: rgba(245,196,0,.4); color: var(--accent); background: rgba(245,196,0,.06); }
+  .weapon-sep { color: var(--accent2); font-weight: 700; font-size: 1rem; }
+  .disk-set { padding: .5rem .7rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 2px; margin-bottom: .5rem; font-size: .85rem; display: flex; align-items: center; gap: .5rem; }
+  .disk-set .rank-num { font-family: 'Share Tech Mono', monospace; font-size: .65rem; color: var(--accent); background: rgba(245,196,0,.1); padding: .1rem .3rem; border-radius: 2px; flex-shrink: 0; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin-top: .2rem; }
+  .stat-cell { background: var(--surface2); border: 1px solid var(--border); padding: .5rem .6rem; border-radius: 2px; }
+  .stat-cell .slot-label { font-family: 'Share Tech Mono', monospace; font-size: .6rem; color: var(--accent2); letter-spacing: .08em; margin-bottom: .2rem; }
+  .stat-cell .stat-name { font-size: .82rem; font-weight: 600; color: var(--text-bright); line-height: 1.3; }
+  .substats-list { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .5rem; }
+  .substat-chip { font-family: 'Share Tech Mono', monospace; font-size: .67rem; padding: .15rem .45rem; background: rgba(0,212,255,.06); border: 1px solid rgba(0,212,255,.2); color: var(--accent3); border-radius: 2px; }
+  .stat-numbers { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: .5rem; margin-top: .2rem; }
+  .stat-num-cell { background: var(--surface2); border: 1px solid var(--border); padding: .5rem .7rem; border-radius: 2px; }
+  .stat-num-cell .sn-key { font-family: 'Share Tech Mono', monospace; font-size: .62rem; color: var(--text-dim); letter-spacing: .08em; margin-bottom: .15rem; }
+  .stat-num-cell .sn-val { font-family: 'Rajdhani', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--text-bright); }
+  .stat-num-cell.ideal .sn-val { color: var(--accent); text-shadow: 0 0 10px rgba(245,196,0,.3); }
+  .tip-item { display: flex; gap: .65rem; padding: .55rem 0; border-bottom: 1px solid var(--border); font-size: .86rem; color: var(--text); line-height: 1.5; }
   .tip-item:last-child { border-bottom: none; }
-  .tip-bullet {
-    color: var(--accent2);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .8rem; flex-shrink: 0;
-    margin-top: .05rem;
-  }
-
-  /* ─── DUPE INFO ──────────────────────────────────────── */
-  .dupe-item {
-    padding: .5rem .7rem;
-    background: var(--surface2);
-    border-left: 3px solid var(--accent);
-    margin-bottom: .5rem;
-    font-size: .85rem;
-    color: var(--text-bright);
-  }
-  .dupe-item .dupe-label {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .62rem;
-    color: var(--accent2);
-    letter-spacing: .08em;
-    margin-bottom: .2rem;
-  }
-
-  /* ─── EMPTY/PLACEHOLDER ──────────────────────────────── */
-  .empty-val {
-    font-style: italic;
-    color: var(--text-dim);
-    font-size: .82rem;
-  }
-
-  /* ─── WELCOME SCREEN ─────────────────────────────────── */
-  .welcome {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    min-height: 50vh; text-align: center;
-    gap: 1rem;
-  }
-  .welcome-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 2.2rem; font-weight: 700;
-    letter-spacing: .1em;
-    color: var(--text-bright);
-  }
+  .tip-bullet { color: var(--accent2); font-family: 'Share Tech Mono', monospace; font-size: .8rem; flex-shrink: 0; margin-top: .05rem; }
+  .dupe-item { padding: .5rem .7rem; background: var(--surface2); border-left: 3px solid var(--accent); margin-bottom: .5rem; font-size: .85rem; color: var(--text-bright); }
+  .dupe-item .dupe-label { font-family: 'Share Tech Mono', monospace; font-size: .62rem; color: var(--accent2); letter-spacing: .08em; margin-bottom: .2rem; }
+  .empty-val { font-style: italic; color: var(--text-dim); font-size: .82rem; }
+  .welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50vh; text-align: center; gap: 1rem; }
+  .welcome-title { font-family: 'Rajdhani', sans-serif; font-size: 2.2rem; font-weight: 700; letter-spacing: .1em; color: var(--text-bright); }
   .welcome-title span { color: var(--accent); text-shadow: 0 0 20px rgba(245,196,0,.4); }
-  .welcome-sub {
-    color: var(--text-dim);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .8rem;
-    letter-spacing: .05em;
-  }
-
-  /* ─── SCROLLBAR ──────────────────────────────────────── */
+  .welcome-sub { color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: .8rem; letter-spacing: .05em; }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
-
-  /* ─── RESPONSIVE ─────────────────────────────────────── */
-  @media (max-width: 768px) {
-    .sidebar { display: none; }
-    .grid-2, .grid-3 { grid-template-columns: 1fr; }
-    .span-2 { grid-column: span 1; }
-    main { padding: 1rem; }
+ @media (max-width: 768px) {
+  /* ===== MENÚ HAMBURGUESA ===== */
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    left: -280px;
+    width: 280px;
+    height: calc(100vh - 60px);
+    background: var(--surface);
+    z-index: 1000;
+    transition: left 0.3s ease;
+    border-right: 1px solid var(--border);
+    box-shadow: 2px 0 12px rgba(0,0,0,0.3);
+    overflow-y: auto;
   }
+  .sidebar.open {
+    left: 0;
+  }
+  /* Botón hamburguesa (si no existe, lo agregamos) */
+  #menu-toggle {
+    display: block !important;
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 1.8rem;
+    cursor: pointer;
+    padding: 0 0.5rem;
+    margin-left: 0.5rem;
+  }
+  /* Overlay para cerrar al tocar fuera */
+  .menu-overlay {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 60px);
+    background: rgba(0,0,0,0.6);
+    z-index: 999;
+    display: none;
+  }
+  .menu-overlay.active {
+    display: block;
+  }
+
+  /* ===== AJUSTES GENERALES ===== */
+  main {
+    padding: 0.8rem;
+    width: 100%;
+  }
+  .grid-2, .grid-3 {
+    grid-template-columns: 1fr !important;
+    gap: 0.8rem;
+  }
+  .char-card {
+    margin: 0;
+  }
+  .char-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+  }
+  .char-avatar {
+    width: 80px;
+    height: 80px;
+  }
+  .char-name {
+    font-size: 1.6rem;
+  }
+  .char-score-big {
+    font-size: 2.2rem;
+    margin-top: 0.5rem;
+  }
+  .char-tags {
+    justify-content: center;
+  }
+  .panel {
+    padding: 0.8rem;
+  }
+  .rank-row {
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .rank-label {
+    width: 100%;
+    font-size: 0.8rem;
+  }
+  .rank-bar-track {
+    width: 100%;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .stat-numbers {
+    grid-template-columns: 1fr 1fr;
+  }
+  .weapon-chain {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .weapon-item {
+    font-size: 0.8rem;
+    width: 100%;
+    text-align: center;
+  }
+  .weapon-sep {
+    display: none;
+  }
+  .disk-set {
+    font-size: 0.8rem;
+  }
+  .emoji-badge {
+    font-size: 1.2rem;
+  }
+  .info-val {
+    font-size: 0.85rem;
+  }
+  .tip-item {
+    font-size: 0.8rem;
+  }
+  /* Elementos de la barra lateral más táctiles */
+  .char-nav-item {
+    padding: 0.8rem 1rem;
+    gap: 0.8rem;
+  }
+  .char-nav-item img {
+    width: 40px;
+    height: 40px;
+  }
+  .nav-rank-badge {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.5rem;
+  }
+}
+
+.emoji-badge {
+  display: inline-block;
+  transition: transform 0.1s;
+}
+.emoji-badge:hover {
+  transform: scale(1.15);
+}
+@media (max-width: 768px) {
+  .emoji-badge {
+    font-size: 1.1rem;
+  }
+}
+
+/* Bordes para rareza */
+.char-avatar.rareza-a {
+  border-color: #aa66ff;  /* Violeta */
+  box-shadow: 0 0 12px rgba(170, 102, 255, 0.5);
+}
+.char-avatar.rareza-s {
+  border-color: #f5c400;  /* Dorado */
+  box-shadow: 0 0 12px rgba(245, 196, 0, 0.6);
+}
+
+/* Colores para la puntuación promedio */
+.score-gris { color: #6c757d; text-shadow: none; }
+.score-verde { color: #28a745; text-shadow: 0 0 6px rgba(40,167,69,0.3); }
+.score-morado { color: #aa66ff; text-shadow: 0 0 6px rgba(170,102,255,0.3); }
+.score-dorado { color: #f5c400; text-shadow: 0 0 6px rgba(245,196,0,0.3); }
+.score-celeste { color: #00d4ff; text-shadow: 0 0 6px rgba(0,212,255,0.3); }
+.score-multicolor {
+  background: linear-gradient(90deg, #f5c400, #ff6b1a, #00d4ff, #aa66ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+}
+
+/* Tooltips de puntuaciones */
+.score-tooltip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.info-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: rgba(0,212,255,0.2);
+  color: var(--accent3);
+  border-radius: 50%;
+  text-align: center;
+  line-height: 16px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: help;
+  margin-left: 0.3rem;
+  transition: all 0.2s;
+}
+.info-icon:hover {
+  background: var(--accent3);
+  color: var(--bg);
+  transform: scale(1.1);
+}
+
+/* Estilos para los filtros */
+#filters {
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.filter-group {
+  margin-bottom: 1rem;
+}
+.filter-group label {
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+}
+.filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.filter-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  text-transform: none;
+  color: var(--text);
+  background: var(--surface2);
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.filter-options label:hover {
+  background: var(--border);
+}
+.filter-options input {
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+/* Popup flotante para descripciones táctiles */
+.description-popup {
+  position: fixed;
+  background: var(--surface2);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  max-width: 260px;
+  font-size: 0.85rem;
+  color: var(--text-bright);
+  z-index: 10000;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+.description-popup.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.description-popup .close-popup {
+  pointer-events: auto;
+  background: none;
+  border: none;
+  color: var(--accent);
+  float: right;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  margin-left: 0.5rem;
+  padding: 0;
+}
+.description-popup .close-popup:hover {
+  color: var(--accent2);
+}
+
+/* Acordeón de filtros */
+.filter-accordion {
+  margin-bottom: 0.5rem;
+}
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+}
+.filter-header:hover {
+  background: rgba(245,196,0,0.05);
+}
+.filter-header .accordion-icon {
+  font-size: 1rem;
+  transition: transform 0.2s;
+}
+.filter-header .accordion-icon.open {
+  transform: rotate(180deg);
+}
+.filter-content {
+  display: none;
+  padding-bottom: 0.5rem;
+}
+.filter-content.open {
+  display: block;
+}
+
+/* ----- TIER LIST ----- */
+#tierlist-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.tier-mode-selector {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+.tier-mode-selector button {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.5rem 1.2rem;
+  border-radius: 30px;
+  cursor: pointer;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.tier-mode-selector button.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.tier-row {
+  margin-bottom: 1.5rem;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.tier-header {
+  background: var(--surface2);
+  padding: 0.6rem 1rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--border);
+}
+.tier-header .tier-name {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  margin-left: 0.5rem;
+}
+.tier-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  padding: 1rem;
+  min-height: 120px;
+}
+.tier-card {
+  width: 100px;
+  background: var(--surface2);
+  border-radius: 8px;
+  text-align: center;
+  padding: 0.5rem;
+  cursor: grab;
+  transition: transform 0.1s, box-shadow 0.2s;
+  border: 1px solid var(--border);
+}
+.tier-card:active {
+  cursor: grabbing;
+}
+.tier-card.dragging {
+  opacity: 0.5;
+}
+.tier-card img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent);
+  margin-bottom: 0.3rem;
+}
+.tier-card span {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+.tier-card .avg-score {
+  font-size: 0.6rem;
+  color: var(--accent);
+}
+.custom-tier-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+.custom-tier-actions button {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.reset-tier-btn {
+  background: rgba(255,62,94,0.2);
+  border-color: var(--red);
+  color: var(--red);
+}
+@media (max-width: 768px) {
+  .tier-card {
+    width: 80px;
+  }
+  .tier-card img {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .weapon-chain img {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  .info-val img {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
+
 </style>
 </head>
 <body>
-
-<!-- ══════════════════════════════════════════════════════
-     HEADER
-══════════════════════════════════════════════════════════ -->
 <header>
   <div class="logo">ZZZ<span>WIKI</span></div>
   <div class="header-game">ZENLESS ZONE ZERO — BUILDS</div>
+  <button id="menu-toggle" style="background:none; border:none; color:var(--accent); font-size:1.8rem; cursor:pointer; display:none;">☰</button>
+  <button id="toggle-tierlist-btn" style="background:var(--surface2); border:1px solid var(--border); color:var(--accent); padding:0.2rem 0.8rem; border-radius:4px; font-family:'Share Tech Mono'; font-size:0.7rem; cursor:pointer;">📊 TIER LIST</button>
   <div class="header-right">
     <input type="text" id="search-input" placeholder="Buscar personaje…" />
     <div class="status-dot loading" id="status-dot" title="Cargando datos…"></div>
   </div>
 </header>
-
 <div class="layout">
-
-  <!-- ══════════════════════════════════════════════════════
-       SIDEBAR
-  ══════════════════════════════════════════════════════════ -->
-  <aside class="sidebar">
-    <div class="sidebar-section">Personajes</div>
-    <div id="char-nav"></div>
-  </aside>
-
-  <!-- ══════════════════════════════════════════════════════
-       MAIN
-  ══════════════════════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-section">Filtros</div>
+  <div id="filters"></div>
+  <div class="sidebar-section">Personajes</div>
+  <div id="char-nav"></div>
+</aside>
+<div id="menu-overlay" class="menu-overlay"></div>
   <main id="main-content">
-    <div class="state-screen" id="loading-screen">
-      <div class="spinner"></div>
-      <h2>CARGANDO DATOS</h2>
-      <div>Conectando con la base de datos…</div>
-    </div>
-  </main>
-
+  <div id="wiki-container">
+    <!-- Aquí se cargará dinámicamente la wiki (lo que ya tenías) -->
+  </div>
+  <div id="tierlist-container" style="display: none;">
+    <!-- La tier list se generará con JS -->
+  </div>
+</main>
 </div>
 
 <script>
 // ══════════════════════════════════════════════════════════
-// CONFIGURACIÓN — pegá acá el ID de tu Google Sheet
+// CONFIGURACIÓN - ESTRUCTURA HORIZONTAL (primera fila = claves)
 // ══════════════════════════════════════════════════════════
-const SHEET_CONFIG = {
-  // Reemplazá con el ID de tu Google Spreadsheet
-  // Lo encontrás en la URL: docs.google.com/spreadsheets/d/[ESTE_ID]/edit
-  sheetId: '1hvggH2H5F27AyvaQnZs9CAPu6V78TZBa2SKq445Jad8',
+const wikiContainer = document.getElementById('wiki-container');
+const tierListContainer = document.getElementById('tierlist-container');
 
-  // Nombre de la hoja (pestaña) con builds de Zenless Zone Zero
-  // Por defecto "Zenless Builds" — cambialo si le pusiste otro nombre
+const SHEET_CONFIG = {
+  sheetId: '1hvggH2H5F27AyvaQnZs9CAPu6V78TZBa2SKq445Jad8',
   sheetName: 'Zenless Builds',
 };
 
-// Mapa de filas: qué guarda cada fila (empezando desde B2 = fila 0)
-const ROW_KEYS = [
-  'nombre',
-  'imagen',
-  'faccion',
-  'elemento',
-  'rol',
-  'rareza',
-  'sc_utilidad',
-  'sc_facilidad_build',
-  'sc_build_value',
-  'sc_pull_value',
-  'sc_gameplay',
-  'sc_f2p_friendly',
-  'sc_consistencia',
-  'nec_arma',
-  'nec_dupes',
-  'mejores_dupes',
-  'mejores_compas',
-  'mejor_bangbu',
-  'w_engines',
-  'sets_discos',
-  'disco_slot4',
-  'disco_slot5',
-  'disco_slot6',
-  'disco_sub',
-  'stats_basicas',
-  'stats_ideales',
-  'consejos',
+const EXPECTED_KEYS = [
+  'nombre', 'imagen', 'faccion', 'elemento', 'rol', 'rareza',
+  'sc_utilidad', 'sc_facilidad_build', 'sc_build_value', 'sc_pull_value',
+  'sc_gameplay', 'sc_f2p_friendly', 'sc_consistencia',
+  'nec_arma', 'nec_dupes', 'mejores_dupes', 'mejores_compas', 'mejor_bangbu',
+  'w_engines', 'sets_discos', 'disco_slot4', 'disco_slot5', 'disco_slot6',
+  'disco_sub', 'stats_basicas', 'stats_ideales', 'consejos', 'resumen'
 ];
 
+// Descripciones para los tooltips de puntuaciones
 const SCORE_LABELS = {
-  sc_utilidad:       'Utilidad',
-  sc_facilidad_build:'Facilidad de Buildeo',
-  sc_build_value:    'Build Value',
-  sc_pull_value:     'Pull Value',
-  sc_gameplay:       'Facilidad de Gameplay',
-  sc_f2p_friendly:   'F2P Friendly',
-  sc_consistencia:   'Consistencia',
+  sc_utilidad: 'Utilidad',
+  sc_facilidad_build: 'Facilidad de Buildeo',
+  sc_build_value: 'Build Value',
+  sc_pull_value: 'Pull Value',
+  sc_gameplay: 'Facilidad de Gameplay',
+  sc_f2p_friendly: 'F2P Friendly',
+  sc_consistencia: 'Consistencia',
 };
 
-const NEC_LEVELS = ['Nada','Poca','Media','Mucha','Obligatoria'];
+const SCORE_TOOLTIPS = {
+  sc_utilidad: 'Qué tan útil es hoy en día el personaje, qué tanto te ayuda en el juego en general.',
+  sc_facilidad_build: 'Qué fácil es llegar a unas estadísticas para que el personaje cumpla su función.',
+  sc_build_value: 'Qué tanto vale la pena sobreinvertir en este personaje.',
+  sc_pull_value: 'Qué tanto vale la pena tirar por este personaje (o sus dupes si es regalado).',
+  sc_gameplay: 'Qué tan fácil es dominar su gameplay para sacar puntuaciones decentes.',
+  sc_f2p_friendly: 'Qué tan amigable es con cuentas con pocas armas rango S, pocos personajes rango S y casi sin dupes.',
+  sc_consistencia: 'Qué tan consistente es en sus rotaciones y si se basa mucho en RNG o situaciones específicas para brillar.',
+};
+
+const NEC_LEVELS = ['Nada', 'Poca', 'Media', 'Mucha', 'Obligatoria'];
+
+// Diccionario de emojis y tooltips
+const EMOJI_DESCRIPTIONS = {
+  '💔': 'Reduce defensas / resistencias del enemigo',
+  '📈': 'Amplifica el daño de todo el equipo',
+  '💉': 'Cura a los aliados',
+  '🛡️': 'Otorga escudos a los aliados',
+  '⛓️': 'Habilita o potencia ataques en cadena',
+  '✨': 'Permite usar ultimates adicionales',
+  '🎯': 'Otorga daño extra',
+  '⚡': 'Otorga regeneración de energía extra',
+  '🌀': 'Ataca sin estar en el campo activo',
+  '🌸': 'Activa reacciones de Bloom',
+  '🌪️': 'Activa reacciones de Disorder',
+  '💥': 'Activa reacciones de Totalize',
+  '💀': 'Alto daño con su Ultimate',
+  '🔗': 'Alto daño en ataques en cadena',
+  '⚙️': 'Alto daño con habilidad EX',
+  '🗡️': 'Alto daño con ataques básicos, cargados o rápidos',
+  '⏳': 'Requiere mucho tiempo activo en campo',
+  '🔁': 'Cambia rápido, poco tiempo en campo',
+  '🤺': 'Puede hacer parrys / contraataques',
+  '⚔️': 'Escala con ATAQUE',
+  '❤️': 'Escala con VIDA máxima',
+  '🔰': 'Escala con DEFENSA',
+  '🌡️': 'Escala con Maestría de Anomalía',
+  '🎲': 'Escala con Probabilidad de Anomalía',
+  '🔋': 'Escala con Recuperación de Energía'
+};
 
 // ══════════════════════════════════════════════════════════
-// FETCH + PARSE
+// FETCH DATOS (CSV)
 // ══════════════════════════════════════════════════════════
 async function fetchSheetData() {
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_CONFIG.sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_CONFIG.sheetName)}&tq=select%20*`;
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_CONFIG.sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_CONFIG.sheetName)}`;
   const resp = await fetch(url);
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-  const text = await resp.text();
-  const json = JSON.parse(text.slice(47, -2));
-
-  // Recuperar también los headers que Google separa
-  const headers = json.table.cols.map(col => col.label || '');
-  const rows = json.table.rows.map(row =>
-    row.c.map(cell => (cell && cell.v !== null && cell.v !== undefined) ? String(cell.v) : '')
-  );
-
-  return [headers, ...rows];
+  const csvText = await resp.text();
+  const rows = [];
+  const lines = csvText.split(/\r?\n/);
+  for (const line of lines) {
+    if (line.trim() === '') continue;
+    const cells = [];
+    let inQuote = false;
+    let current = '';
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') inQuote = !inQuote;
+      else if (ch === ',' && !inQuote) { cells.push(current.trim()); current = ''; }
+      else current += ch;
+    }
+    cells.push(current.trim());
+    rows.push(cells);
+  }
+  return rows;
 }
 
 function buildCharacters(rows) {
-  // rows[0] = fila 1 del sheet (vacía, ignorar)
-  // rows[1] = fila 2: ["Nombre", "Nicole Demara", "Otro personaje", ...]
-  // rows[2] = fila 3: ["Imagen (URL)", "https://...", ...]
-  // etc.
-
   if (rows.length < 2) return [];
-
-  // Cuántos personajes hay (columnas desde índice 1)
-  const dataRows = rows.slice(1); // desde fila 2 en adelante
-  const numChars = Math.max(...dataRows.map(r => r.length)) - 1;
-
-  const chars = [];
-  for (let col = 1; col <= numChars; col++) {
-    const char = {};
-    ROW_KEYS.forEach((key, i) => {
-      const row = dataRows[i];
-      char[key] = row ? (row[col] || '').trim() : '';
-    });
-    if (char.nombre && char.nombre.trim()) chars.push(char);
+  const headers = rows[0];
+  const colIndexToKey = {};
+  for (let i = 0; i < headers.length; i++) {
+    const header = headers[i] ? headers[i].toLowerCase().trim() : '';
+    if (EXPECTED_KEYS.includes(header)) colIndexToKey[i] = header;
   }
-  return chars;
+  const nombreIndex = Object.keys(colIndexToKey).find(idx => colIndexToKey[idx] === 'nombre');
+  if (nombreIndex === undefined) throw new Error('No se encontró la columna "nombre" en la primera fila.');
+  const characters = [];
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row || row.length === 0) continue;
+    const charObj = {};
+    for (const colIdx in colIndexToKey) {
+      let value = row[colIdx] !== undefined ? row[colIdx] : '';
+      value = value.replace(/^"|"$/g, '');
+      charObj[colIndexToKey[colIdx]] = value;
+    }
+    if (charObj.nombre && charObj.nombre.trim() !== '') characters.push(charObj);
+  }
+  return characters;
 }
 
 // ══════════════════════════════════════════════════════════
-// UTILITIES
+// UTILIDADES
 // ══════════════════════════════════════════════════════════
 function calcPromedio(char) {
-  const scores = Object.keys(SCORE_LABELS).map(k => parseFloat(char[k]) || 0);
-  const nonZero = scores.filter(v => v > 0);
-  if (!nonZero.length) return null;
-  return (nonZero.reduce((a,b) => a+b, 0) / nonZero.length).toFixed(1);
+  let total = 0, count = 0;
+  for (const key of Object.keys(SCORE_LABELS)) {
+    let val = parseFloat(char[key]);
+    if (!isNaN(val) && val > 0) { total += val; count++; }
+  }
+  return count === 0 ? null : (total / count).toFixed(1);
+}
+
+function getScoreClass(avg) {
+  if (avg === null) return '';
+  const num = parseFloat(avg);
+  if (num < 3) return 'score-gris';
+  if (num < 5) return 'score-verde';
+  if (num < 7) return 'score-morado';
+  if (num < 8) return 'score-dorado';
+  if (num < 9) return 'score-celeste';
+  return 'score-multicolor';
 }
 
 function necClass(val) {
@@ -727,128 +788,340 @@ function necClass(val) {
 }
 
 function splitPipe(str) {
+  if (!str) return [];
   return str.split('|').map(s => s.trim()).filter(Boolean);
 }
 
-function empty(v) { return !v || !v.trim(); }
+// Helper: determina si un string es una URL de imagen
+function isImageUrl(str) {
+  if (!str) return false;
+  str = str.trim();
+  // Si no empieza con http, no es URL
+  if (!str.startsWith('http')) return false;
+  // Lista de extensiones de imagen comunes
+  const imageExtensions = /\.(png|jpg|jpeg|gif|webp|svg|bmp|ico)(\?.*)?$/i;
+  if (imageExtensions.test(str)) return true;
+  // Dominios conocidos de imágenes (wikia, nocookie, gg, drive.google.com, etc.)
+  const imageDomains = /(wikia|nocookie|gg|drive\.google\.com|googleusercontent|imgur|ibb\.co|cdn\.discordapp|github\.io)/i;
+  if (imageDomains.test(str)) return true;
+  // Si tiene 'image' en la URL, también lo consideramos
+  if (str.includes('/image/') || str.includes('img=')) return true;
+  // Para URLs de Google Drive: convertir a link directo si es necesario
+  if (str.includes('drive.google.com')) {
+    // Podríamos transformar la URL, pero por ahora la marcamos como imagen
+    return true;
+  }
+  return false;
+}
+
+function renderEmojis(str) {
+  if (!str) return '';
+  const emojis = str.split(/\s+/).filter(e => e.trim().length > 0);
+  return emojis.map(emoji => {
+    const description = EMOJI_DESCRIPTIONS[emoji] || 'Sin descripción';
+    // Escapamos comillas dobles para que no rompan el atributo
+    const safeDesc = description.replace(/"/g, '&quot;');
+    return `<span class="emoji-badge" data-desc="${safeDesc}" style="cursor:pointer; font-size:1.3rem; margin-right:0.3rem;">${emoji}</span>`;
+  }).join('');
+}
 
 // ══════════════════════════════════════════════════════════
-// RENDER
+// FILTROS Y BÚSQUEDA
 // ══════════════════════════════════════════════════════════
 let allChars = [];
 let activeIdx = -1;
+let currentSearchTerm = '';
+let selectedElements = new Set();
+let selectedRarities = new Set();
+let selectedRoles = new Set();
 
+function getUniqueValues(prop) {
+  return [...new Set(allChars.map(c => c[prop]).filter(v => v && v.trim() !== ''))];
+}
+
+function renderFilters() {
+  const container = document.getElementById('filters');
+  if (!container) return;
+  
+  const elements = getUniqueValues('elemento');
+  const rarities = getUniqueValues('rareza');
+  const roles = getUniqueValues('rol');
+  
+  let html = '';
+  
+  // Función auxiliar para crear un grupo de filtros
+  function renderFilterGroup(title, items, selectedSet, className) {
+    if (!items.length) return '';
+    let groupHtml = `<div class="filter-accordion">
+      <div class="filter-header" data-group="${className}">
+        <span>${title}</span>
+        <span class="accordion-icon">▼</span>
+      </div>
+      <div class="filter-content" id="filter-${className}">
+        <div class="filter-options">`;
+    items.forEach(item => {
+      groupHtml += `<label><input type="checkbox" value="${item}" class="filter-${className}" ${selectedSet.has(item) ? 'checked' : ''}> ${item}</label>`;
+    });
+    groupHtml += `</div></div></div>`;
+    return groupHtml;
+  }
+  
+  html += renderFilterGroup('Elemento', elements, selectedElements, 'element');
+  html += renderFilterGroup('Rango', rarities, selectedRarities, 'rarity');
+  html += renderFilterGroup('Rol', roles, selectedRoles, 'role');
+  
+  container.innerHTML = html;
+  
+  // Adjuntar eventos a los checkboxes
+  document.querySelectorAll('.filter-element').forEach(cb => cb.addEventListener('change', () => {
+    if (cb.checked) selectedElements.add(cb.value);
+    else selectedElements.delete(cb.value);
+    updateFilteredList();
+  }));
+  document.querySelectorAll('.filter-rarity').forEach(cb => cb.addEventListener('change', () => {
+    if (cb.checked) selectedRarities.add(cb.value);
+    else selectedRarities.delete(cb.value);
+    updateFilteredList();
+  }));
+  document.querySelectorAll('.filter-role').forEach(cb => cb.addEventListener('change', () => {
+    if (cb.checked) selectedRoles.add(cb.value);
+    else selectedRoles.delete(cb.value);
+    updateFilteredList();
+  }));
+  
+  // Inicializar el comportamiento de acordeón
+  document.querySelectorAll('.filter-header').forEach(header => {
+    const groupName = header.dataset.group;
+    const content = document.getElementById(`filter-${groupName}`);
+    const icon = header.querySelector('.accordion-icon');
+    // Por defecto, todos los grupos cerrados
+    content.classList.remove('open');
+    icon.classList.remove('open');
+    header.addEventListener('click', (e) => {
+      e.stopPropagation();
+      content.classList.toggle('open');
+      icon.classList.toggle('open');
+    });
+  });
+}
+
+function filterCharacters() {
+  return allChars.filter(char => {
+    // Filtro búsqueda
+    if (currentSearchTerm && !char.nombre.toLowerCase().includes(currentSearchTerm)) return false;
+    // Filtro elemento
+    if (selectedElements.size && !selectedElements.has(char.elemento)) return false;
+    // Filtro rareza
+    if (selectedRarities.size && !selectedRarities.has(char.rareza)) return false;
+    // Filtro rol
+    if (selectedRoles.size && !selectedRoles.has(char.rol)) return false;
+    return true;
+  });
+}
+
+function updateFilteredList() {
+  const filtered = filterCharacters();
+  renderSidebar(filtered);
+  // Si el personaje activo ya no está en los filtrados, seleccionar el primero si existe
+  if (activeIdx !== -1 && !filtered.includes(allChars[activeIdx])) {
+    if (filtered.length > 0) {
+      const newActive = allChars.indexOf(filtered[0]);
+      selectChar(newActive);
+    } else {
+      activeIdx = -1;
+      renderWelcome([]);
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// RENDER (sidebar y personaje)
+// ══════════════════════════════════════════════════════════
 function renderSidebar(chars) {
   const nav = document.getElementById('char-nav');
   nav.innerHTML = '';
   chars.forEach((c, i) => {
     const avg = calcPromedio(c);
+    const rarezaClass = c.rareza ? `rareza-${c.rareza.toLowerCase()}` : '';
     const item = document.createElement('div');
-    item.className = 'char-nav-item' + (i === activeIdx ? ' active' : '');
+    item.className = 'char-nav-item' + (allChars.indexOf(c) === activeIdx ? ' active' : '');
     item.innerHTML = `
-      <img src="${c.imagen || ''}" alt="${c.nombre}" onerror="this.style.display='none'">
+      <img src="${c.imagen || ''}" alt="${c.nombre}" class="char-avatar ${rarezaClass}" onerror="this.style.display='none'">
       <span>${c.nombre}</span>
-      ${avg ? `<span class="nav-rank-badge">${avg}</span>` : ''}
+      ${avg ? `<span class="nav-rank-badge ${getScoreClass(avg)}">${avg}</span>` : ''}
     `;
-    item.addEventListener('click', () => selectChar(i));
+    item.addEventListener('click', () => selectChar(allChars.indexOf(c)));
     nav.appendChild(item);
   });
 }
 
 function selectChar(idx) {
+  if (idx < 0 || idx >= allChars.length) return;
   activeIdx = idx;
-  renderSidebar(allChars);
+  const filtered = filterCharacters();
+  renderSidebar(filtered);
   renderChar(allChars[idx]);
   window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+  if (window.innerWidth <= 768) {
+    const sidebarElem = document.querySelector('.sidebar');
+    if (sidebarElem && sidebarElem.classList.contains('open')) {
+      if (typeof closeMenu === 'function') closeMenu();
+    }
+  }
+}  // <--- CIERRE CORRECTO DE selectChar
 
 function renderChar(c) {
   const avg = calcPromedio(c);
-  const main = document.getElementById('main-content');
-
-  // Scores
+  // Generar filas de puntuaciones con tooltips
   const scoreRows = Object.entries(SCORE_LABELS).map(([key, label]) => {
-    const val = parseFloat(c[key]) || 0;
+    let val = parseFloat(c[key]);
+    if (isNaN(val)) val = 0;
     const pct = (val / 10) * 100;
-    return `
-      <div class="rank-row ${val === 0 ? 'zero' : ''}">
-        <div class="rank-label">${label}</div>
-        <div class="rank-bar-track">
-          <div class="rank-bar-fill" style="width:${pct}%"></div>
-        </div>
-        <div class="rank-value">${val > 0 ? val : '—'}</div>
-      </div>`;
+    const tooltip = SCORE_TOOLTIPS[key] || '';
+    return `<div class="rank-row ${val === 0 ? 'zero' : ''}">
+              <div class="rank-label">
+                ${label}
+                <span class="info-icon" data-tip="${tooltip.replace(/"/g, '&quot;')}">ⓘ</span>
+              </div>
+              <div class="rank-bar-track"><div class="rank-bar-fill" style="width:${pct}%"></div></div>
+              <div class="rank-value">${val > 0 ? val : '—'}</div>
+            </div>`;
   }).join('');
 
-  // W-Engines
-  const engines = c.w_engines ? c.w_engines.split('>').map(s => s.trim()).filter(Boolean) : [];
-  const engineHTML = engines.length
-    ? engines.map((e, i) => `
-        <span class="weapon-item ${i===0?'best':''}">${e}</span>
-        ${i < engines.length-1 ? '<span class="weapon-sep">›</span>' : ''}
-      `).join('')
-    : '<span class="empty-val">Sin datos</span>';
+const engines = c.w_engines ? c.w_engines.split('>').map(s => s.trim()).filter(Boolean) : [];
+const engineHTML = engines.length ? engines.map((e, i) => {
+  if (isImageUrl(e)) {
+    const borderStyle = i === 0 ? '2px solid var(--accent)' : '1px solid var(--border)';
+    // Guardamos el texto original en el atributo data-text
+    return `<img src="${e}" alt="w-engine" data-text="${e.replace(/"/g, '&quot;')}" style="width: 48px; height: 48px; border-radius: 8px; border: ${borderStyle}; margin: 0.2rem; background: var(--surface2); cursor: pointer;" title="W-Engine recomendado" onerror="this.onerror=null; this.outerHTML = '<span class=\'weapon-item ${i===0?'best':''}\'>' + this.getAttribute('data-text') + '</span>' + (${i < engines.length-1} ? '<span class=\'weapon-sep\'>›</span>' : '');">`;
+  } else {
+    return `<span class="weapon-item ${i===0?'best':''}">${e}</span>${i < engines.length-1 ? '<span class="weapon-sep">›</span>' : ''}`;
+  }
+}).join('') : '<span class="empty-val">Sin datos</span>';
 
-  // Disk sets
-  const sets = (c.sets_discos || '').split('>').map(s => s.trim()).filter(Boolean);
-  const setsHTML = sets.length
-    ? sets.map((s, i) => `<div class="disk-set"><span class="rank-num">${i+1}</span>${s}</div>`).join('')
-    : '<span class="empty-val">Sin datos</span>';
+const setsRaw = (c.sets_discos || '').split('>').map(s => s.trim()).filter(Boolean);
+const setsHTML = setsRaw.length ? setsRaw.map((block, blockIdx) => {
+  // Dentro de cada bloque, separamos las dos partes: 4p y 2p
+  // El formato esperado es: "4 [set1] 2 [set2]" o también podría ser "4 [set1] 2 [set2]" con URLs o textos
+  // Usamos una expresión regular para encontrar números al inicio de cada parte
+  const parts = [];
+  let remaining = block;
+  // Buscar patrones como "4 " luego cualquier cosa hasta el siguiente " 2 " o hasta el final
+  const match4 = remaining.match(/^(\d+)\s+(.+?)(?=\s+\d+\s+|$)/);
+  if (match4) {
+    const count4 = match4[1];
+    let content4 = match4[2].trim();
+    remaining = remaining.substring(match4[0].length).trim();
+    // Ahora buscar "2 " y el resto
+    const match2 = remaining.match(/^(\d+)\s+(.+)$/);
+    if (match2) {
+      const count2 = match2[1];
+      let content2 = match2[2].trim();
+      parts.push({ count: count4, content: content4 });
+      parts.push({ count: count2, content: content2 });
+    } else {
+      // Si no hay segundo número, asumimos que solo hay un set (caso poco común pero posible)
+      parts.push({ count: count4, content: content4 });
+    }
+  } else {
+    // Si no hay números al inicio, tratamos el bloque completo como un solo set (para compatibilidad)
+    parts.push({ count: (blockIdx+1).toString(), content: block });
+  }
+  
+  // Generar HTML para cada parte
+  const partsHtml = parts.map(part => {
+    const { count, content } = part;
+    let innerHtml = '';
+    if (isImageUrl(content)) {
+      const safeUrl = content.replace(/"/g, '&quot;');
+      innerHtml = `<div style="display: flex; flex-direction: column; align-items: center;">
+        <img src="${content}" alt="set disco" style="width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2);" onerror="this.onerror=null; this.outerHTML = '<span>' + this.getAttribute('data-text') + '</span>';" data-text="${safeUrl}">
+        <span style="font-size: 0.65rem; margin-top: 0.2rem;">${count}p</span>
+      </div>`;
+    } else {
+      innerHtml = `<span class="rank-num">${count}</span><span>${content}</span>`;
+    }
+    return innerHtml;
+  }).join('');
+  
+  // Envolver la combinación en un div con clase disk-set (para mantener estilo)
+  return `<div class="disk-set" style="display: flex; gap: 1rem; align-items: center; justify-content: space-around;">${partsHtml}</div>`;
+}).join('') : '<span class="empty-val">Sin datos</span>';
 
-  // Compas
-  const compas = splitPipe(c.mejores_compas);
-  const compasHTML = compas.length
-    ? compas.map(s => {
-        const [name, ...rest] = s.split('-');
-        return `<div class="info-row">
-          <div class="info-val">${name.trim()}<span class="reason">${rest.join('-').trim()}</span></div>
-        </div>`;
-      }).join('')
-    : '<div class="info-row"><div class="info-val empty-val">Sin datos</div></div>';
+// Mejores Compañeros con soporte para | (separador de compañeros) y > (prioridad dentro de cada compañero)
+const rawCompanions = c.mejores_compas ? c.mejores_compas.split('|').map(s => s.trim()).filter(Boolean) : [];
+const compasHTML = rawCompanions.length ? rawCompanions.map(companionChain => {
+  // Dividir por > para obtener las opciones en orden de prioridad
+  const options = companionChain.split('>').map(s => s.trim()).filter(Boolean);
+  const optionsHtml = options.map((opt, idx) => {
+    let name = opt;
+    let reasonText = '';
+    
+    // Si no es URL, separar por primer guión para razón
+    if (!isImageUrl(name)) {
+      const hyphenIndex = name.indexOf('-');
+      if (hyphenIndex !== -1) {
+        reasonText = name.substring(hyphenIndex + 1).trim();
+        name = name.substring(0, hyphenIndex).trim();
+      }
+    }
+    
+    let imageHtml = '';
+    let displayName = name;
+    if (isImageUrl(name)) {
+      const safeName = name.replace(/"/g, '&quot;');
+      imageHtml = `<img src="${name}" alt="compañero" data-text="${safeName}" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); margin-right: 0.3rem;" onerror="this.onerror=null; this.outerHTML = '<span>' + this.getAttribute('data-text') + '</span>';">`;
+      displayName = '';
+    }
+    
+    // Mostrar imagen/texto y razón
+    let html = `<span style="display: inline-flex; align-items: center; gap: 0.2rem;">${imageHtml}<span>${displayName}${displayName && reasonText ? ' ' : ''}<span class="reason">${reasonText}</span></span></span>`;
+    return html;
+  }).join(' <span style="color: var(--accent2); font-weight: bold;">→</span> ');
+  
+  return `<div class="info-row"><div class="info-val" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">${optionsHtml}</div></div>`;
+}).join('') : '<div class="info-row"><div class="info-val empty-val">Sin datos</div></div>';
 
-  // Bangbu
-  const bangbus = splitPipe(c.mejor_bangbu);
-  const bangbuHTML = bangbus.length
-    ? bangbus.map(s => {
-        const [name, ...rest] = s.split('-');
-        return `<div class="info-row">
-          <div class="info-val">${name.trim()}<span class="reason">${rest.join('-').trim()}</span></div>
-        </div>`;
-      }).join('')
-    : '<div class="info-row"><div class="info-val empty-val">Sin datos</div></div>';
+const rawBangbus = c.mejor_bangbu ? c.mejor_bangbu.split('|').map(s => s.trim()).filter(Boolean) : [];
+const bangbuHTML = rawBangbus.length ? rawBangbus.map(bangbuChain => {
+  const options = bangbuChain.split('>').map(s => s.trim()).filter(Boolean);
+  const optionsHtml = options.map((opt, idx) => {
+    let name = opt;
+    let reasonText = '';
+    if (!isImageUrl(name)) {
+      const hyphenIndex = name.indexOf('-');
+      if (hyphenIndex !== -1) {
+        reasonText = name.substring(hyphenIndex + 1).trim();
+        name = name.substring(0, hyphenIndex).trim();
+      }
+    }
+    let imageHtml = '';
+    let displayName = name;
+    if (isImageUrl(name)) {
+      const safeName = name.replace(/"/g, '&quot;');
+      imageHtml = `<img src="${name}" alt="bangbu" data-text="${safeName}" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); margin-right: 0.3rem;" onerror="this.onerror=null; this.outerHTML = '<span>' + this.getAttribute('data-text') + '</span>';">`;
+      displayName = '';
+    }
+    return `<span style="display: inline-flex; align-items: center; gap: 0.2rem;">${imageHtml}<span>${displayName}${displayName && reasonText ? ' ' : ''}<span class="reason">${reasonText}</span></span></span>`;
+  }).join(' <span style="color: var(--accent2); font-weight: bold;">→</span> ');
+  return `<div class="info-row"><div class="info-val" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">${optionsHtml}</div></div>`;
+}).join('') : '<div class="info-row"><div class="info-val empty-val">Sin datos</div></div>';
 
-  // Dupes
   const dupes = splitPipe(c.mejores_dupes);
-  const dupesHTML = dupes.length
-    ? dupes.map(d => `<div class="dupe-item">${d}</div>`).join('')
-    : '<span class="empty-val">Sin datos</span>';
+  const dupesHTML = dupes.length ? dupes.map(d => `<div class="dupe-item">${d}</div>`).join('') : '<span class="empty-val">Sin datos</span>';
 
-  // Stats básicas / ideales
   function renderStats(str, ideal = false) {
     const items = splitPipe(str);
     if (!items.length) return '<span class="empty-val">Sin datos</span>';
-    return `<div class="stat-numbers">` + items.map(s => {
-      const [k, v] = s.split(':');
-      return `<div class="stat-num-cell ${ideal?'ideal':''}">
-        <div class="sn-key">${(k||'').trim()}</div>
-        <div class="sn-val">${(v||'').trim()}</div>
-      </div>`;
-    }).join('') + '</div>';
+    return `<div class="stat-numbers">` + items.map(s => { const [k, v] = s.split(':'); return `<div class="stat-num-cell ${ideal?'ideal':''}"><div class="sn-key">${(k||'').trim()}</div><div class="sn-val">${(v||'').trim()}</div></div>`; }).join('') + '</div>';
   }
 
-  // Consejos
   const tips = splitPipe(c.consejos);
-  const tipsHTML = tips.length
-    ? tips.map(t => `<div class="tip-item"><span class="tip-bullet">◆</span><span>${t}</span></div>`).join('')
-    : '<div class="tip-item"><span class="tip-bullet">◆</span><span class="empty-val">Sin datos</span></div>';
+  const tipsHTML = tips.length ? tips.map(t => `<div class="tip-item"><span class="tip-bullet">◆</span><span>${t}</span></div>`).join('') : '<div class="tip-item"><span class="tip-bullet">◆</span><span class="empty-val">Sin datos</span></div>';
 
-  // Substats
   const subs = (c.disco_sub || '').split(',').map(s => s.trim()).filter(Boolean);
-  const subsHTML = subs.length
-    ? `<div class="substats-list">${subs.map(s => `<span class="substat-chip">${s}</span>`).join('')}</div>`
-    : '';
+  const subsHTML = subs.length ? `<div class="substats-list">${subs.map(s => `<span class="substat-chip">${s}</span>`).join('')}</div>` : '';
 
-  // Tags
   const tags = [
     c.rareza   && `<span class="tag tag-rarity">${c.rareza}</span>`,
     c.elemento && `<span class="tag tag-element">${c.elemento}</span>`,
@@ -856,115 +1129,52 @@ function renderChar(c) {
     c.faccion  && `<span class="tag tag-faction">${c.faccion}</span>`,
   ].filter(Boolean).join('');
 
-  main.innerHTML = `
-  <div class="char-card">
+  const rarezaClass = c.rareza ? `rareza-${c.rareza.toLowerCase()}` : '';
 
-    <!-- HEADER -->
+  wikiContainer.innerHTML = `
+  <div class="char-card">
     <div class="char-header">
-      <img class="char-avatar" src="${c.imagen||''}" alt="${c.nombre}"
-           onerror="this.style.display='none'">
+      <img class="char-avatar ${rarezaClass}" src="${c.imagen||''}" alt="${c.nombre}" onerror="this.style.display='none'">
       <div class="char-info">
         <div class="char-name">${c.nombre}</div>
+        <div class="char-emojis" style="margin: 0.3rem 0;">${renderEmojis(c.resumen)}</div>
         <div class="char-tags">${tags}</div>
       </div>
-      ${avg ? `<div class="char-score-big">${avg}<div class="score-label">/ 10</div></div>` : ''}
+      ${avg ? `<div class="char-score-big ${getScoreClass(avg)}">${avg}<div class="score-label">/ 10</div></div>` : ''}
     </div>
-
-    <!-- SCORES + NECESIDADES -->
     <div class="grid-2">
-      <div class="panel">
-        <div class="panel-title">Puntuaciones</div>
-        <div class="rank-list">${scoreRows}</div>
-      </div>
+      <div class="panel"><div class="panel-title">Puntuaciones</div><div class="rank-list">${scoreRows}</div></div>
       <div class="panel">
         <div class="panel-title">Necesidades</div>
-        <div class="info-row">
-          <div class="info-key">W-Engine (arma signature)</div>
-          <div class="info-val">
-            <span class="necessity ${necClass(c.nec_arma||'nada')}">${c.nec_arma||'—'}</span>
-          </div>
-        </div>
-        <div class="info-row">
-          <div class="info-key">Dupes / Copias</div>
-          <div class="info-val">
-            <span class="necessity ${necClass(c.nec_dupes||'nada')}">${c.nec_dupes||'—'}</span>
-          </div>
-        </div>
-        <br>
-        <div class="panel-title">Mejores Dupes</div>
-        ${dupesHTML}
+        <div class="info-row"><div class="info-key">W-Engine (arma signature)</div><div class="info-val"><span class="necessity ${necClass(c.nec_arma||'nada')}">${c.nec_arma||'—'}</span></div></div>
+        <div class="info-row"><div class="info-key">Dupes / Copias</div><div class="info-val"><span class="necessity ${necClass(c.nec_dupes||'nada')}">${c.nec_dupes||'—'}</span></div></div>
+        <br><div class="panel-title">Mejores Dupes</div>${dupesHTML}
       </div>
     </div>
-
-    <!-- EQUIPO -->
     <div class="grid-2">
-      <div class="panel">
-        <div class="panel-title">Mejores Compañeros</div>
-        ${compasHTML}
-      </div>
-      <div class="panel">
-        <div class="panel-title">Mejor Bangbú</div>
-        ${bangbuHTML}
-      </div>
+      <div class="panel"><div class="panel-title">Mejores Compañeros</div>${compasHTML}</div>
+      <div class="panel"><div class="panel-title">Mejor Bangbú</div>${bangbuHTML}</div>
     </div>
-
-    <!-- W-ENGINES + DISCOS -->
     <div class="grid-2">
-      <div class="panel">
-        <div class="panel-title">W-Engines</div>
-        <div class="weapon-chain">${engineHTML}</div>
-      </div>
-      <div class="panel">
-        <div class="panel-title">Sets de Discos</div>
-        ${setsHTML}
-      </div>
+      <div class="panel"><div class="panel-title">W-Engines</div><div class="weapon-chain">${engineHTML}</div></div>
+      <div class="panel"><div class="panel-title">Sets de Discos</div>${setsHTML}</div>
     </div>
-
-    <!-- STATS DISCOS -->
     <div class="panel" style="margin-bottom:1.2rem">
       <div class="panel-title">Stats de Discos</div>
       <div class="stats-grid">
-        <div class="stat-cell">
-          <div class="slot-label">SLOT 4</div>
-          <div class="stat-name">${c.disco_slot4||'—'}</div>
-        </div>
-        <div class="stat-cell">
-          <div class="slot-label">SLOT 5</div>
-          <div class="stat-name">${c.disco_slot5||'—'}</div>
-        </div>
-        <div class="stat-cell">
-          <div class="slot-label">SLOT 6</div>
-          <div class="stat-name">${c.disco_slot6||'—'}</div>
-        </div>
+        <div class="stat-cell"><div class="slot-label">SLOT 4</div><div class="stat-name">${c.disco_slot4||'—'}</div></div>
+        <div class="stat-cell"><div class="slot-label">SLOT 5</div><div class="stat-name">${c.disco_slot5||'—'}</div></div>
+        <div class="stat-cell"><div class="slot-label">SLOT 6</div><div class="stat-name">${c.disco_slot6||'—'}</div></div>
       </div>
-      ${subsHTML ? `
-        <div style="margin-top:.75rem">
-          <div class="info-key" style="margin-bottom:.3rem">SUBSTATS PRIORITARIAS</div>
-          ${subsHTML}
-        </div>` : ''}
+      ${subsHTML ? `<div style="margin-top:.75rem"><div class="info-key" style="margin-bottom:.3rem">SUBSTATS PRIORITARIAS</div>${subsHTML}</div>` : ''}
     </div>
-
-    <!-- STATS BÁSICAS / IDEALES -->
     <div class="grid-2">
-      <div class="panel">
-        <div class="panel-title">Stats Básicas</div>
-        ${renderStats(c.stats_basicas, false)}
-      </div>
-      <div class="panel">
-        <div class="panel-title">Stats Ideales</div>
-        ${renderStats(c.stats_ideales, true)}
-      </div>
+      <div class="panel"><div class="panel-title">Stats Básicas</div>${renderStats(c.stats_basicas, false)}</div>
+      <div class="panel"><div class="panel-title">Stats Ideales</div>${renderStats(c.stats_ideales, true)}</div>
     </div>
-
-    <!-- CONSEJOS -->
-    <div class="panel" style="margin-bottom:2rem">
-      <div class="panel-title">Consejos &amp; Habilidades</div>
-      ${tipsHTML}
-    </div>
-
+    <div class="panel" style="margin-bottom:2rem"><div class="panel-title">Consejos &amp; Habilidades</div>${tipsHTML}</div>
   </div>`;
 
-  // Animar barras después de render
   requestAnimationFrame(() => {
     document.querySelectorAll('.rank-bar-fill').forEach(el => {
       const w = el.style.width;
@@ -975,56 +1185,311 @@ function renderChar(c) {
 }
 
 function renderWelcome(chars) {
-  const main = document.getElementById('main-content');
-  main.innerHTML = `
-    <div class="welcome">
-      <div class="welcome-title">BIENVENIDO A <span>ZZZWIKI</span></div>
-      <div class="welcome-sub">Seleccioná un personaje en el panel izquierdo</div>
-      <div style="color:var(--text-dim);font-size:.8rem;margin-top:.5rem">
-        ${chars.length} personaje${chars.length!==1?'s':''} cargado${chars.length!==1?'s':''}
-      </div>
-    </div>`;
+  wikiContainer.innerHTML = `<div class="welcome"><div class="welcome-title">BIENVENIDO A <span>ZZZWIKI</span></div><div class="welcome-sub">Seleccioná un personaje en el panel izquierdo</div><div style="color:var(--text-dim);font-size:.8rem;margin-top:.5rem">${chars.length} personaje${chars.length!==1?'s':''} cargado${chars.length!==1?'s':''}</div></div>`;
 }
 
 function renderError(msg) {
-  const main = document.getElementById('main-content');
-  main.innerHTML = `
-    <div class="state-screen">
-      <div class="big-icon">⚠</div>
-      <h2>ERROR AL CARGAR</h2>
-      <div>${msg}</div>
-      <div style="margin-top:1rem;font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--text-dim)">
-        Verificá que el Sheet ID sea correcto y que la hoja esté publicada como CSV
-      </div>
-    </div>`;
+  wikiContainer.innerHTML = `<div class="state-screen"><div class="big-icon">⚠</div><h2>ERROR AL CARGAR</h2><div>${msg}</div><div style="margin-top:1rem;font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--text-dim)">Verificá que la primera fila contenga los nombres de columna exactos (nombre, imagen, ...)</div></div>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// MENÚ MÓVIL
+// ══════════════════════════════════════════════════════════
+let sidebar;
+let overlay;
+let menuToggle;
+
+function closeMenu() {
+  if (sidebar) sidebar.classList.remove('open');
+  if (overlay) overlay.classList.remove('active');
+}
+
+function openMenu() {
+  if (sidebar) sidebar.classList.add('open');
+  if (overlay) overlay.classList.add('active');
+}
+
+function initMobileMenu() {
+  menuToggle = document.getElementById('menu-toggle');
+  sidebar = document.querySelector('.sidebar');
+  overlay = document.getElementById('menu-overlay');
+  if (!menuToggle || !sidebar || !overlay) return;
+  menuToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (sidebar.classList.contains('open')) closeMenu();
+    else openMenu();
+  });
+  overlay.addEventListener('click', closeMenu);
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) closeMenu();
+  });
 }
 
 // ══════════════════════════════════════════════════════════
 // SEARCH
 // ══════════════════════════════════════════════════════════
-document.getElementById('search-input').addEventListener('input', function() {
-  const q = this.value.toLowerCase().trim();
-  const filtered = q
-    ? allChars.filter(c => c.nombre.toLowerCase().includes(q))
-    : allChars;
-  renderSidebar_filtered(filtered);
-});
+function setupSearch() {
+  const searchInput = document.getElementById('search-input');
+  if (!searchInput) return;
+  searchInput.addEventListener('input', function() {
+    currentSearchTerm = this.value.toLowerCase().trim();
+    updateFilteredList();
+  });
+}
 
-function renderSidebar_filtered(chars) {
-  const nav = document.getElementById('char-nav');
-  nav.innerHTML = '';
-  chars.forEach(c => {
-    const i = allChars.indexOf(c);
-    const avg = calcPromedio(c);
-    const item = document.createElement('div');
-    item.className = 'char-nav-item' + (i === activeIdx ? ' active' : '');
-    item.innerHTML = `
-      <img src="${c.imagen || ''}" alt="${c.nombre}" onerror="this.style.display='none'">
-      <span>${c.nombre}</span>
-      ${avg ? `<span class="nav-rank-badge">${avg}</span>` : ''}
-    `;
-    item.addEventListener('click', () => selectChar(i));
-    nav.appendChild(item);
+// ===================== TIER LIST =====================
+let currentTierMode = 'auto'; // 'auto' o 'custom'
+let customTiers = [];  // array de objetos: { name, characters: [charIndex] }
+
+// Obtener todas las clases (roles) únicas de personajes
+function getAllRoles() {
+  return [...new Set(allChars.map(c => c.rol).filter(r => r && r.trim() !== ''))];
+}
+
+// Generar tier list automática: agrupa por rol y rango de promedio
+function generateAutoTierList() {
+  const roles = getAllRoles();
+  const tiers = [
+    { min: 9, max: 10, name: 'S+ (9-10)' },
+    { min: 8, max: 8.99, name: 'S (8-9)' },
+    { min: 7, max: 7.99, name: 'A (7-8)' },
+    { min: 5, max: 6.99, name: 'B (5-7)' },
+    { min: 3, max: 4.99, name: 'C (3-5)' },
+    { min: 0, max: 2.99, name: 'D (0-3)' }
+  ];
+  
+  let html = `<div class="tier-mode-selector">
+    <button class="tier-auto-btn active">📊 Automática por promedio</button>
+    <button class="tier-custom-btn">🎮 Personalizada (arrastrable)</button>
+  </div>`;
+  
+  for (const rol of roles) {
+    html += `<div class="tier-rol-group" style="margin-bottom:2rem;">
+      <h3 style="color:var(--accent2); margin-bottom:0.5rem;">${rol}</h3>`;
+    for (const tier of tiers) {
+      const charsInTier = allChars.filter(c => {
+        const avg = parseFloat(calcPromedio(c));
+        return c.rol === rol && !isNaN(avg) && avg >= tier.min && avg <= tier.max;
+      });
+      if (charsInTier.length === 0) continue;
+      html += `<div class="tier-row">
+        <div class="tier-header">${tier.name}</div>
+        <div class="tier-cards">`;
+      for (const ch of charsInTier) {
+        const avg = calcPromedio(ch);
+        html += `<div class="tier-card" data-char-idx="${allChars.indexOf(ch)}">
+          <img src="${ch.imagen || ''}" alt="${ch.nombre}" onerror="this.style.display='none'">
+          <span>${ch.nombre}</span>
+          <span class="avg-score">${avg || '—'}</span>
+        </div>`;
+      }
+      html += `</div></div>`;
+    }
+    html += `</div>`;
+  }
+  return html;
+}
+
+// Inicializar tier list personalizada (cargar desde localStorage o crear por defecto)
+function initCustomTiers() {
+  const saved = localStorage.getItem('zzz_custom_tiers');
+  if (saved) {
+    customTiers = JSON.parse(saved);
+  } else {
+    // Por defecto: crear filas S, A, B, C, D con personajes ordenados por promedio
+    const sorted = [...allChars].sort((a,b) => parseFloat(calcPromedio(b)) - parseFloat(calcPromedio(a)));
+    const tiersDefault = [
+      { name: 'S (9-10)', characters: [] },
+      { name: 'A (7-9)', characters: [] },
+      { name: 'B (5-7)', characters: [] },
+      { name: 'C (3-5)', characters: [] },
+      { name: 'D (0-3)', characters: [] },
+    ];
+    for (const ch of sorted) {
+      const avg = parseFloat(calcPromedio(ch));
+      let tierIdx = 0;
+      if (avg >= 9) tierIdx = 0;
+      else if (avg >= 7) tierIdx = 1;
+      else if (avg >= 5) tierIdx = 2;
+      else if (avg >= 3) tierIdx = 3;
+      else tierIdx = 4;
+      tiersDefault[tierIdx].characters.push(allChars.indexOf(ch));
+    }
+    customTiers = tiersDefault;
+  }
+}
+
+// Guardar tier list personalizada en localStorage
+function saveCustomTiers() {
+  localStorage.setItem('zzz_custom_tiers', JSON.stringify(customTiers));
+}
+
+// Renderizar la tier list personalizada (drag & drop)
+function renderCustomTierList() {
+  let html = `<div class="tier-mode-selector">
+    <button class="tier-auto-btn">📊 Automática por promedio</button>
+    <button class="tier-custom-btn active">🎮 Personalizada (arrastrable)</button>
+  </div>
+  <div id="custom-tier-container">`;
+  
+  customTiers.forEach((tier, idx) => {
+    html += `<div class="tier-row" data-tier-index="${idx}">
+      <div class="tier-header">
+        <input type="text" class="tier-name-input" value="${tier.name}" style="background:var(--surface2); border:1px solid var(--border); color:var(--text-bright); padding:0.2rem 0.5rem; border-radius:4px; width:120px;">
+        <button class="remove-tier-btn" data-tier="${idx}" style="background:none; border:none; color:var(--red); cursor:pointer;">✕</button>
+      </div>
+      <div class="tier-cards" data-tier="${idx}" data-dropzone="true">
+  `;
+    for (const charIdx of tier.characters) {
+      const ch = allChars[charIdx];
+      if (!ch) continue;
+      const avg = calcPromedio(ch);
+      html += `<div class="tier-card" draggable="true" data-char-idx="${charIdx}" data-origin-tier="${idx}">
+        <img src="${ch.imagen || ''}" alt="${ch.nombre}" onerror="this.style.display='none'">
+        <span>${ch.nombre}</span>
+        <span class="avg-score">${avg || '—'}</span>
+      </div>`;
+    }
+    html += `</div></div>`;
+  });
+  
+  html += `<div class="custom-tier-actions">
+    <button id="add-tier-btn">➕ Añadir fila</button>
+    <button id="reset-custom-tier" class="reset-tier-btn">⟳ Restablecer por promedio</button>
+  </div></div>`;
+  
+  document.getElementById('tierlist-container').innerHTML = html;
+  
+  // Adjuntar eventos de drag & drop
+  attachDragAndDropEvents();
+  // Eventos para botones de eliminar fila, añadir fila, reset
+  document.querySelectorAll('.remove-tier-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const tierIdx = parseInt(btn.dataset.tier);
+      if (customTiers.length > 1) {
+        // Mover personajes de la fila eliminada a la fila superior (si existe) o inferior
+        const charsToMove = customTiers[tierIdx].characters;
+        customTiers.splice(tierIdx, 1);
+        if (customTiers.length > 0) {
+          const targetIdx = Math.min(tierIdx, customTiers.length-1);
+          customTiers[targetIdx].characters.push(...charsToMove);
+        }
+        saveCustomTiers();
+        renderCustomTierList();
+      }
+    });
+  });
+  document.getElementById('add-tier-btn')?.addEventListener('click', () => {
+    customTiers.push({ name: 'Nueva fila', characters: [] });
+    saveCustomTiers();
+    renderCustomTierList();
+  });
+  document.getElementById('reset-custom-tier')?.addEventListener('click', () => {
+    initCustomTiers(); // reinicia según promedios
+    saveCustomTiers();
+    renderCustomTierList();
+  });
+  // Eventos para renombrar fila
+  document.querySelectorAll('.tier-name-input').forEach((input, idx) => {
+    input.addEventListener('change', (e) => {
+      customTiers[idx].name = e.target.value;
+      saveCustomTiers();
+    });
+  });
+}
+
+// Funciones para drag & drop
+function attachDragAndDropEvents() {
+  const cards = document.querySelectorAll('.tier-card');
+  const dropZones = document.querySelectorAll('[data-dropzone="true"]');
+  
+  cards.forEach(card => {
+    card.addEventListener('dragstart', handleDragStart);
+    card.addEventListener('dragend', handleDragEnd);
+    card.setAttribute('draggable', 'true');
+  });
+  dropZones.forEach(zone => {
+    zone.addEventListener('dragover', handleDragOver);
+    zone.addEventListener('drop', handleDrop);
+  });
+}
+
+let draggedItem = null;
+let draggedCharIdx = null;
+let draggedOriginTier = null;
+
+function handleDragStart(e) {
+  draggedItem = this;
+  draggedCharIdx = parseInt(this.dataset.charIdx);
+  draggedOriginTier = parseInt(this.dataset.originTier);
+  e.dataTransfer.setData('text/plain', draggedCharIdx);
+  this.classList.add('dragging');
+}
+
+function handleDragEnd(e) {
+  if (draggedItem) draggedItem.classList.remove('dragging');
+  draggedItem = null;
+  draggedCharIdx = null;
+  draggedOriginTier = null;
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  const targetZone = e.currentTarget;
+  const targetTierIdx = parseInt(targetZone.dataset.tier);
+  if (isNaN(targetTierIdx)) return;
+  if (draggedCharIdx === null || draggedOriginTier === null) return;
+  
+  // Mover personaje de origen a destino
+  const originTier = customTiers[draggedOriginTier];
+  const charIndexInOrigin = originTier.characters.indexOf(draggedCharIdx);
+  if (charIndexInOrigin !== -1) originTier.characters.splice(charIndexInOrigin, 1);
+  customTiers[targetTierIdx].characters.push(draggedCharIdx);
+  
+  saveCustomTiers();
+  renderCustomTierList();
+}
+
+// Mostrar/ocultar tier list y wiki
+function showWiki() {
+  document.getElementById('wiki-container').style.display = 'block';
+  document.getElementById('tierlist-container').style.display = 'none';
+  // Si hay un personaje activo, mostrarlo; si no, mostrar bienvenida
+  if (allChars.length > 0) {
+    if (activeIdx !== -1 && allChars[activeIdx]) {
+      renderChar(allChars[activeIdx]);
+    } else {
+      renderWelcome(allChars);
+    }
+  }
+}
+function showTierList() {
+  document.getElementById('wiki-container').style.display = 'none';
+  document.getElementById('tierlist-container').style.display = 'block';
+  // Generar según el modo actual
+  if (currentTierMode === 'auto') {
+    document.getElementById('tierlist-container').innerHTML = generateAutoTierList();
+  } else {
+    initCustomTiers();
+    renderCustomTierList();
+  }
+  // Re-enganchar eventos de cambio de modo
+  document.querySelectorAll('.tier-auto-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentTierMode = 'auto';
+      showTierList();
+    });
+  });
+  document.querySelectorAll('.tier-custom-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentTierMode = 'custom';
+      showTierList();
+    });
   });
 }
 
@@ -1036,24 +1501,108 @@ async function init() {
   try {
     const rows = await fetchSheetData();
     allChars = buildCharacters(rows);
-    dot.className = 'status-dot'; // verde = ok
-
+    dot.className = 'status-dot';
     if (!allChars.length) {
-      renderError('No se encontraron personajes. Verificá que la hoja tenga datos desde B2.');
+      renderError('No se encontraron personajes. Asegúrate de que la primera fila tenga los encabezados.');
       return;
-
-console.log('Filas raw:', rows.slice(0, 5));
-console.log('Chars parseados:', allChars);
-
     }
-
+// Configurar botón de toggle
+const toggleBtn = document.getElementById('toggle-tierlist-btn');
+toggleBtn.addEventListener('click', () => {
+  if (document.getElementById('tierlist-container').style.display === 'none') {
+    showTierList();
+    toggleBtn.textContent = '📖 WIKI';
+  } else {
+    showWiki();
+    toggleBtn.textContent = '📊 TIER LIST';
+  }
+});
+showWiki(); // por defecto mostrar wiki
+    renderFilters();      // Generar los filtros dinámicos
     renderSidebar(allChars);
     renderWelcome(allChars);
+    initMobileMenu();
+    setupSearch();
+    setupDescriptionListeners();
   } catch (err) {
     dot.className = 'status-dot error';
     renderError(err.message || 'Error desconocido');
     console.error(err);
   }
+}
+
+// ══════════════════════════════════════════════════════════
+// POPUP TÁCTIL PARA DESCRIPCIONES
+// ══════════════════════════════════════════════════════════
+let activePopup = null;
+
+function showDescription(text, event) {
+  // Cerrar popup previo si existe
+  if (activePopup) activePopup.remove();
+  
+  const popup = document.createElement('div');
+  popup.className = 'description-popup';
+  popup.innerHTML = `<button class="close-popup">✕</button><div>${text}</div>`;
+  document.body.appendChild(popup);
+  
+  // Posicionar cerca del elemento pulsado
+  const rect = event.target.getBoundingClientRect();
+  let left = rect.left + window.scrollX;
+  let top = rect.bottom + window.scrollY + 8;
+  
+  // Evitar que se salga por la derecha
+  const popupWidth = 260;
+  if (left + popupWidth > window.innerWidth) {
+    left = window.innerWidth - popupWidth - 10;
+  }
+  // Evitar que se salga por abajo
+  const popupHeight = popup.offsetHeight;
+  if (top + popupHeight > window.scrollY + window.innerHeight) {
+    top = rect.top + window.scrollY - popupHeight - 8;
+  }
+  
+  popup.style.left = left + 'px';
+  popup.style.top = top + 'px';
+  setTimeout(() => popup.classList.add('visible'), 10);
+  activePopup = popup;
+  
+  // Cerrar con el botón X
+  popup.querySelector('.close-popup').addEventListener('click', (e) => {
+    e.stopPropagation();
+    popup.remove();
+    activePopup = null;
+  });
+  
+  // Cerrar al hacer clic fuera del popup
+  const closeHandler = (e) => {
+    if (!popup.contains(e.target) && e.target !== event.target) {
+      popup.remove();
+      activePopup = null;
+      document.removeEventListener('click', closeHandler);
+    }
+  };
+  setTimeout(() => document.addEventListener('click', closeHandler), 0);
+}
+
+// Delegación de eventos para emojis e iconos de información
+function setupDescriptionListeners() {
+  document.addEventListener('click', function(e) {
+    let target = e.target;
+    // Emojis
+    if (target.classList && target.classList.contains('emoji-badge')) {
+      const desc = target.getAttribute('data-desc');
+      if (desc) showDescription(desc, e);
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    // Iconos de información
+    else if (target.classList && target.classList.contains('info-icon')) {
+      const tip = target.getAttribute('data-tip');
+      if (tip) showDescription(tip, e);
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  });
 }
 
 init();
