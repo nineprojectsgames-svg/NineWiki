@@ -1,0 +1,301 @@
+:root {
+  --bg:        #0a0c10;
+  --surface:   #0f1219;
+  --surface2:  #161b26;
+  --border:    #1e2535;
+  --accent:    #f5c400;
+  --accent2:   #ff6b1a;
+  --accent3:   #00d4ff;
+  --text:      #c8d0e0;
+  --text-dim:  #5a6478;
+  --text-bright: #edf0f7;
+  --red:       #ff3e5e;
+  --green:     #00e5a0;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.08) 2px, rgba(0,0,0,.08) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Header */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,12,16,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  display: flex; align-items: center; gap: 1.5rem;
+  height: 60px;
+}
+.logo {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: var(--accent);
+  text-shadow: 0 0 20px rgba(245,196,0,.4);
+  white-space: nowrap;
+  text-decoration: none;
+}
+.logo span { color: var(--accent2); }
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.nav-link {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 0.35rem 0.85rem;
+  border-radius: 3px;
+  transition: color 0.15s, background 0.15s;
+}
+.nav-link:hover {
+  color: var(--text-bright);
+  background: var(--surface2);
+}
+.nav-link.active {
+  color: var(--accent);
+  background: rgba(245,196,0,.08);
+}
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 1.5rem 2rem;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+}
+
+/* Page layout */
+.page-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 2rem 4rem;
+}
+
+/* Hero (home) */
+.hero {
+  text-align: center;
+  padding: 4rem 1rem 3rem;
+}
+.hero-badge {
+  display: inline-block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: var(--accent3);
+  border: 1px solid rgba(0,212,255,.3);
+  background: rgba(0,212,255,.06);
+  padding: 0.25rem 0.75rem;
+  border-radius: 2px;
+  margin-bottom: 1.5rem;
+}
+.hero-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-bright);
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+.hero-title span {
+  color: var(--accent);
+  text-shadow: 0 0 30px rgba(245,196,0,.35);
+}
+.hero-sub {
+  font-size: 1.05rem;
+  color: var(--text-dim);
+  max-width: 520px;
+  margin: 0 auto 2.5rem;
+  font-weight: 300;
+}
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  padding: 0.65rem 1.5rem;
+  border-radius: 3px;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.btn-primary:hover {
+  box-shadow: 0 0 20px rgba(245,196,0,.4);
+}
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Feature cards (home) */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.2rem;
+  margin-top: 2rem;
+}
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  transition: border-color 0.2s;
+}
+.feature-card:hover {
+  border-color: rgba(245,196,0,.3);
+}
+.feature-icon {
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+}
+.feature-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-bright);
+  margin-bottom: 0.5rem;
+}
+.feature-desc {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* Wikis hub */
+.page-heading {
+  margin-bottom: 2rem;
+}
+.page-heading h1 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-bright);
+  margin-bottom: 0.4rem;
+}
+.page-heading p {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+}
+.wiki-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.2rem;
+}
+.wiki-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: border-color 0.2s, transform 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.wiki-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 120px; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(245,196,0,.04));
+  pointer-events: none;
+}
+.wiki-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.wiki-card.available { cursor: pointer; }
+.wiki-card.coming-soon {
+  opacity: 0.55;
+  cursor: default;
+  pointer-events: none;
+}
+.wiki-card-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent3);
+  border: 1px solid rgba(0,212,255,.25);
+  background: rgba(0,212,255,.08);
+  padding: 0.15rem 0.5rem;
+  border-radius: 2px;
+  align-self: flex-start;
+}
+.wiki-card-tag.soon {
+  color: var(--text-dim);
+  border-color: var(--border);
+  background: var(--surface2);
+}
+.wiki-card-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-bright);
+}
+.wiki-card-desc {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  flex: 1;
+}
+.wiki-card-meta {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 768px) {
+  .site-header { padding: 0 1rem; gap: 0.75rem; flex-wrap: wrap; height: auto; min-height: 60px; padding-top: 0.5rem; padding-bottom: 0.5rem; }
+  .site-nav { gap: 0.15rem; }
+  .nav-link { font-size: 0.85rem; padding: 0.3rem 0.6rem; }
+  .page-main { padding: 2rem 1rem 3rem; }
+  .hero { padding: 2.5rem 0.5rem 2rem; }
+}
