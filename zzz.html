@@ -53,6 +53,24 @@
     height: 60px;
   }
   .header-game { font-family: 'Share Tech Mono', monospace; font-size: .72rem; color: var(--text-dim); letter-spacing: .08em; border: 1px solid var(--border); padding: .2rem .6rem; border-radius: 2px; white-space: nowrap; }
+  .section-tabs { display: flex; gap: 0.55rem; margin-left: 1rem; }
+  .section-tab {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+  }
+  .section-tab.active,
+  .section-tab:hover {
+    background: rgba(245,196,0,.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
   .header-right { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
   #search-input { background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'Share Tech Mono', monospace; font-size: .8rem; padding: .4rem .8rem; border-radius: 3px; width: 200px; outline: none; transition: border-color .2s; }
   #search-input:focus { border-color: var(--accent); }
@@ -150,47 +168,34 @@
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
  @media (max-width: 768px) {
-  /* ===== MENÚ HAMBURGUESA ===== */
   .sidebar {
-    position: fixed;
-    top: 60px;
-    left: -280px;
-    width: 280px;
-    height: calc(100vh - 60px);
-    background: var(--surface);
-    z-index: 1000;
-    transition: left 0.3s ease;
-    border-right: 1px solid var(--border);
-    box-shadow: 2px 0 12px rgba(0,0,0,0.3);
-    overflow-y: auto;
-  }
-  .sidebar.open {
-    left: 0;
-  }
-  /* Botón hamburguesa (si no existe, lo agregamos) */
-  #menu-toggle {
-    display: block !important;
-    background: none;
-    border: none;
-    color: var(--accent);
-    font-size: 1.8rem;
-    cursor: pointer;
-    padding: 0 0.5rem;
-    margin-left: 0.5rem;
-  }
-  /* Overlay para cerrar al tocar fuera */
-  .menu-overlay {
     position: fixed;
     top: 60px;
     left: 0;
     width: 100%;
     height: calc(100vh - 60px);
-    background: rgba(0,0,0,0.6);
-    z-index: 999;
+    background: var(--surface);
+    z-index: 1000;
+    border-right: none;
+    box-shadow: none;
+    overflow-y: auto;
+    padding: 1rem 0;
     display: none;
   }
-  .menu-overlay.active {
+  .sidebar.visible {
     display: block;
+  }
+  .sidebar-section,
+  .char-nav-item {
+    margin: 0 1rem;
+  }
+  .sidebar-section {
+    padding: 0.8rem 0 0.4rem;
+  }
+  .sidebar .filter-options,
+  .sidebar .filter-header,
+  .sidebar .filter-content {
+    margin: 0 1rem;
   }
 
   /* ===== AJUSTES GENERALES ===== */
@@ -611,8 +616,11 @@
     <a href="wikis.html" class="nav-link active">Wikis</a>
   </nav>
   <div class="header-game">ZZZ — BUILDS</div>
-  <button id="menu-toggle" style="background:none; border:none; color:var(--accent); font-size:1.8rem; cursor:pointer; display:none;">☰</button>
-  <button id="toggle-tierlist-btn" style="background:var(--surface2); border:1px solid var(--border); color:var(--accent); padding:0.2rem 0.8rem; border-radius:4px; font-family:'Share Tech Mono'; font-size:0.7rem; cursor:pointer;">📊 TIER LIST</button>
+  <div id="section-tabs" class="section-tabs">
+    <button class="section-tab active" data-section="home">Inicio</button>
+    <button class="section-tab" data-section="characters">Personajes</button>
+    <button class="section-tab" data-section="tierlist">Tier List</button>
+  </div>
   <div class="header-right">
     <input type="text" id="search-input" placeholder="Buscar personaje…" />
     <div class="status-dot loading" id="status-dot" title="Cargando datos…"></div>
@@ -625,7 +633,6 @@
   <div class="sidebar-section">Personajes</div>
   <div id="char-nav"></div>
 </aside>
-<div id="menu-overlay" class="menu-overlay"></div>
   <main id="main-content">
   <div id="wiki-container">
     <!-- Aquí se cargará dinámicamente la wiki (lo que ya tenías) -->
@@ -642,6 +649,7 @@
 // ══════════════════════════════════════════════════════════
 const wikiContainer = document.getElementById('wiki-container');
 const tierListContainer = document.getElementById('tierlist-container');
+let currentSection = 'home';
 
 const SHEET_CONFIG = {
   sheetId: '1hvggH2H5F27AyvaQnZs9CAPu6V78TZBa2SKq445Jad8',
@@ -967,11 +975,12 @@ function selectChar(idx) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   if (window.innerWidth <= 768) {
     const sidebarElem = document.querySelector('.sidebar');
-    if (sidebarElem && sidebarElem.classList.contains('open')) {
-      if (typeof closeMenu === 'function') closeMenu();
+    if (sidebarElem) {
+      sidebarElem.style.display = 'none';
+      sidebarElem.classList.remove('visible');
     }
   }
-}  // <--- CIERRE CORRECTO DE selectChar
+}
 
 function renderChar(c) {
   const avg = calcPromedio(c);
@@ -1199,33 +1208,9 @@ function renderError(msg) {
 // MENÚ MÓVIL
 // ══════════════════════════════════════════════════════════
 let sidebar;
-let overlay;
-let menuToggle;
-
-function closeMenu() {
-  if (sidebar) sidebar.classList.remove('open');
-  if (overlay) overlay.classList.remove('active');
-}
-
-function openMenu() {
-  if (sidebar) sidebar.classList.add('open');
-  if (overlay) overlay.classList.add('active');
-}
 
 function initMobileMenu() {
-  menuToggle = document.getElementById('menu-toggle');
   sidebar = document.querySelector('.sidebar');
-  overlay = document.getElementById('menu-overlay');
-  if (!menuToggle || !sidebar || !overlay) return;
-  menuToggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (sidebar.classList.contains('open')) closeMenu();
-    else openMenu();
-  });
-  overlay.addEventListener('click', closeMenu);
-  window.addEventListener('resize', () => {
-    if (window.innerWidth > 768) closeMenu();
-  });
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1459,21 +1444,67 @@ function handleDrop(e) {
 }
 
 // Mostrar/ocultar tier list y wiki
-function showWiki() {
-  document.getElementById('wiki-container').style.display = 'block';
-  document.getElementById('tierlist-container').style.display = 'none';
-  // Si hay un personaje activo, mostrarlo; si no, mostrar bienvenida
-  if (allChars.length > 0) {
-    if (activeIdx !== -1 && allChars[activeIdx]) {
-      renderChar(allChars[activeIdx]);
-    } else {
-      renderWelcome(allChars);
+function setActiveSectionTab(section) {
+  document.querySelectorAll('.section-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.section === section);
+  });
+}
+
+function showHome() {
+  currentSection = 'home';
+  const sidebarElem = document.querySelector('.sidebar');
+  if (sidebarElem) sidebarElem.style.display = 'none';
+  wikiContainer.style.display = 'block';
+  tierListContainer.style.display = 'none';
+  setActiveSectionTab('home');
+  wikiContainer.innerHTML = `
+    <div class="welcome">
+      <div class="welcome-title">ZENLESS ZONE <span>ZERO</span></div>
+      <div class="welcome-sub">Bienvenido a la página principal de ZZZ. Aquí encontrarás Personajes y Tier List.</div>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; margin-top:1rem;">
+        <button class="section-tab-button" data-section="characters">Ver Personajes</button>
+        <button class="section-tab-button" data-section="tierlist">Ver Tier List</button>
+      </div>
+    </div>`;
+  document.querySelectorAll('.section-tab-button').forEach(btn => {
+    btn.addEventListener('click', () => showSection(btn.dataset.section));
+  });
+}
+
+function showCharacters() {
+  currentSection = 'characters';
+  const sidebarElem = document.querySelector('.sidebar');
+  if (sidebarElem) {
+    sidebarElem.style.display = 'block';
+    if (window.innerWidth <= 768) {
+      sidebarElem.classList.add('visible');
     }
   }
+  wikiContainer.style.display = 'block';
+  tierListContainer.style.display = 'none';
+  setActiveSectionTab('characters');
+  const filtered = filterCharacters();
+  renderSidebar(filtered);
+  if (activeIdx !== -1 && allChars[activeIdx] && filtered.includes(allChars[activeIdx])) {
+    renderChar(allChars[activeIdx]);
+  } else {
+    renderWelcome(filtered);
+  }
 }
+
+function showSection(section) {
+  if (section === 'tierlist') showTierList();
+  else if (section === 'characters') showCharacters();
+  else showHome();
+}
+
 function showTierList() {
-  document.getElementById('wiki-container').style.display = 'none';
-  document.getElementById('tierlist-container').style.display = 'block';
+  currentSection = 'tierlist';
+  const sidebarElem = document.querySelector('.sidebar');
+  if (sidebarElem) sidebarElem.style.display = 'none';
+  wikiContainer.style.display = 'none';
+  tierListContainer.style.display = 'block';
+  setActiveSectionTab('tierlist');
   // Generar según el modo actual
   if (currentTierMode === 'auto') {
     document.getElementById('tierlist-container').innerHTML = generateAutoTierList();
@@ -1509,21 +1540,13 @@ async function init() {
       renderError('No se encontraron personajes. Asegúrate de que la primera fila tenga los encabezados.');
       return;
     }
-// Configurar botón de toggle
-const toggleBtn = document.getElementById('toggle-tierlist-btn');
-toggleBtn.addEventListener('click', () => {
-  if (document.getElementById('tierlist-container').style.display === 'none') {
-    showTierList();
-    toggleBtn.textContent = '📖 WIKI';
-  } else {
-    showWiki();
-    toggleBtn.textContent = '📊 TIER LIST';
-  }
-});
-showWiki(); // por defecto mostrar wiki
-    renderFilters();      // Generar los filtros dinámicos
+    document.querySelectorAll('.section-tab').forEach(btn => {
+      btn.addEventListener('click', () => showSection(btn.dataset.section));
+    });
+
+    renderFilters();
     renderSidebar(allChars);
-    renderWelcome(allChars);
+    showHome();
     initMobileMenu();
     setupSearch();
     setupDescriptionListeners();
