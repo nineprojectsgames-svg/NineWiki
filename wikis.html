@@ -4,8 +4,73 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wikis | Nine Games</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ninegames.css">
+<style>
+  .wiki-card-img {
+    width: 100%; height: 100px;
+    object-fit: cover;
+    border-radius: 2px;
+    opacity: .55;
+    margin-bottom: .25rem;
+    background: var(--surface2);
+    display: block;
+  }
+  .wiki-card-img-placeholder {
+    width: 100%; height: 80px;
+    background: linear-gradient(135deg, var(--surface2), var(--surface3));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    margin-bottom: .25rem;
+    border-radius: 2px;
+  }
+
+  .filter-bar {
+    display: flex; align-items: center; gap: .65rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .filter-chip {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .68rem; letter-spacing: .07em;
+    padding: .28rem .75rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .filter-chip:hover, .filter-chip.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .coming-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: .85rem;
+    margin-top: 1.5rem;
+  }
+  .coming-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.1rem 1.2rem;
+    display: flex; align-items: center; gap: .75rem;
+    opacity: .45;
+  }
+  .coming-item .ci-icon { font-size: 1.3rem; }
+  .coming-item .ci-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .95rem; font-weight: 600;
+    color: var(--text-bright);
+  }
+  .coming-item .ci-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .6rem; color: var(--text-dim);
+  }
+</style>
 </head>
 <body>
 
@@ -18,26 +83,45 @@
 </header>
 
 <main class="page-main">
+
   <div class="page-heading">
-    <h1>WIKIS</h1>
-    <p>Elegí un juego para ver builds, puntuaciones y tier lists.</p>
+    <h1>Wikis</h1>
+    <p>Elegí un juego para ver builds, puntuaciones y tier lists actualizadas en tiempo real.</p>
   </div>
 
+  <!-- DISPONIBLES -->
+  <div class="section-divider"><h2>Disponibles ahora</h2></div>
   <div class="wiki-grid">
     <a href="zzz.html" class="wiki-card available">
-      <span class="wiki-card-tag">Disponible</span>
+      <div class="wiki-card-img-placeholder">⚡</div>
+      <span class="wiki-card-tag">● En vivo</span>
       <h2 class="wiki-card-title">Zenless Zone Zero</h2>
-      <p class="wiki-card-desc">Wiki de builds con puntuaciones por personaje, W-Engines, sets de discos, compañeros, Bangbús y tier list interactiva.</p>
-      <span class="wiki-card-meta">→ ABRIR WIKI</span>
+      <p class="wiki-card-desc">Builds completas por agente: W-Engines, sets de discos, stats recomendadas, compañeros de equipo, Bangbús y tier list interactiva con drag & drop.</p>
+      <span class="wiki-card-meta">→ Abrir wiki</span>
     </a>
+  </div>
 
-    <div class="wiki-card coming-soon">
-      <span class="wiki-card-tag soon">Próximamente</span>
-      <h2 class="wiki-card-title">Más juegos</h2>
-      <p class="wiki-card-desc">Nuevas wikis se irán agregando acá. ¿Tenés algún juego en mente?</p>
-      <span class="wiki-card-meta">EN DESARROLLO</span>
+  <!-- PRÓXIMAMENTE -->
+  <div class="section-divider" style="margin-top: 3rem;"><h2>Próximamente</h2></div>
+  <div class="coming-grid">
+    <div class="coming-item">
+      <span class="ci-icon">🌸</span>
+      <div><div class="ci-name">Honkai Star Rail</div><div class="ci-tag">Pronto</div></div>
+    </div>
+    <div class="coming-item">
+      <span class="ci-icon">💧</span>
+      <div><div class="ci-name">Genshin Impact</div><div class="ci-tag">Pronto</div></div>
+    </div>
+    <div class="coming-item">
+      <span class="ci-icon">🔮</span>
+      <div><div class="ci-name">Wuthering Waves</div><div class="ci-tag">Pronto</div></div>
+    </div>
+    <div class="coming-item">
+      <span class="ci-icon">⚔️</span>
+      <div><div class="ci-name">Otro juego</div><div class="ci-tag">¿Sugerís uno?</div></div>
     </div>
   </div>
+
 </main>
 
 <footer class="site-footer">NINE GAMES — 2026</footer>

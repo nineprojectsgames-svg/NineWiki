@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nine Games</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet">
+<title>Nine Games — Wikis, Builds & Guías</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ninegames.css">
 </head>
 <body>
@@ -18,38 +18,111 @@
 </header>
 
 <main>
+
+  <!-- HERO -->
   <section class="hero">
-    <div class="hero-badge">GUÍAS · BUILDS · TIER LISTS</div>
+    <div class="hero-glow"></div>
+    <div class="hero-eyebrow">
+      <span class="dot"></span>
+      Guías · Builds · Tier Lists
+    </div>
     <h1 class="hero-title">NINE<span>GAMES</span></h1>
-    <p class="hero-sub">Recursos, wikis y herramientas para tus juegos favoritos. Todo en un solo lugar.</p>
+    <p class="hero-sub">Recursos, wikis y herramientas para tus juegos favoritos. Todo en un solo lugar, siempre actualizado.</p>
     <div class="hero-actions">
-      <a href="wikis.html" class="btn btn-primary">Explorar Wikis</a>
-      <a href="zzz.html" class="btn btn-secondary">Wiki de ZZZ</a>
+      <a href="wikis.html" class="btn btn-primary">
+        <span>⚡</span> Explorar Wikis
+      </a>
+      <a href="zzz.html" class="btn btn-secondary">
+        <span>📖</span> Wiki de ZZZ
+      </a>
     </div>
   </section>
 
-  <section class="page-main">
+  <div class="page-main">
+
+    <!-- STATS -->
+    <div class="site-stats">
+      <div class="stat-item">
+        <div class="stat-val">1</div>
+        <div class="stat-label">Wikis activas</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="stat-chars">—</div>
+        <div class="stat-label">Personajes en ZZZ</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">Live</div>
+        <div class="stat-label">Datos en tiempo real</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">0$</div>
+        <div class="stat-label">Costo de acceso</div>
+      </div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="section-divider"><h2>¿Qué encontrás acá?</h2></div>
     <div class="features">
       <div class="feature-card">
-        <div class="feature-icon">📖</div>
-        <h2 class="feature-title">Wikis de juegos</h2>
-        <p class="feature-desc">Guías detalladas con builds, puntuaciones, tier lists y consejos para cada personaje.</p>
+        <span class="feature-icon">📖</span>
+        <h2 class="feature-title">Wikis por personaje</h2>
+        <p class="feature-desc">Builds detalladas con W-Engines, sets de discos, stats, compañeros y Bangbús recomendados para cada agente.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">📊</div>
-        <h2 class="feature-title">Tier lists</h2>
-        <p class="feature-desc">Rankings automáticos por puntuación y listas personalizables que puedes reorganizar.</p>
+        <span class="feature-icon">📊</span>
+        <h2 class="feature-title">Tier lists interactivas</h2>
+        <p class="feature-desc">Rankings automáticos por puntaje y tier lists personalizables que podés arrastrar y reorganizar a tu gusto.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🔄</div>
+        <span class="feature-icon">⚡</span>
+        <h2 class="feature-title">Sistema de puntuaciones</h2>
+        <p class="feature-desc">Cada personaje calificado en Utilidad, Build Value, Pull Value, Facilidad de Gameplay, F2P Friendly y más.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🔄</span>
         <h2 class="feature-title">Siempre actualizado</h2>
-        <p class="feature-desc">Los datos se cargan en vivo desde Google Sheets.</p>
+        <p class="feature-desc">Los datos se cargan en vivo desde Google Sheets. Cualquier cambio en la planilla se refleja al instante.</p>
       </div>
     </div>
-  </section>
+
+    <!-- WIKIS DISPONIBLES -->
+    <div class="section-divider" style="margin-top: 3rem;"><h2>Wikis disponibles</h2></div>
+    <div class="wiki-grid">
+      <a href="zzz.html" class="wiki-card available">
+        <span class="wiki-card-tag">● Disponible</span>
+        <h2 class="wiki-card-title">Zenless Zone Zero</h2>
+        <p class="wiki-card-desc">Builds completas por personaje: W-Engines, discos, stats, compañeros, Bangbús, dupes y tier list interactiva.</p>
+        <span class="wiki-card-meta">→ Abrir wiki</span>
+      </a>
+      <div class="wiki-card coming-soon">
+        <span class="wiki-card-tag soon">Próximamente</span>
+        <h2 class="wiki-card-title">Más juegos</h2>
+        <p class="wiki-card-desc">Nuevas wikis se irán sumando. ¿Tenés un juego en mente? Mandá sugerencias.</p>
+        <span class="wiki-card-meta" style="color: var(--text-dim)">En desarrollo</span>
+      </div>
+    </div>
+
+  </div>
 </main>
 
-<footer class="site-footer">NINE GAMES — 2026</footer>
+<footer class="site-footer">NINE GAMES — 2026 &nbsp;·&nbsp; Hecho con ♥ para la comunidad gamer</footer>
+
+<script>
+// Intentar mostrar cantidad de chars de ZZZ
+(async () => {
+  try {
+    const SHEET_ID = '1hvggH2H5F27AyvaQnZs9CAPu6V78TZBa2SKq445Jad8';
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Zenless%20Builds`;
+    const r = await fetch(url);
+    const text = await r.text();
+    // Count non-empty data columns from first row
+    const firstLine = text.split('\n')[0];
+    const cols = firstLine.split(',').slice(1).filter(c => c.replace(/"/g,'').trim() !== '');
+    const el = document.getElementById('stat-chars');
+    if (el && cols.length > 0) el.textContent = cols.length;
+  } catch(e) {}
+})();
+</script>
 
 </body>
 </html>
