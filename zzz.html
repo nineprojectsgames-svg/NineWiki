@@ -450,137 +450,410 @@
   display: block;
 }
 
-/* ----- TIER LIST ----- */
+/* ══════════════════════════════════════════════
+   TIER LIST — Redesign completo
+══════════════════════════════════════════════ */
 #tierlist-container {
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
+  padding-bottom: 3rem;
 }
+
+/* Selector de modo */
 .tier-mode-selector {
   display: flex;
-  gap: 1rem;
-  justify-content: center;
+  gap: .5rem;
   margin-bottom: 2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: .4rem;
+  border-radius: 4px;
+  width: fit-content;
 }
 .tier-mode-selector button {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 0.5rem 1.2rem;
-  border-radius: 30px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-dim);
+  padding: .4rem 1.1rem;
+  border-radius: 3px;
   cursor: pointer;
   font-family: 'Rajdhani', sans-serif;
+  font-size: .85rem;
   font-weight: 600;
-  transition: all 0.2s;
+  letter-spacing: .05em;
+  transition: all .18s;
+  white-space: nowrap;
+}
+.tier-mode-selector button:hover {
+  color: var(--text-bright);
+  background: var(--surface2);
 }
 .tier-mode-selector button.active {
-  background: var(--accent);
-  color: var(--bg);
-  border-color: var(--accent);
+  background: var(--accent-dim);
+  border-color: rgba(245,196,0,.4);
+  color: var(--accent);
 }
-.tier-row {
-  margin-bottom: 1.5rem;
-  background: var(--surface);
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  overflow: hidden;
+
+/* Agrupador por rol */
+.tier-rol-group {
+  margin-bottom: 2.5rem;
 }
-.tier-header {
-  background: var(--surface2);
-  padding: 0.6rem 1rem;
+.tier-rol-title {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 0.9rem;
-  font-weight: bold;
-  letter-spacing: 0.1em;
-  border-bottom: 1px solid var(--border);
+  font-size: .68rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: .8rem;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
 }
-.tier-header .tier-name {
-  display: inline-block;
-  background: var(--accent);
-  color: var(--bg);
-  padding: 0.2rem 0.6rem;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  margin-left: 0.5rem;
+.tier-rol-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
 }
+
+/* Fila de tier */
+.tier-row {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: .5rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
+  min-height: 76px;
+}
+
+/* Etiqueta de tier (izquierda) */
+.tier-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  flex-shrink: 0;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  border-right: 1px solid var(--border);
+  padding: .5rem .3rem;
+  text-align: center;
+}
+/* Colores por tier */
+.tier-row[data-tier-label="S+"] .tier-header,
+.tier-row[data-tier-label*="S+"] .tier-header { background: rgba(245,196,0,.12); color: #f5c400; border-right-color: rgba(245,196,0,.3); }
+.tier-row[data-tier-label="S"] .tier-header,
+.tier-row[data-tier-label*="S ("] .tier-header  { background: rgba(245,196,0,.08); color: #e6b800; border-right-color: rgba(245,196,0,.2); }
+.tier-row[data-tier-label="A"] .tier-header,
+.tier-row[data-tier-label*="A ("] .tier-header  { background: rgba(170,102,255,.1); color: #aa66ff; border-right-color: rgba(170,102,255,.25); }
+.tier-row[data-tier-label="B"] .tier-header,
+.tier-row[data-tier-label*="B ("] .tier-header  { background: rgba(68,170,255,.08); color: #44aaff; border-right-color: rgba(68,170,255,.2); }
+.tier-row[data-tier-label="C"] .tier-header,
+.tier-row[data-tier-label*="C ("] .tier-header  { background: rgba(0,229,160,.07); color: #00c882; border-right-color: rgba(0,229,160,.2); }
+.tier-row[data-tier-label="D"] .tier-header,
+.tier-row[data-tier-label*="D ("] .tier-header  { background: rgba(255,62,94,.07); color: #cc3350; border-right-color: rgba(255,62,94,.2); }
+
+/* Nombre editable en tier personalizada */
+.tier-name-input {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  width: 100%;
+  text-align: center;
+  padding: 0;
+  outline: none;
+  cursor: pointer;
+}
+.tier-name-input:focus {
+  background: var(--surface2);
+  border-radius: 2px;
+  padding: 0 .2rem;
+}
+
+/* Botón quitar tier */
+.remove-tier-btn {
+  background: none !important;
+  border: none !important;
+  color: var(--text-dim) !important;
+  font-size: .8rem !important;
+  cursor: pointer;
+  padding: .2rem .3rem !important;
+  line-height: 1;
+  transition: color .15s;
+  margin-top: .2rem;
+}
+.remove-tier-btn:hover { color: var(--red) !important; }
+
+/* Cards dentro del tier */
 .tier-cards {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8rem;
-  padding: 1rem;
-  min-height: 120px;
+  gap: .5rem;
+  padding: .55rem .65rem;
+  flex: 1;
+  align-items: center;
+  min-height: 76px;
 }
+.tier-cards[data-dropzone="true"] {
+  min-height: 76px;
+}
+.tier-cards.drag-over {
+  background: rgba(245,196,0,.04);
+  outline: 1px dashed rgba(245,196,0,.3);
+}
+
+/* Card de personaje en tier */
 .tier-card {
-  width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 72px;
   background: var(--surface2);
-  border-radius: 8px;
-  text-align: center;
-  padding: 0.5rem;
-  cursor: grab;
-  transition: transform 0.1s, box-shadow 0.2s;
   border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: .4rem .3rem;
+  cursor: pointer;
+  transition: border-color .15s, transform .12s, box-shadow .15s;
+  text-align: center;
+  user-select: none;
 }
-.tier-card:active {
-  cursor: grabbing;
+.tier-card:hover {
+  border-color: rgba(245,196,0,.35);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
 }
-.tier-card.dragging {
-  opacity: 0.5;
-}
+.tier-card[draggable="true"] { cursor: grab; }
+.tier-card[draggable="true"]:active { cursor: grabbing; }
+.tier-card.dragging { opacity: .35; transform: scale(.95); }
+
 .tier-card img {
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--accent);
-  margin-bottom: 0.3rem;
+  border: 2px solid var(--border2);
+  margin-bottom: .25rem;
+  display: block;
 }
 .tier-card span {
   display: block;
-  font-size: 0.7rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: .7rem;
   font-weight: 600;
   color: var(--text-bright);
+  line-height: 1.2;
+  word-break: break-word;
+  max-width: 100%;
 }
 .tier-card .avg-score {
-  font-size: 0.6rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .6rem;
   color: var(--accent);
+  margin-top: .1rem;
 }
+
+/* Acciones tier personalizada */
 .custom-tier-actions {
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   display: flex;
-  gap: 1rem;
-  justify-content: center;
+  gap: .65rem;
+  flex-wrap: wrap;
 }
 .custom-tier-actions button {
   background: var(--surface2);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border2);
   color: var(--text);
-  padding: 0.4rem 1rem;
-  border-radius: 6px;
+  padding: .42rem 1rem;
+  border-radius: 3px;
   cursor: pointer;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: .85rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+  transition: all .15s;
+}
+.custom-tier-actions button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 .reset-tier-btn {
-  background: rgba(255,62,94,0.2);
-  border-color: var(--red);
-  color: var(--red);
+  background: rgba(255,62,94,.08) !important;
+  border-color: rgba(255,62,94,.35) !important;
+  color: var(--red) !important;
 }
+.reset-tier-btn:hover {
+  background: rgba(255,62,94,.15) !important;
+  border-color: var(--red) !important;
+}
+
+/* ══════════════════════════════════════════════
+   MOBILE — Overhaul completo
+══════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  .tier-card {
-    width: 80px;
+  /* Header mobile */
+  .site-header {
+    padding: 0 .75rem;
+    gap: .5rem;
+    flex-wrap: nowrap;
+    height: 52px;
   }
-  .tier-card img {
-    width: 50px;
-    height: 50px;
+  .header-game { display: none; }
+  .section-tabs { display: none; }
+  #search-input { width: 120px; font-size: .72rem; padding: .3rem .6rem; }
+
+  /* Layout */
+  .layout { min-height: calc(100vh - 52px); }
+
+  /* Sidebar como drawer full-screen */
+  .sidebar {
+    position: fixed;
+    top: 52px; left: 0;
+    width: 100%;
+    height: calc(100vh - 52px);
+    z-index: 500;
+    border-right: none;
+    box-shadow: none;
+    transform: translateX(-100%);
+    transition: transform .25s cubic-bezier(.25,.46,.45,.94);
+    display: block !important; /* siempre en DOM, controlado por transform */
+    padding: .75rem 0 2rem;
   }
+  .sidebar.visible {
+    transform: translateX(0);
+    box-shadow: 4px 0 32px rgba(0,0,0,.6);
+  }
+
+  /* Overlay oscuro detrás del drawer */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 52px 0 0 0;
+    background: rgba(0,0,0,.55);
+    z-index: 499;
+  }
+  .sidebar-overlay.visible { display: block; }
+
+  /* Botón menú mobile */
+  #mobile-menu-btn {
+    display: inline-flex !important;
+    align-items: center; justify-content: center;
+    width: 34px; height: 34px;
+    padding: 0;
+    font-size: .95rem;
+    border-radius: 3px;
+  }
+
+  /* Main sin sidebar */
+  main { padding: .75rem .65rem 2rem; width: 100%; }
+
+  /* Grids → columna única */
+  .grid-2, .grid-3 {
+    grid-template-columns: 1fr !important;
+    gap: .65rem;
+  }
+
+  /* Character header en mobile */
+  .char-header {
+    flex-direction: row;
+    align-items: center;
+    padding: .85rem;
+    gap: .85rem;
+  }
+  .char-avatar { width: 64px; height: 64px; flex-shrink: 0; }
+  .char-info { min-width: 0; }
+  .char-name { font-size: 1.35rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .char-score-big { font-size: 2rem; align-self: flex-end; }
+  .char-tags { margin-bottom: .3rem; }
+
+  /* Panels */
+  .panel { padding: .75rem; }
+
+  /* Score bars en mobile */
+  .rank-row { gap: .45rem; }
+  .rank-label { width: auto; min-width: 0; flex: 1; font-size: .76rem; }
+  .rank-bar-track { width: 80px; flex: none; }
+  .rank-value { width: 18px; font-size: .7rem; }
+  .info-icon { display: none; } /* en mobile quitamos los ⓘ inline */
+
+  /* Stats grids */
+  .stats-grid { grid-template-columns: 1fr 1fr 1fr; gap: .35rem; }
+  .stat-numbers { grid-template-columns: 1fr 1fr; }
+
+  /* Weapons */
+  .weapon-chain { gap: .3rem; }
+  .weapon-item { font-size: .78rem; }
+  .weapon-chain img { width: 40px !important; height: 40px !important; }
+  .info-val img { width: 34px !important; height: 34px !important; }
+
+  /* Tier list mobile */
+  #tierlist-container { padding: .75rem .1rem 3rem; }
+  .tier-mode-selector { width: 100%; justify-content: stretch; }
+  .tier-mode-selector button { flex: 1; font-size: .78rem; padding: .4rem .5rem; }
+  .tier-row { min-height: 62px; }
+  .tier-header { width: 42px; font-size: .85rem; }
+  .tier-cards { gap: .35rem; padding: .4rem; }
+  .tier-card { width: 58px; }
+  .tier-card img { width: 38px; height: 38px; }
+  .tier-card span { font-size: .62rem; }
+  .custom-tier-actions { gap: .5rem; }
+  .custom-tier-actions button { font-size: .8rem; padding: .38rem .8rem; }
+
+  /* Nav items más táctiles */
+  .char-nav-item { padding: .65rem 1rem; gap: .65rem; min-height: 52px; }
+  .char-nav-item img { width: 34px; height: 34px; }
+}
+
+/* ══════════════════════════════════════════════
+   MOBILE BOTTOM NAV
+══════════════════════════════════════════════ */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 56px;
+  background: rgba(8,10,14,.97);
+  border-top: 1px solid var(--border);
+  z-index: 300;
+  backdrop-filter: blur(12px);
+  justify-content: stretch;
+  align-items: stretch;
+}
+.mbn-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .15rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: color .15s, background .15s;
+  padding: .3rem .2rem;
+  border-right: 1px solid var(--border);
+}
+.mbn-btn:last-child { border-right: none; }
+.mbn-btn:hover { color: var(--text); background: var(--surface2); }
+.mbn-btn.active { color: var(--accent); }
+.mbn-btn.active .mbn-icon { filter: drop-shadow(0 0 4px rgba(245,196,0,.5)); }
+.mbn-icon { font-size: 1.1rem; line-height: 1; }
+.mbn-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .55rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
 }
 
 @media (max-width: 768px) {
-  .weapon-chain img {
-    width: 40px !important;
-    height: 40px !important;
-  }
-  .info-val img {
-    width: 32px !important;
-    height: 32px !important;
-  }
+  .mobile-bottom-nav { display: flex; }
+  main { padding-bottom: 72px !important; } /* space for bottom nav */
 }
 
 </style>
@@ -601,10 +874,11 @@
   </div>
   <div class="header-right">
     <input type="text" id="search-input" placeholder="Buscar…" />
-    <button id="mobile-menu-btn" style="display:none; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:.3rem .7rem; border-radius:3px; font-size:1rem; cursor:pointer;">☰</button>
+    <button id="mobile-menu-btn" style="display:none; background:var(--surface2); border:1px solid var(--border); color:var(--text); border-radius:3px; cursor:pointer;">☰</button>
     <div class="status-dot loading" id="status-dot" title="Cargando datos…"></div>
   </div>
 </header>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
 <div class="layout">
 <aside class="sidebar">
   <div class="sidebar-section">Filtros</div>
@@ -622,7 +896,25 @@
 </main>
 </div>
 
-<script>
+<!-- Mobile bottom nav -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+  <button class="mbn-btn active" data-section="home">
+    <span class="mbn-icon">🏠</span>
+    <span class="mbn-label">Inicio</span>
+  </button>
+  <button class="mbn-btn" data-section="characters">
+    <span class="mbn-icon">⚡</span>
+    <span class="mbn-label">Personajes</span>
+  </button>
+  <button class="mbn-btn" data-section="tierlist">
+    <span class="mbn-icon">📊</span>
+    <span class="mbn-label">Tier List</span>
+  </button>
+  <button class="mbn-btn" data-section="bangboos">
+    <span class="mbn-icon">🤖</span>
+    <span class="mbn-label">Bangboos</span>
+  </button>
+</nav>
 // ══════════════════════════════════════════════════════════
 // CONFIGURACIÓN - ESTRUCTURA HORIZONTAL (primera fila = claves)
 // ══════════════════════════════════════════════════════════
@@ -980,12 +1272,8 @@ function selectChar(idx) {
   renderSidebar(filtered);
   renderChar(allChars[idx]);
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (window.innerWidth <= 768) {
-    const sidebarElem = document.querySelector('.sidebar');
-    if (sidebarElem) {
-      sidebarElem.style.display = 'none';
-      sidebarElem.classList.remove('visible');
-    }
+  if (window.innerWidth <= 768 && window._closeDrawer) {
+    window._closeDrawer();
   }
 }
 
@@ -1009,13 +1297,13 @@ function renderChar(c) {
 
 const engines = c.w_engines ? c.w_engines.split('>').map(s => s.trim()).filter(Boolean) : [];
 const engineHTML = engines.length ? engines.map((e, i) => {
+  const bestClass = i === 0 ? 'weapon-item best' : 'weapon-item';
+  const sep = i < engines.length - 1 ? '<span class="weapon-sep">›</span>' : '';
   if (isImageUrl(e)) {
     const borderStyle = i === 0 ? '2px solid var(--accent)' : '1px solid var(--border)';
-    // Guardamos el texto original en el atributo data-text
-    return `<img src="${e}" alt="w-engine" data-text="${e.replace(/"/g, '&quot;')}" style="width: 48px; height: 48px; border-radius: 8px; border: ${borderStyle}; margin: 0.2rem; background: var(--surface2); cursor: pointer;" title="W-Engine recomendado" onerror="this.onerror=null; this.outerHTML = '<span class=\'weapon-item ${i===0?'best':''}\'>' + this.getAttribute('data-text') + '</span>' + (${i < engines.length-1} ? '<span class=\'weapon-sep\'>›</span>' : '');">`;
-  } else {
-    return `<span class="weapon-item ${i===0?'best':''}">${e}</span>${i < engines.length-1 ? '<span class="weapon-sep">›</span>' : ''}`;
+    return '<img src="' + e + '" alt="w-engine" style="width:48px;height:48px;border-radius:8px;border:' + borderStyle + ';margin:0.2rem;background:var(--surface2);" onerror="this.style.display=\'none\'"> ' + sep;
   }
+  return '<span class="' + bestClass + '">' + e + '</span>' + sep;
 }).join('') : '<span class="empty-val">Sin datos</span>';
 
 const setsRaw = (c.sets_discos || '').split('>').map(s => s.trim()).filter(Boolean);
@@ -1362,7 +1650,7 @@ function selectBangboo(idx) {
   const filtered = filterBangboos();
   renderBangbooNav(filtered);
   renderBangbooCard(allBangboos[idx]);
-  if (window.innerWidth <= 768) document.getElementById('sidebar').style.display = 'none';
+  if (window.innerWidth <= 768 && window._closeDrawer) window._closeDrawer();
 }
 
 // Renderizar tarjeta de un Bangboo
@@ -1438,37 +1726,45 @@ let sidebar;
 function initMobileMenu() {
   sidebar = document.querySelector('.sidebar');
   const menuBtn = document.getElementById('mobile-menu-btn');
+  const overlay = document.getElementById('sidebar-overlay');
   if (!menuBtn) return;
 
-  // Show button on mobile
-  if (window.innerWidth <= 768) menuBtn.style.display = 'inline-block';
-  window.addEventListener('resize', () => {
-    menuBtn.style.display = window.innerWidth <= 768 ? 'inline-block' : 'none';
-  });
+  function isMobile() { return window.innerWidth <= 768; }
 
-  menuBtn.addEventListener('click', () => {
+  function openDrawer() {
     if (!sidebar) return;
-    const isVisible = sidebar.classList.contains('visible');
-    if (isVisible) {
-      sidebar.classList.remove('visible');
-      sidebar.style.display = 'none';
-      menuBtn.textContent = '☰';
-    } else {
-      sidebar.style.display = 'block';
-      sidebar.classList.add('visible');
-      menuBtn.textContent = '✕';
-    }
+    sidebar.classList.add('visible');
+    if (overlay) overlay.classList.add('visible');
+    menuBtn.textContent = '✕';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    if (!sidebar) return;
+    sidebar.classList.remove('visible');
+    if (overlay) overlay.classList.remove('visible');
+    menuBtn.textContent = '☰';
+    document.body.style.overflow = '';
+  }
+
+  // Show/hide button based on viewport
+  function checkMobile() {
+    menuBtn.style.display = isMobile() ? 'inline-flex' : 'none';
+    if (!isMobile()) closeDrawer();
+  }
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
+
+  menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sidebar.classList.contains('visible') ? closeDrawer() : openDrawer();
   });
 
-  // Close on outside click
-  document.addEventListener('click', (e) => {
-    if (sidebar && sidebar.classList.contains('visible') &&
-        !sidebar.contains(e.target) && e.target !== menuBtn) {
-      sidebar.classList.remove('visible');
-      sidebar.style.display = 'none';
-      menuBtn.textContent = '☰';
-    }
-  });
+  // Overlay click closes drawer
+  if (overlay) overlay.addEventListener('click', closeDrawer);
+
+  // Expose closeDrawer globally so selectChar can call it
+  window._closeDrawer = closeDrawer;
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1499,39 +1795,39 @@ function getAllRoles() {
   return [...new Set(allChars.map(c => c.rol).filter(r => r && r.trim() !== ''))];
 }
 
-// Generar tier list automática: agrupa por rol y rango de promedio
 function generateAutoTierList() {
   const roles = getAllRoles();
   const tiers = [
-    { min: 9, max: 10, name: 'S+ (9-10)' },
-    { min: 8, max: 8.99, name: 'S (8-9)' },
-    { min: 7, max: 7.99, name: 'A (7-8)' },
-    { min: 5, max: 6.99, name: 'B (5-7)' },
-    { min: 3, max: 4.99, name: 'C (3-5)' },
-    { min: 0, max: 2.99, name: 'D (0-3)' }
+    { min: 9,   max: 10,   label: 'S+', name: 'S+ (9-10)' },
+    { min: 8,   max: 8.99, label: 'S',  name: 'S (8-9)'   },
+    { min: 7,   max: 7.99, label: 'A',  name: 'A (7-8)'   },
+    { min: 5,   max: 6.99, label: 'B',  name: 'B (5-7)'   },
+    { min: 3,   max: 4.99, label: 'C',  name: 'C (3-5)'   },
+    { min: 0,   max: 2.99, label: 'D',  name: 'D (0-3)'   }
   ];
-  
+
   let html = `<div class="tier-mode-selector">
-    <button class="tier-auto-btn active">📊 Automática por promedio</button>
-    <button class="tier-custom-btn">🎮 Personalizada (arrastrable)</button>
+    <button class="tier-auto-btn active">📊 Por promedio</button>
+    <button class="tier-custom-btn">✏️ Personalizada</button>
   </div>`;
-  
+
   for (const rol of roles) {
-    html += `<div class="tier-rol-group" style="margin-bottom:2rem;">
-      <h3 style="color:var(--accent2); margin-bottom:0.5rem;">${rol}</h3>`;
+    html += `<div class="tier-rol-group">
+      <div class="tier-rol-title">${rol}</div>`;
     for (const tier of tiers) {
       const charsInTier = allChars.filter(c => {
         const avg = parseFloat(calcPromedio(c));
         return c.rol === rol && !isNaN(avg) && avg >= tier.min && avg <= tier.max;
       });
       if (charsInTier.length === 0) continue;
-      html += `<div class="tier-row">
-        <div class="tier-header">${tier.name}</div>
+      html += `<div class="tier-row" data-tier-label="${tier.label}">
+        <div class="tier-header">${tier.label}</div>
         <div class="tier-cards">`;
       for (const ch of charsInTier) {
         const avg = calcPromedio(ch);
-        html += `<div class="tier-card" data-char-idx="${allChars.indexOf(ch)}">
-          <img src="${ch.imagen || ''}" alt="${ch.nombre}" onerror="this.style.display='none'">
+        const rarezaClass = ch.rareza ? `rareza-${ch.rareza.toLowerCase()}` : '';
+        html += `<div class="tier-card" data-char-idx="${allChars.indexOf(ch)}" onclick="selectChar(${allChars.indexOf(ch)}); showSection('characters');" title="${ch.nombre} — ${avg || '?'}">
+          <img src="${ch.imagen || ''}" alt="${ch.nombre}" class="${rarezaClass}" onerror="this.style.display='none'">
           <span>${ch.nombre}</span>
           <span class="avg-score">${avg || '—'}</span>
         </div>`;
@@ -1580,16 +1876,16 @@ function saveCustomTiers() {
 // Renderizar la tier list personalizada (drag & drop)
 function renderCustomTierList() {
   let html = `<div class="tier-mode-selector">
-    <button class="tier-auto-btn">📊 Automática por promedio</button>
-    <button class="tier-custom-btn active">🎮 Personalizada (arrastrable)</button>
+    <button class="tier-auto-btn">📊 Por promedio</button>
+    <button class="tier-custom-btn active">✏️ Personalizada</button>
   </div>
   <div id="custom-tier-container">`;
   
   customTiers.forEach((tier, idx) => {
-    html += `<div class="tier-row" data-tier-index="${idx}">
-      <div class="tier-header">
-        <input type="text" class="tier-name-input" value="${tier.name}" style="background:var(--surface2); border:1px solid var(--border); color:var(--text-bright); padding:0.2rem 0.5rem; border-radius:4px; width:120px;">
-        <button class="remove-tier-btn" data-tier="${idx}" style="background:none; border:none; color:var(--red); cursor:pointer;">✕</button>
+    html += `<div class="tier-row" data-tier-index="${idx}" data-tier-label="${tier.name.charAt(0)}">
+      <div class="tier-header" style="flex-direction:column; gap:.2rem; width:56px;">
+        <input type="text" class="tier-name-input" value="${tier.name}">
+        <button class="remove-tier-btn" data-tier="${idx}">✕</button>
       </div>
       <div class="tier-cards" data-tier="${idx}" data-dropzone="true">
   `;
@@ -1607,8 +1903,8 @@ function renderCustomTierList() {
   });
   
   html += `<div class="custom-tier-actions">
-    <button id="add-tier-btn">➕ Añadir fila</button>
-    <button id="reset-custom-tier" class="reset-tier-btn">⟳ Restablecer por promedio</button>
+    <button id="add-tier-btn">+ Añadir fila</button>
+    <button id="reset-custom-tier" class="reset-tier-btn">↺ Restablecer</button>
   </div></div>`;
   
   document.getElementById('tierlist-container').innerHTML = html;
@@ -1718,7 +2014,8 @@ function setActiveSectionTab(section) {
 function showHome() {
   currentSection = 'home';
   const sidebarElem = document.querySelector('.sidebar');
-  if (sidebarElem) sidebarElem.style.display = 'none';
+  if (sidebarElem && window.innerWidth > 768) sidebarElem.style.display = 'none';
+  if (window._closeDrawer) window._closeDrawer();
   wikiContainer.style.display = 'block';
   tierListContainer.style.display = 'none';
   setActiveSectionTab('home');
@@ -1740,11 +2037,8 @@ function showHome() {
 function showCharacters() {
   currentSection = 'characters';
   const sidebarElem = document.querySelector('.sidebar');
-  if (sidebarElem) {
+  if (sidebarElem && window.innerWidth > 768) {
     sidebarElem.style.display = 'block';
-    if (window.innerWidth <= 768) {
-      sidebarElem.classList.add('visible');
-    }
   }
   wikiContainer.style.display = 'block';
   tierListContainer.style.display = 'none';
@@ -1761,31 +2055,34 @@ function showCharacters() {
 function showSection(section) {
   currentSection = section;
   document.querySelectorAll('.section-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.section === section));
+  // Sync bottom nav
+  document.querySelectorAll('.mbn-btn').forEach(b => b.classList.toggle('active', b.dataset.section === section));
   const sidebarElem = document.querySelector('.sidebar');
+  const isMobile = window.innerWidth <= 768;
   
   if (section === 'home' || section === 'tierlist') {
-    sidebarElem.style.display = 'none';
+    // Hide sidebar on desktop for these sections
+    if (sidebarElem && !isMobile) sidebarElem.style.display = 'none';
+    if (window._closeDrawer) window._closeDrawer();
     wikiContainer.style.display = 'block';
     tierListContainer.style.display = 'none';
     if (section === 'home') showHome();
-    else if (section === 'tierlist') showTierList();
+    else showTierList();
   } else if (section === 'characters') {
-    sidebarElem.style.display = 'block';
-    if (window.innerWidth <= 768) sidebarElem.classList.add('visible');
+    if (sidebarElem && !isMobile) sidebarElem.style.display = 'block';
     wikiContainer.style.display = 'block';
     tierListContainer.style.display = 'none';
-    renderFilters(); // filtros de personajes
+    renderFilters();
     const filtered = filterCharacters();
     renderSidebar(filtered);
     if (activeIdx !== -1 && filtered.includes(allChars[activeIdx])) renderChar(allChars[activeIdx]);
     else if (filtered.length > 0) selectChar(allChars.indexOf(filtered[0]));
     else renderWelcome('personajes');
   } else if (section === 'bangboos') {
-    sidebarElem.style.display = 'block';
-    if (window.innerWidth <= 768) sidebarElem.classList.add('visible');
+    if (sidebarElem && !isMobile) sidebarElem.style.display = 'block';
     wikiContainer.style.display = 'block';
     tierListContainer.style.display = 'none';
-    renderBangbooFilters(); // filtros de Bangboos
+    renderBangbooFilters();
     const filtered = filterBangboos();
     renderBangbooNav(filtered);
     if (activeBangbooIdx !== -1 && filtered.includes(allBangboos[activeBangbooIdx])) renderBangbooCard(allBangboos[activeBangbooIdx]);
@@ -1797,7 +2094,8 @@ function showSection(section) {
 function showTierList() {
   currentSection = 'tierlist';
   const sidebarElem = document.querySelector('.sidebar');
-  if (sidebarElem) sidebarElem.style.display = 'none';
+  if (sidebarElem && window.innerWidth > 768) sidebarElem.style.display = 'none';
+  if (window._closeDrawer) window._closeDrawer();
   wikiContainer.style.display = 'none';
   tierListContainer.style.display = 'block';
   setActiveSectionTab('tierlist');
@@ -1931,6 +2229,16 @@ function setupDescriptionListeners() {
 }
 
 init();
+
+// Mobile bottom nav
+document.querySelectorAll('.mbn-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const section = btn.dataset.section;
+    showSection(section);
+    document.querySelectorAll('.mbn-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
 </script>
 </body>
 </html>
