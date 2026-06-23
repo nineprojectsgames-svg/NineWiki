@@ -871,6 +871,7 @@
     <button class="section-tab" data-section="characters">Personajes</button>
     <button class="section-tab" data-section="tierlist">Tier List</button>
     <button class="section-tab" data-section="bangboos">Bangboos</button>
+    <button class="section-tab" data-section="bosses">Jefes</button>
   </div>
   <div class="header-right">
     <input type="text" id="search-input" placeholder="Buscar…" />
@@ -913,6 +914,10 @@
   <button class="mbn-btn" data-section="bangboos">
     <span class="mbn-icon">🤖</span>
     <span class="mbn-label">Bangboos</span>
+  </button>
+  <button class="mbn-btn" data-section="bosses">
+    <span class="mbn-icon">👹</span>
+    <span class="mbn-label">Jefes</span>
   </button>
 </nav>
 
@@ -962,6 +967,22 @@ const SCORE_TOOLTIPS = {
   sc_gameplay: 'Qué tan fácil es dominar su gameplay para sacar puntuaciones decentes.',
   sc_f2p_friendly: 'Qué tan amigable es con cuentas con pocas armas rango S, pocos personajes rango S y casi sin dupes.',
   sc_consistencia: 'Qué tan consistente es en sus rotaciones y si se basa mucho en RNG o situaciones específicas para brillar.',
+};
+
+const SCORE_LABELS_BOSS = {
+  vida: 'Vida',
+  defensa: 'Defensa',
+  agresividad: 'Agresividad',
+  invulnerabilidad: 'Invulnerabilidad',
+  complejidad: 'Complejidad'
+};
+
+const SCORE_TOOLTIPS_BOSS = {
+  vida: 'Cantidad de vida del enemigo.',
+  defensa: 'Reducción de daño o defensa.',
+  agresividad: 'Qué tan agresivo es el jefe en combate.',
+  invulnerabilidad: 'Si tiene periodos de invulnerabilidad y su duración.',
+  complejidad: 'Complejidad de su mecánica especial.'
 };
 
 const NEC_LEVELS = ['Nada', 'Poca', 'Media', 'Mucha', 'Obligatoria'];
@@ -1493,8 +1514,20 @@ const bangbuHTML = rawBangbus.length ? rawBangbus.map(bangbuChain => {
   });
 }
 
-function renderWelcome(chars) {
-  wikiContainer.innerHTML = `<div class="welcome"><div class="welcome-title">ZENLESS ZONE <span>ZERO</span></div><div class="welcome-sub">Seleccioná un personaje en el panel izquierdo</div><div style="color:var(--text-dim);font-size:.8rem;margin-top:.5rem">${chars.length} personaje${chars.length!==1?'s':''} cargado${chars.length!==1?'s':''}</div></div>`;
+function renderWelcome(section) {
+  const titles = { 
+    personajes: 'ZENLESS ZONE ZERO', 
+    bangboos: 'BANGBOOS', 
+    bosses: 'GUÍAS DE JEFES',
+    home: 'ZENLESS ZONE ZERO' 
+  };
+  const subs = { 
+    personajes: 'Seleccioná un personaje en el panel izquierdo', 
+    bangboos: 'Seleccioná un Bangboo en el panel izquierdo',
+    bosses: 'Seleccioná un jefe en el panel izquierdo',
+    home: 'Bienvenido a la página principal de ZZZ' 
+  };
+  wikiContainer.innerHTML = `<div class="welcome"><div class="welcome-title">${titles[section] || 'ZENLESS ZONE ZERO'}</div><div class="welcome-sub">${subs[section] || ''}</div></div>`;
 }
 
 function renderError(msg) {
@@ -1720,6 +1753,271 @@ const EXPECTED_KEYS_BANGBOOS = [
   'personajes_recomendados'
 ];
 
+const EXPECTED_KEYS_BOSS = [
+  'nombre', 'imagen', 'debilidades', 'resistencias', 'roll_recomendo',
+  'vida', 'defensa', 'agresividad', 'invulnerabilidad', 'complejidad',
+  'personajes_recomendados', 'consejos'
+];
+
+// ============================================================
+// ===================== BOSS (JEFES) ==========================
+// ============================================================
+
+// Estado de Boss
+let allBosses = [];
+let activeBossIdx = -1;
+let bossSearchTerm = '';
+let selectedBossWeaknesses = new Set();
+let selectedBossResistances = new Set();
+let selectedBossRoles = new Set();
+
+// Construir objetos desde filas
+function buildBosses(rows) {
+  if (rows.length < 2) return [];
+  const headers = rows[0];
+  const colIndexToKey = {};
+  for (let i = 0; i < headers.length; i++) {
+    const header = headers[i] ? headers[i].toLowerCase().trim() : '';
+    if (EXPECTED_KEYS_BOSS.includes(header)) colIndexToKey[i] = header;
+  }
+  const nombreIndex = Object.keys(colIndexToKey).find(idx => colIndexToKey[idx] === 'nombre');
+  if (nombreIndex === undefined) throw new Error('No se encontró la columna "nombre" en Boss');
+  const bosses = [];
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row || row.length === 0) continue;
+    const obj = {};
+    for (const colIdx in colIndexToKey) {
+      let value = row[colIdx] !== undefined ? row[colIdx] : '';
+      value = value.replace(/^"|"$/g, '');
+      obj[colIndexToKey[colIdx]] = value;
+    }
+    if (obj.nombre && obj.nombre.trim() !== '') bosses.push(obj);
+  }
+  return bosses;
+}
+
+// Filtrar Boss
+function filterBosses() {
+  return allBosses.filter(b => {
+    if (bossSearchTerm && !b.nombre.toLowerCase().includes(bossSearchTerm)) return false;
+    // Filtros por debilidades, resistencias, roles (si hay selección)
+    if (selectedBossWeaknesses.size) {
+      const weaks = b.debilidades ? b.debilidades.split(',').map(s=>s.trim()) : [];
+      if (!weaks.some(w => selectedBossWeaknesses.has(w))) return false;
+    }
+    if (selectedBossResistances.size) {
+      const res = b.resistencias ? b.resistencias.split(',').map(s=>s.trim()) : [];
+      if (!res.some(r => selectedBossResistances.has(r))) return false;
+    }
+    if (selectedBossRoles.size) {
+      const roles = b.roll_recomendo ? b.roll_recomendo.split(',').map(s=>s.trim()) : [];
+      if (!roles.some(r => selectedBossRoles.has(r))) return false;
+    }
+    return true;
+  });
+}
+
+// Renderizar filtros de Boss
+function renderBossFilters() {
+  // Extraer valores únicos de debilidades, resistencias y roles
+  const weaknesses = [...new Set(allBosses.flatMap(b => b.debilidades ? b.debilidades.split(',').map(s=>s.trim()) : []))];
+  const resistances = [...new Set(allBosses.flatMap(b => b.resistencias ? b.resistencias.split(',').map(s=>s.trim()) : []))];
+  const roles = [...new Set(allBosses.flatMap(b => b.roll_recomendo ? b.roll_recomendo.split(',').map(s=>s.trim()) : []))];
+
+  let html = '';
+  const renderGroup = (title, items, selectedSet, className, separator = ',') => {
+    if (!items.length) return '';
+    let gh = `<div class="filter-accordion"><div class="filter-header" data-group="${className}"><span>${title}</span><span class="accordion-icon">▼</span></div><div class="filter-content" id="filter-${className}"><div class="filter-options">`;
+    items.forEach(item => {
+      gh += `<label><input type="checkbox" value="${item}" class="filter-${className}" ${selectedSet.has(item) ? 'checked' : ''}> ${item}</label>`;
+    });
+    gh += `</div></div></div>`;
+    return gh;
+  };
+  html += renderGroup('Debilidades', weaknesses, selectedBossWeaknesses, 'b-weakness');
+  html += renderGroup('Resistencias', resistances, selectedBossResistances, 'b-resistance');
+  html += renderGroup('Roles recomendados', roles, selectedBossRoles, 'b-role');
+
+  filtersContainer.innerHTML = html;
+
+  document.querySelectorAll('.filter-b-weakness').forEach(cb => cb.addEventListener('change', () => {
+    cb.checked ? selectedBossWeaknesses.add(cb.value) : selectedBossWeaknesses.delete(cb.value);
+    updateBossList();
+  }));
+  document.querySelectorAll('.filter-b-resistance').forEach(cb => cb.addEventListener('change', () => {
+    cb.checked ? selectedBossResistances.add(cb.value) : selectedBossResistances.delete(cb.value);
+    updateBossList();
+  }));
+  document.querySelectorAll('.filter-b-role').forEach(cb => cb.addEventListener('change', () => {
+    cb.checked ? selectedBossRoles.add(cb.value) : selectedBossRoles.delete(cb.value);
+    updateBossList();
+  }));
+
+  document.querySelectorAll('.filter-header').forEach(header => {
+    const group = header.dataset.group;
+    const content = document.getElementById(`filter-${group}`);
+    const icon = header.querySelector('.accordion-icon');
+    content.classList.remove('open');
+    icon.classList.remove('open');
+    header.addEventListener('click', e => {
+      e.stopPropagation();
+      content.classList.toggle('open');
+      icon.classList.toggle('open');
+    });
+  });
+}
+
+// Renderizar navegación de Boss (sidebar)
+function renderBossNav(bosses) {
+  navContainer.innerHTML = '<div class="sidebar-section">Jefes</div>';
+  const div = document.createElement('div');
+  div.id = 'boss-nav';
+  navContainer.appendChild(div);
+  bosses.forEach((b, i) => {
+    const statsKeys = ['vida','defensa','agresividad','invulnerabilidad','complejidad'];
+    const avg = calcPromedioGeneric(b, statsKeys);
+    const diffClass = getDifficultyClass(avg);
+    const rarezaClass = b.rareza ? `rareza-${b.rareza.toLowerCase()}` : ''; // opcional, si no hay rareza, quitamos
+    const item = document.createElement('div');
+    item.className = 'char-nav-item' + (allBosses.indexOf(b) === activeBossIdx ? ' active' : '');
+    const imgSrc = b.imagen || '';
+    // Usamos badge con color según dificultad
+    const difficultyBadge = avg ? `<span class="nav-rank-badge" style="background:${getDifficultyColor(avg)}; color: #fff;">${avg}</span>` : '';
+    item.innerHTML = `<img src="${imgSrc}" alt="${b.nombre}" class="char-avatar" onerror="this.style.display='none'"><span>${b.nombre}</span>${difficultyBadge}`;
+    item.addEventListener('click', () => selectBoss(allBosses.indexOf(b)));
+    div.appendChild(item);
+  });
+}
+
+// Funciones auxiliares para dificultad
+function getDifficultyClass(avg) {
+  if (avg === null) return '';
+  const num = parseFloat(avg);
+  if (num <= 1) return 'diff-very-easy';
+  if (num <= 2) return 'diff-easy';
+  if (num <= 3) return 'diff-medium';
+  if (num <= 4) return 'diff-complex';
+  return 'diff-hard';
+}
+
+function getDifficultyColor(avg) {
+  if (avg === null) return '#6c757d';
+  const num = parseFloat(avg);
+  if (num <= 1) return '#b3e5b3'; // verde claro
+  if (num <= 2) return '#66bb6a'; // verde oscuro
+  if (num <= 3) return '#ab47bc'; // violeta
+  if (num <= 4) return '#ff9800'; // naranja
+  return '#f44336'; // rojo
+}
+
+function getDifficultyLabel(avg) {
+  if (avg === null) return 'Sin datos';
+  const num = parseFloat(avg);
+  if (num <= 1) return 'Muy Fácil';
+  if (num <= 2) return 'Fácil';
+  if (num <= 3) return 'Media';
+  if (num <= 4) return 'Complejo';
+  return 'Difícil';
+}
+
+// Actualizar lista de Boss (filtros y búsqueda)
+function updateBossList() {
+  const filtered = filterBosses();
+  renderBossNav(filtered);
+  if (activeBossIdx !== -1 && !filtered.includes(allBosses[activeBossIdx])) {
+    if (filtered.length > 0) {
+      selectBoss(allBosses.indexOf(filtered[0]));
+    } else {
+      activeBossIdx = -1;
+      renderWelcome('bosses');
+    }
+  }
+}
+
+// Seleccionar un Boss
+function selectBoss(idx) {
+  if (idx < 0 || idx >= allBosses.length) return;
+  activeBossIdx = idx;
+  const filtered = filterBosses();
+  renderBossNav(filtered);
+  renderBossCard(allBosses[idx]);
+  if (window.innerWidth <= 768 && window._closeDrawer) window._closeDrawer();
+}
+
+// Renderizar tarjeta de un Boss
+function renderBossCard(b) {
+  const statsKeys = ['vida','defensa','agresividad','invulnerabilidad','complejidad'];
+  const avg = calcPromedioGeneric(b, statsKeys);
+  const diffLabel = getDifficultyLabel(avg);
+  const diffColor = getDifficultyColor(avg);
+
+  const scoreRows = Object.entries(SCORE_LABELS_BOSS).map(([key, label]) => {
+    let val = parseFloat(b[key]) || 0;
+    const pct = (val / 5) * 100;
+    const tip = SCORE_TOOLTIPS_BOSS[key] || '';
+    return `<div class="rank-row ${val === 0 ? 'zero' : ''}"><div class="rank-label">${label}<span class="info-icon" data-tip="${tip.replace(/"/g, '&quot;')}">ⓘ</span></div><div class="rank-bar-track"><div class="rank-bar-fill" style="width:${pct}%"></div></div><div class="rank-value">${val > 0 ? val : '—'}</div></div>`;
+  }).join('');
+
+  // Personajes recomendados
+  const rawRecs = b.personajes_recomendados ? b.personajes_recomendados.split('|').map(s => s.trim()).filter(Boolean) : [];
+  const recsHTML = rawRecs.length ? rawRecs.map(chain => {
+    const opts = chain.split('>').map(s => s.trim()).filter(Boolean);
+    const optsHtml = opts.map(opt => {
+      if (isImageUrl(opt)) {
+        return `<img src="${opt}" style="width:40px;height:40px;border-radius:50%;border:2px solid var(--accent);margin:0.2rem;" onerror="this.style.display='none'" title="Personaje recomendado">`;
+      }
+      return `<span>${opt}</span>`;
+    }).join(' <span style="color:var(--accent2);font-weight:bold;">→</span> ');
+    return `<div class="info-row"><div class="info-val" style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">${optsHtml}</div></div>`;
+  }).join('') : '<div class="info-row"><div class="info-val empty-val">Sin personajes recomendados</div></div>';
+
+  // Consejos
+  const tips = splitPipe(b.consejos);
+  const tipsHTML = tips.length ? tips.map(t => `<div class="tip-item"><span class="tip-bullet">◆</span><span>${t}</span></div>`).join('') : '<div class="tip-item"><span class="tip-bullet">◆</span><span class="empty-val">Sin datos</span></div>';
+
+  // Debilidades, resistencias, roles
+  const debilidades = b.debilidades ? b.debilidades.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  const resistencias = b.resistencias ? b.resistencias.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  const roles = b.roll_recomendo ? b.roll_recomendo.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  const tags = [
+    debilidades.length && `<span class="tag tag-element" style="background:rgba(255,0,0,.1); border-color:rgba(255,0,0,.3); color:#ff6b6b;">Debilidad: ${debilidades.join(', ')}</span>`,
+    resistencias.length && `<span class="tag tag-element" style="background:rgba(0,100,255,.1); border-color:rgba(0,100,255,.3); color:#4dabf7;">Resiste: ${resistencias.join(', ')}</span>`,
+    roles.length && `<span class="tag tag-role">${roles.join(', ')}</span>`
+  ].filter(Boolean).join('');
+
+  const imgSrc = b.imagen || '';
+  wikiContainer.innerHTML = `
+  <div class="char-card">
+    <div class="char-header">
+      <img class="char-avatar" src="${imgSrc}" alt="${b.nombre}" onerror="this.style.display='none'">
+      <div class="char-info">
+        <div class="char-name">${b.nombre}</div>
+        <div class="char-tags">${tags}</div>
+      </div>
+      ${avg ? `<div class="char-score-big" style="color:${diffColor};">${avg}<div class="score-label">/ 5 · ${diffLabel}</div></div>` : ''}
+    </div>
+    <div class="grid-2">
+      <div class="panel"><div class="panel-title">Estadísticas</div><div class="rank-list">${scoreRows}</div></div>
+    </div>
+    <div class="panel" style="margin-bottom:1.2rem">
+      <div class="panel-title">Personajes recomendados</div>
+      ${recsHTML}
+    </div>
+    <div class="panel" style="margin-bottom:1.2rem">
+      <div class="panel-title">Consejos</div>
+      ${tipsHTML}
+    </div>
+  </div>`;
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.rank-bar-fill').forEach(el => {
+      const w = el.style.width;
+      el.style.width = '0';
+      requestAnimationFrame(() => { el.style.width = w; });
+    });
+  });
+}
+   
 // ══════════════════════════════════════════════════════════
 // MENÚ MÓVIL
 // ══════════════════════════════════════════════════════════
@@ -1783,7 +2081,10 @@ function setupSearch() {
     } else if (currentSection === 'bangboos') {
       bangbooSearchTerm = term;
       updateBangbooList();
-    }
+    } else if (currentSection === 'bosses') {
+    bossSearchTerm = term;
+    updateBossList();
+    }  
     // Si está en otras secciones (home, tierlist), no hace nada
   });
 }
@@ -2029,6 +2330,7 @@ function showHome() {
         <button class="section-tab-button" data-section="characters">⚡ Ver Personajes</button>
         <button class="section-tab-button" data-section="tierlist">📊 Ver Tier List</button>
         <button class="section-tab-button" data-section="bangboos">🤖 Ver Bangboos</button>
+        <button class="section-tab-button" data-section="bosses">👹 Ver Jefes</button>
       </div>
     </div>`;
   document.querySelectorAll('.section-tab-button').forEach(btn => {
@@ -2090,7 +2392,17 @@ function showSection(section) {
     if (activeBangbooIdx !== -1 && filtered.includes(allBangboos[activeBangbooIdx])) renderBangbooCard(allBangboos[activeBangbooIdx]);
     else if (filtered.length > 0) selectBangboo(allBangboos.indexOf(filtered[0]));
     else renderWelcome('bangboos');
-  }
+  } else if (section === 'bosses') {
+    if (sidebarElem && !isMobile) sidebarElem.style.display = 'block';
+    wikiContainer.style.display = 'block';
+    tierListContainer.style.display = 'none';
+    renderBossFilters();
+    const filtered = filterBosses();
+    renderBossNav(filtered);
+    if (activeBossIdx !== -1 && filtered.includes(allBosses[activeBossIdx])) renderBossCard(allBosses[activeBossIdx]);
+    else if (filtered.length > 0) selectBoss(allBosses.indexOf(filtered[0]));
+    else renderWelcome('bosses');
+}
 }
 
 function showTierList() {
@@ -2134,6 +2446,9 @@ allChars = buildCharacters(rows);
 // Cargar Bangboos
 const bangbooRows = await fetchSheetData('Zenless Bangboos');
 allBangboos = buildBangboos(bangbooRows);
+// Cargar Boss
+const bossRows = await fetchSheetData('Zenless Boss');
+allBosses = buildBosses(bossRows);
     dot.className = 'status-dot';
     if (!allChars.length) {
       renderError('No se encontraron personajes. Asegúrate de que la primera fila tenga los encabezados.');
