@@ -1074,6 +1074,22 @@ function buildCharacters(rows) {
   return characters;
 }
 
+function buildCharacterMap(rows) {
+  if (rows.length < 2) return {};
+  const map = {};
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    if (row && row.length >= 2) {
+      const id = parseInt(row[0]);
+      const name = row[1].trim();
+      if (!isNaN(id) && name) {
+        map[id] = { name: name, rarity: 'A' }; // rareza por defecto 'A'
+      }
+    }
+  }
+  return map;
+}
+
 // ══════════════════════════════════════════════════════════
 // UTILIDADES
 // ══════════════════════════════════════════════════════════
@@ -2525,7 +2541,6 @@ function renderProfile() {
 }
 
 function renderPlayerProfile(data, resultDiv) {
-  // Verificar que los datos tengan la estructura correcta
   if (!data || !data.PlayerInfo || !data.PlayerInfo.SocialDetail) {
     resultDiv.innerHTML = `<p style="color: var(--red);">No se encontraron datos del jugador. Verifica que el UID sea correcto y el perfil sea público.</p>`;
     return;
@@ -2543,16 +2558,27 @@ function renderPlayerProfile(data, resultDiv) {
   const uid = profile.Uid || data.uid || '?';
   const region = data.region || '?';
   const desc = social.Desc || '';
+  const avatarId = profile.AvatarId || '';
+  const avatarUrl = avatarId ? `https://enka.network/ui/zzz/icon/${avatarId}.png` : '';
 
-  // Construir URL del avatar del jugador (no siempre disponible)
-  const avatarUrl = profile.AvatarId ? `https://enka.network/ui/zzz/icon/${profile.AvatarId}.png` : '';
+  // ============================================================
+  // MAPA COMPLETO DE PERSONAJES DE ZZZ (IDs de Enka Network)
+  // ============================================================
+// Obtenemos el mapa desde la variable global (cargada en init)
+   const characterMap = window.characterMap || {};
+  // ============================================================
+  // MAPA DE ARMAS (IDs de Enka)
+  // ============================================================
+  const weaponMap = {
+    14156: 'Joyau Dore',
+  };
 
   console.log(`👤 Jugador: ${nickname} (Nv. ${level}) - ${avatarList.length} personajes`);
 
   let html = `
     <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem;">
       <!-- Cabecera del jugador -->
-      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
         <img src="${avatarUrl}" style="width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--accent); background: var(--surface2);" onerror="this.style.display='none'">
         <div>
           <h3 style="color: var(--text-bright); font-family: 'Rajdhani', sans-serif; font-size: 1.4rem;">${nickname}</h3>
@@ -2567,42 +2593,41 @@ function renderPlayerProfile(data, resultDiv) {
   if (avatarList.length === 0) {
     html += `<p style="color: var(--text-dim); text-align: center;">Este jugador no tiene personajes en su escaparate.</p>`;
   } else {
-    html += `<div style="display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center;">`;
+    html += `<div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">`;
     avatarList.forEach(char => {
       const charId = char.Id;
       const level = char.Level || '?';
       const promotion = char.PromotionLevel || 0;
-      // Rareza: intentamos deducirla del ID (los rangos S suelen ser IDs específicos, pero no es fiable)
-      // Alternativa: usar un mapa de rareza por ID (puedes ampliarlo)
-      let rarity = 'A';
-      // Lista de personajes S conocidos (IDs de ejemplo)
-      const sRarityIds = [1371, 1091, 1431, 1221, 1561, 1201]; // Añade los que quieras
-      if (sRarityIds.includes(charId)) rarity = 'S';
-      // También podemos usar el `TalentLevel` o `UpgradeId` para deducir, pero es más complejo.
-      
+      const coreSkill = char.CoreSkillEnhancement || 0;
+      const talentLevel = char.TalentLevel || 0;
+      const weapon = char.Weapon || {};
+      const weaponId = weapon.Id || 0;
+      const weaponLevel = weapon.Level || '?';
+
+      // Obtener datos del personaje desde el mapa
+      let charData = characterMap[charId];
+  if (!charData) {
+    console.warn(`⚠️ Personaje ID ${charId} no encontrado en el mapa.`);
+    charData = { name: `ID: ${charId}`, rarity: 'A' };
+  }
+  const charName = charData.name;
+  const rarity = charData.rarity || 'A';
       const rarityColor = rarity === 'S' ? 'var(--rank-s)' : 'var(--rank-a)';
       
-      // Intentar obtener el nombre del personaje desde el ID (puedes ampliar este mapa)
-      const characterNames = {
-        1371: 'Harumasa',
-        1091: 'Miyabi',
-        1431: 'Evelyn',
-        1221: 'Zhu Yuan',
-        1561: 'Astra Yao',
-        1201: 'Qingyi'
-      };
-      const charName = characterNames[charId] || `Personaje ${charId}`;
+      // Obtener nombre del arma
+      const weaponName = weaponMap[weaponId] || (weaponId > 0 ? `Arma ${weaponId}` : '');
       
       // Icono del personaje
       const charIcon = `https://enka.network/ui/zzz/icon/${charId}.png`;
-      
-      // Nivel de destreza (CoreSkillEnhancement, etc.) no lo mostramos por ahora
-      
+
       html += `
-        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem; text-align: center; width: 90px;">
-          <img src="${charIcon}" style="width: 56px; height: 56px; border-radius: 50%; border: 2px solid ${rarityColor}; margin-bottom: 0.25rem;" onerror="this.style.display='none'">
-          <div style="font-size: 0.7rem; color: var(--text-bright); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${charName}</div>
-          <div style="font-size: 0.6rem; color: var(--text-dim);">Nv. ${level}</div>
+        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem; text-align: center; width: 110px;">
+          <img src="${charIcon}" style="width: 64px; height: 64px; border-radius: 50%; border: 2px solid ${rarityColor}; margin-bottom: 0.3rem;" onerror="this.style.display='none'">
+          <div style="font-size: 0.75rem; color: var(--text-bright); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${charName}</div>
+          <div style="font-size: 0.6rem; color: var(--text-dim);">Nv. ${level} ${promotion > 0 ? `· F${promotion}` : ''}</div>
+          ${coreSkill > 0 ? `<div style="font-size: 0.55rem; color: var(--accent3);">Habilidad C. ${coreSkill}</div>` : ''}
+          ${talentLevel > 0 ? `<div style="font-size: 0.55rem; color: var(--accent2);">Duplicado ${talentLevel}</div>` : ''}
+          ${weaponName ? `<div style="font-size: 0.55rem; color: var(--text-dim);">${weaponName} (Nv.${weaponLevel})</div>` : ''}
           ${rarity === 'S' ? '<div style="font-size: 0.5rem; color: var(--rank-s);">★ S</div>' : '<div style="font-size: 0.5rem; color: var(--rank-a);">★ A</div>'}
         </div>
       `;
@@ -2611,7 +2636,7 @@ function renderPlayerProfile(data, resultDiv) {
   }
 
   html += `
-      <div style="margin-top: 1rem; text-align: center; font-size: 0.7rem; color: var(--text-dim);">
+      <div style="margin-top: 1.5rem; text-align: center; font-size: 0.7rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 0.8rem;">
         Datos obtenidos de <a href="https://enka.network" target="_blank" style="color: var(--accent);">Enka Network</a>
       </div>
     </div>
@@ -2619,6 +2644,7 @@ function renderPlayerProfile(data, resultDiv) {
 
   resultDiv.innerHTML = html;
 }
+
 // ══════════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════════
@@ -2633,6 +2659,9 @@ allBangboos = buildBangboos(bangbooRows);
 // Cargar Boss
 const bossRows = await fetchSheetData('Zenless Boss');
 allBosses = buildBosses(bossRows);
+// Cargar mapa de personajes desde la hoja "Zenless Characters ID"
+const charRows = await fetchSheetData('Zenless Characters ID');
+window.characterMap = buildCharacterMap(charRows);
     dot.className = 'status-dot';
     if (!allChars.length) {
       renderError('No se encontraron personajes. Asegúrate de que la primera fila tenga los encabezados.');
