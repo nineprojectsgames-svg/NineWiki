@@ -2457,9 +2457,7 @@ function showTierList() {
 // ===================== PERFIL DE JUGADOR ====================
 // ============================================================
 
-// Función para renderizar la sección de perfil
 function renderProfile() {
-  // Guardamos el HTML del formulario y área de resultados
   const profileHTML = `
     <div style="max-width: 600px; margin: 0 auto; padding: 1rem;">
       <h2 style="color: var(--accent); font-family: 'Rajdhani', sans-serif; text-align: center; margin-bottom: 1.5rem;">🔍 Buscar Perfil de Jugador</h2>
@@ -2468,99 +2466,144 @@ function renderProfile() {
         <span style="color: var(--text-mid); font-size: 0.75rem;">⚠️ Asegúrate de que tu perfil sea <strong>público</strong> en el juego.</span>
       </p>
       <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem;">
-        <input type="text" id="uid-input" placeholder="Ej: 184551462" style="flex: 1; min-width: 180px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 0.5rem 0.8rem; border-radius: 4px; font-family: 'Share Tech Mono', monospace; font-size: 0.9rem;">
-        <select id="region-select" style="background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 0.5rem; border-radius: 4px;">
-          <option value="prod_gf_eu">Europa</option>
-          <option value="prod_gf_us">América</option>
-          <option value="prod_gf_jp">Asia</option>
-          <option value="prod_gf_sa">Sudamérica</option>
-        </select>
+        <input type="text" id="uid-input" placeholder="Ej: 1000076410" style="flex: 1; min-width: 180px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 0.5rem 0.8rem; border-radius: 4px; font-family: 'Share Tech Mono', monospace; font-size: 0.9rem;">
         <button id="search-player-btn" style="background: var(--accent); color: var(--bg); border: none; padding: 0.5rem 1.5rem; border-radius: 4px; cursor: pointer; font-weight: bold;">Buscar</button>
       </div>
       <div id="player-result" style="margin-top: 1rem;">
-        <!-- Aquí se mostrarán los resultados -->
+        <p style="color: var(--text-dim); text-align: center; font-size: 0.85rem;">Ingresa un UID y presiona "Buscar"</p>
       </div>
     </div>
   `;
   wikiContainer.innerHTML = profileHTML;
 
-  // Agregar evento al botón de búsqueda
-  document.getElementById('search-player-btn').addEventListener('click', function() {
-    const uid = document.getElementById('uid-input').value.trim();
+  const searchBtn = document.getElementById('search-player-btn');
+  const uidInput = document.getElementById('uid-input');
+  const resultDiv = document.getElementById('player-result');
+
+  searchBtn.addEventListener('click', function() {
+    const uid = uidInput.value.trim();
     if (!uid) {
-      document.getElementById('player-result').innerHTML = `<p style="color: var(--red);">Por favor ingresa un UID válido.</p>`;
+      resultDiv.innerHTML = `<p style="color: var(--red);">Por favor ingresa un UID válido.</p>`;
       return;
     }
-    // Usamos un proxy CORS para evitar bloqueos (puedes cambiarlo si tienes tu propio proxy)
-    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-    const apiUrl = `https://api.enka.network/api/zzz/uid/${uid}`;
-    const finalUrl = proxyUrl + apiUrl;
     
-    // Mostrar mensaje de carga
-    document.getElementById('player-result').innerHTML = `<div style="text-align: center; color: var(--text-dim);"><div class="spinner" style="margin: 0 auto 0.5rem;"></div>Cargando perfil...</div>`;
+    // Usamos tu Worker de Cloudflare (que ya funciona)
+    const finalUrl = `https://zzz-proxy.n4h1n12.workers.dev?uid=${uid}`;
+    
+    console.log('🔍 Buscando perfil para UID:', uid);
+    console.log('📡 URL:', finalUrl);
+    
+    resultDiv.innerHTML = `<div style="text-align: center; color: var(--text-dim);"><div class="spinner" style="margin: 0 auto 0.5rem;"></div>Cargando perfil...</div>`;
 
     fetch(finalUrl)
       .then(response => {
-        if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+        console.log('📥 Respuesta HTTP:', response.status);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
         return response.json();
       })
-      .then(data => renderPlayerProfile(data))
+      .then(data => {
+        console.log('✅ Datos recibidos:', data);
+        renderPlayerProfile(data, resultDiv);
+      })
       .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('player-result').innerHTML = `
-          <p style="color: var(--red);">
-            ❌ No se pudo obtener el perfil.<br>
-            <span style="font-size: 0.8rem; color: var(--text-dim);">
-              Verifica que el UID sea correcto y que el perfil sea público.<br>
-              Si el problema persiste, puede deberse a un bloqueo CORS (prueba con otro navegador o más tarde).
-            </span>
-          </p>
+        console.error('❌ Error:', error);
+        resultDiv.innerHTML = `
+          <div style="background: var(--surface); border: 1px solid var(--red); border-radius: 8px; padding: 1rem; text-align: center;">
+            <p style="color: var(--red); font-weight: bold;">❌ No se pudo obtener el perfil</p>
+            <p style="color: var(--text-dim); font-size: 0.85rem;">Error: ${error.message}</p>
+            <button onclick="document.getElementById('search-player-btn').click()" style="margin-top: 0.5rem; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 0.3rem 1rem; border-radius: 4px; cursor: pointer;">Reintentar</button>
+          </div>
         `;
       });
   });
 
-  // También permitir buscar al presionar Enter en el input
-  document.getElementById('uid-input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') document.getElementById('search-player-btn').click();
+  uidInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') searchBtn.click();
   });
 }
 
-// Función para renderizar los datos del perfil
-function renderPlayerProfile(data) {
-  if (!data || !data.player) {
-    document.getElementById('player-result').innerHTML = `<p style="color: var(--red);">No se encontraron datos del jugador.</p>`;
+function renderPlayerProfile(data, resultDiv) {
+  // Verificar que los datos tengan la estructura correcta
+  if (!data || !data.PlayerInfo || !data.PlayerInfo.SocialDetail) {
+    resultDiv.innerHTML = `<p style="color: var(--red);">No se encontraron datos del jugador. Verifica que el UID sea correcto y el perfil sea público.</p>`;
     return;
   }
 
-  const player = data.player;
-  const characters = data.characters || [];
+  const playerInfo = data.PlayerInfo;
+  const social = playerInfo.SocialDetail;
+  const profile = social.ProfileDetail || {};
+  const showcase = playerInfo.ShowcaseDetail || {};
+  const avatarList = showcase.AvatarList || [];
+
+  // Datos del jugador
+  const nickname = profile.Nickname || 'Sin nombre';
+  const level = profile.Level || '?';
+  const uid = profile.Uid || data.uid || '?';
+  const region = data.region || '?';
+  const desc = social.Desc || '';
+
+  // Construir URL del avatar del jugador (no siempre disponible)
+  const avatarUrl = profile.AvatarId ? `https://enka.network/ui/zzz/icon/${profile.AvatarId}.png` : '';
+
+  console.log(`👤 Jugador: ${nickname} (Nv. ${level}) - ${avatarList.length} personajes`);
 
   let html = `
     <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem;">
       <!-- Cabecera del jugador -->
       <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
-        <img src="${player.profile_picture || ''}" style="width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--accent); background: var(--surface2);" onerror="this.style.display='none'">
+        <img src="${avatarUrl}" style="width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--accent); background: var(--surface2);" onerror="this.style.display='none'">
         <div>
-          <h3 style="color: var(--text-bright); font-family: 'Rajdhani', sans-serif; font-size: 1.4rem;">${player.nickname || 'Sin nombre'}</h3>
-          <p style="color: var(--text-dim); font-size: 0.85rem;">Nivel ${player.level || '?'} · UID: ${player.uid || ''}</p>
+          <h3 style="color: var(--text-bright); font-family: 'Rajdhani', sans-serif; font-size: 1.4rem;">${nickname}</h3>
+          <p style="color: var(--text-dim); font-size: 0.85rem;">
+            Nivel ${level} · UID: ${uid} · ${region}
+            ${desc ? `· “${desc}”` : ''}
+          </p>
         </div>
       </div>
   `;
 
-  if (characters.length === 0) {
+  if (avatarList.length === 0) {
     html += `<p style="color: var(--text-dim); text-align: center;">Este jugador no tiene personajes en su escaparate.</p>`;
   } else {
     html += `<div style="display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center;">`;
-    characters.forEach(char => {
-      const charName = char.name || 'Desconocido';
-      const charIcon = char.icon || '';
-      const rarity = char.rarity || 'A';
+    avatarList.forEach(char => {
+      const charId = char.Id;
+      const level = char.Level || '?';
+      const promotion = char.PromotionLevel || 0;
+      // Rareza: intentamos deducirla del ID (los rangos S suelen ser IDs específicos, pero no es fiable)
+      // Alternativa: usar un mapa de rareza por ID (puedes ampliarlo)
+      let rarity = 'A';
+      // Lista de personajes S conocidos (IDs de ejemplo)
+      const sRarityIds = [1371, 1091, 1431, 1221, 1561, 1201]; // Añade los que quieras
+      if (sRarityIds.includes(charId)) rarity = 'S';
+      // También podemos usar el `TalentLevel` o `UpgradeId` para deducir, pero es más complejo.
+      
       const rarityColor = rarity === 'S' ? 'var(--rank-s)' : 'var(--rank-a)';
+      
+      // Intentar obtener el nombre del personaje desde el ID (puedes ampliar este mapa)
+      const characterNames = {
+        1371: 'Harumasa',
+        1091: 'Miyabi',
+        1431: 'Evelyn',
+        1221: 'Zhu Yuan',
+        1561: 'Astra Yao',
+        1201: 'Qingyi'
+      };
+      const charName = characterNames[charId] || `Personaje ${charId}`;
+      
+      // Icono del personaje
+      const charIcon = `https://enka.network/ui/zzz/icon/${charId}.png`;
+      
+      // Nivel de destreza (CoreSkillEnhancement, etc.) no lo mostramos por ahora
+      
       html += `
         <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem; text-align: center; width: 90px;">
           <img src="${charIcon}" style="width: 56px; height: 56px; border-radius: 50%; border: 2px solid ${rarityColor}; margin-bottom: 0.25rem;" onerror="this.style.display='none'">
-          <div style="font-size: 0.7rem; color: var(--text-bright); font-weight: 600;">${charName}</div>
-          <div style="font-size: 0.6rem; color: var(--text-dim);">Nv. ${char.level || '?'}</div>
+          <div style="font-size: 0.7rem; color: var(--text-bright); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${charName}</div>
+          <div style="font-size: 0.6rem; color: var(--text-dim);">Nv. ${level}</div>
+          ${rarity === 'S' ? '<div style="font-size: 0.5rem; color: var(--rank-s);">★ S</div>' : '<div style="font-size: 0.5rem; color: var(--rank-a);">★ A</div>'}
         </div>
       `;
     });
@@ -2574,9 +2617,8 @@ function renderPlayerProfile(data) {
     </div>
   `;
 
-  document.getElementById('player-result').innerHTML = html;
+  resultDiv.innerHTML = html;
 }
-
 // ══════════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════════
