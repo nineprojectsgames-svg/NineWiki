@@ -856,6 +856,99 @@
   main { padding-bottom: 72px !important; } /* space for bottom nav */
 }
 
+/* ─── Calculadora de Daño ─── */
+.damage-calc {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+.damage-calc .calc-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.damage-calc .calc-tab {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.damage-calc .calc-tab.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.damage-calc .calc-tab:hover:not(.active) {
+  border-color: var(--accent);
+  color: var(--text-bright);
+}
+.damage-calc .calc-panel {
+  display: none;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+.damage-calc .calc-panel.active {
+  display: flex;
+}
+.damage-calc .calc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 80px;
+}
+.damage-calc .calc-field label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.damage-calc .calc-field input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.3rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  width: 100%;
+  font-family: 'Barlow', sans-serif;
+}
+.damage-calc .calc-field input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+.damage-calc .calc-result {
+  margin-top: 0.8rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  text-align: center;
+  padding: 0.5rem;
+  background: var(--surface);
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.damage-calc .calc-result .score {
+  color: var(--accent);
+  font-size: 1.6rem;
+}
+.damage-calc .calc-result .detail {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
 </style>
 </head>
 <body>
@@ -1482,6 +1575,90 @@ const bangbuHTML = rawBangbus.length ? rawBangbus.map(bangbuChain => {
 
   const rarezaClass = c.rareza ? `rareza-${c.rareza.toLowerCase()}` : '';
 
+// ═══════ Panel de cálculo de daño ═══════
+const damageCalcHTML = `
+<div class="damage-calc">
+  <div class="panel-title">⚔️ Calculadora de Daño</div>
+  <div class="calc-tabs" id="calc-tabs-${c.nombre}">
+    <button class="calc-tab active" data-rol="atacante">Atacante</button>
+    <button class="calc-tab" data-rol="anomalo">Anomalo</button>
+    <button class="calc-tab" data-rol="disruptivo">Disruptivo</button>
+  </div>
+
+  <!-- Panel Atacante -->
+  <div class="calc-panel active" data-rol="atacante" id="panel-atacante-${c.nombre}">
+    <div class="calc-field">
+      <label>ATQ</label>
+      <input type="number" id="atk-${c.nombre}" value="2000" step="10">
+    </div>
+    <div class="calc-field">
+      <label>BONO (%)</label>
+      <input type="number" id="bono-${c.nombre}" value="80" step="5">
+    </div>
+    <div class="calc-field">
+      <label>PROB CRIT (%)</label>
+      <input type="number" id="crit-rate-${c.nombre}" value="60" step="1">
+    </div>
+    <div class="calc-field">
+      <label>DAÑO CRIT (%)</label>
+      <input type="number" id="crit-dmg-${c.nombre}" value="150" step="5">
+    </div>
+    <div class="calc-result" id="result-atacante-${c.nombre}">
+      <div class="score">—</div>
+      <div class="detail">Introduce valores para calcular</div>
+    </div>
+  </div>
+
+  <!-- Panel Anomalo -->
+  <div class="calc-panel" data-rol="anomalo" id="panel-anomalo-${c.nombre}">
+    <div class="calc-field">
+      <label>ATQ</label>
+      <input type="number" id="atk-anom-${c.nombre}" value="2000" step="10">
+    </div>
+    <div class="calc-field">
+      <label>BONO (%)</label>
+      <input type="number" id="bono-anom-${c.nombre}" value="80" step="5">
+    </div>
+    <div class="calc-field">
+      <label>MAESTRÍA ANOMALIA</label>
+      <input type="number" id="maestria-${c.nombre}" value="150" step="5">
+    </div>
+    <div class="calc-field">
+      <label>TASA ANOMALIA (%)</label>
+      <input type="number" id="tasa-${c.nombre}" value="20" step="1">
+    </div>
+    <div class="calc-result" id="result-anomalo-${c.nombre}">
+      <div class="score">—</div>
+      <div class="detail">Introduce valores para calcular</div>
+    </div>
+  </div>
+
+  <!-- Panel Disruptivo -->
+  <div class="calc-panel" data-rol="disruptivo" id="panel-disruptivo-${c.nombre}">
+    <div class="calc-field">
+      <label>VIDA</label>
+      <input type="number" id="vida-${c.nombre}" value="40000" step="100">
+    </div>
+    <div class="calc-field">
+      <label>BONO (%)</label>
+      <input type="number" id="bono-dis-${c.nombre}" value="80" step="5">
+    </div>
+    <div class="calc-field">
+      <label>PROB CRIT (%)</label>
+      <input type="number" id="crit-rate-dis-${c.nombre}" value="60" step="1">
+    </div>
+    <div class="calc-field">
+      <label>DAÑO CRIT (%)</label>
+      <input type="number" id="crit-dmg-dis-${c.nombre}" value="150" step="5">
+    </div>
+    <div class="calc-result" id="result-disruptivo-${c.nombre}">
+      <div class="score">—</div>
+      <div class="detail">Introduce valores para calcular</div>
+    </div>
+  </div>
+</div>
+`;
+
   wikiContainer.innerHTML = `
   <div class="char-card">
     <div class="char-header">
@@ -1524,7 +1701,9 @@ const bangbuHTML = rawBangbus.length ? rawBangbus.map(bangbuChain => {
       <div class="panel"><div class="panel-title">Stats Ideales</div>${renderStats(c.stats_ideales, true)}</div>
     </div>
     <div class="panel" style="margin-bottom:2rem"><div class="panel-title">Consejos &amp; Habilidades</div>${tipsHTML}</div>
+    ${damageCalcHTML}   <!-- <-- AQUÍ LO AÑADES -->
   </div>`;
+
 
   requestAnimationFrame(() => {
     document.querySelectorAll('.rank-bar-fill').forEach(el => {
@@ -1533,6 +1712,102 @@ const bangbuHTML = rawBangbus.length ? rawBangbus.map(bangbuChain => {
       requestAnimationFrame(() => { el.style.width = w; });
     });
   });
+
+// ═══════ Lógica de la calculadora ═══════
+const nombreId = c.nombre.replace(/\s/g, '');
+
+function getVal(id) {
+  const el = document.getElementById(id);
+  return el ? parseFloat(el.value) || 0 : 0;
+}
+
+function updateResult(panelType, resultId) {
+  let score = 0;
+  let detail = '';
+  let formula = '';
+
+  if (panelType === 'atacante') {
+    const atk = getVal(`atk-${c.nombre}`);
+    const bono = getVal(`bono-${c.nombre}`);
+    const critRate = getVal(`crit-rate-${c.nombre}`);
+    const critDmg = getVal(`crit-dmg-${c.nombre}`);
+    const critFactor = 1 + (critRate / 100) * (critDmg / 100);
+    score = atk * (1 + bono / 100) * critFactor;
+    formula = `ATQ × (1 + Bono/100) × (1 + Prob×DañoCrit/10000)`;
+    detail = `(ATQ ${atk} · Bono ${bono}% · CR ${critRate}% / CD ${critDmg}%)`;
+  } else if (panelType === 'anomalo') {
+    const atk = getVal(`atk-anom-${c.nombre}`);
+    const bono = getVal(`bono-anom-${c.nombre}`);
+    const maestria = getVal(`maestria-${c.nombre}`);
+    const tasa = getVal(`tasa-${c.nombre}`);
+    const anomFactor = (1 + maestria / 100) * (tasa / 100);
+    score = atk * (1 + bono / 100) * anomFactor;
+    formula = `ATQ × (1 + Bono/100) × ((1 + Maestria/100) × Tasa/100)`;
+    detail = `(ATQ ${atk} · Bono ${bono}% · MA ${maestria} · Tasa ${tasa}%)`;
+  } else if (panelType === 'disruptivo') {
+    const vida = getVal(`vida-${c.nombre}`);
+    const bono = getVal(`bono-dis-${c.nombre}`);
+    const critRate = getVal(`crit-rate-dis-${c.nombre}`);
+    const critDmg = getVal(`crit-dmg-dis-${c.nombre}`);
+    const critFactor = 1 + (critRate / 100) * (critDmg / 100);
+    score = (vida / 6) * (1 + bono / 100) * critFactor;
+    formula = `(Vida/6) × (1 + Bono/100) × (1 + Prob×DañoCrit/10000)`;
+    detail = `(Vida ${vida} · Bono ${bono}% · CR ${critRate}% / CD ${critDmg}%)`;
+  }
+
+  const resultEl = document.getElementById(resultId);
+  if (resultEl) {
+    if (score > 0) {
+      resultEl.innerHTML = `
+        <div class="score">${score.toFixed(0)}</div>
+        <div class="detail">${formula} → ${detail}</div>
+      `;
+    } else {
+      resultEl.innerHTML = `
+        <div class="score">—</div>
+        <div class="detail">Introduce valores para calcular</div>
+      `;
+    }
+  }
+}
+
+// Eventos para pestañas
+const tabsContainer = document.getElementById(`calc-tabs-${c.nombre}`);
+if (tabsContainer) {
+  tabsContainer.querySelectorAll('.calc-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      // Cambiar pestaña activa
+      tabsContainer.querySelectorAll('.calc-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      const rol = this.dataset.rol;
+      // Mostrar panel correspondiente
+      const parent = this.closest('.damage-calc');
+      parent.querySelectorAll('.calc-panel').forEach(p => p.classList.remove('active'));
+      const panel = parent.querySelector(`.calc-panel[data-rol="${rol}"]`);
+      if (panel) panel.classList.add('active');
+      // Actualizar resultado del panel activo
+      const resultId = `result-${rol}-${c.nombre}`;
+      updateResult(rol, resultId);
+    });
+  });
+}
+
+// Eventos de input para cada panel
+['atacante', 'anomalo', 'disruptivo'].forEach(rol => {
+  const panel = document.getElementById(`panel-${rol}-${c.nombre}`);
+  if (panel) {
+    panel.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', function() {
+        const resultId = `result-${rol}-${c.nombre}`;
+        updateResult(rol, resultId);
+      });
+    });
+  }
+});
+
+// Calcular inicialmente (para mostrar algo)
+updateResult('atacante', `result-atacante-${c.nombre}`);
+
 }
 
 function renderWelcome(section) {
