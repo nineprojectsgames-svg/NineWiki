@@ -1914,11 +1914,16 @@ function getDifficultyColor(avg) {
 function getDifficultyLabel(avg) {
   if (avg === null) return 'Sin datos';
   const num = parseFloat(avg);
+  if (num <= 0.5) return 'Simple';
   if (num <= 1) return 'Muy Fácil';
-  if (num <= 2) return 'Fácil';
-  if (num <= 3) return 'Media';
-  if (num <= 4) return 'Complejo';
-  return 'Difícil';
+  if (num <= 1.5) return 'Fácil';
+  if (num <= 2) return 'Moderadamente Fácil';
+  if (num <= 2.5) return 'Moderada';
+  if (num <= 3) return 'Moderadamente Complejo';
+  if (num <= 3.5) return 'Complejo';
+  if (num <= 4) return 'Muy Complejo';
+  if (num <= 4.5) return 'Dificíl';
+  return 'Muy Difícil';
 }
 
 // Actualizar lista de Boss (filtros y búsqueda)
