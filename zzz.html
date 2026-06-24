@@ -872,6 +872,7 @@
     <button class="section-tab" data-section="tierlist">Tier List</button>
     <button class="section-tab" data-section="bangboos">Bangboos</button>
     <button class="section-tab" data-section="bosses">Jefes</button>
+    <button class="section-tab" data-section="profile">👤 Perfil</button>
   </div>
   <div class="header-right">
     <input type="text" id="search-input" placeholder="Buscar…" />
@@ -918,6 +919,10 @@
   <button class="mbn-btn" data-section="bosses">
     <span class="mbn-icon">👹</span>
     <span class="mbn-label">Jefes</span>
+  </button>
+  <button class="mbn-btn" data-section="profile">
+    <span class="mbn-icon">👤</span>
+    <span class="mbn-label">Perfil</span>
   </button>
 </nav>
 
@@ -2336,6 +2341,7 @@ function showHome() {
         <button class="section-tab-button" data-section="tierlist">📊 Ver Tier List</button>
         <button class="section-tab-button" data-section="bangboos">🤖 Ver Bangboos</button>
         <button class="section-tab-button" data-section="bosses">👹 Ver Jefes</button>
+        <button class="section-tab-button" data-section="profile">👤 Buscar Perfil</button>
       </div>
     </div>`;
   document.querySelectorAll('.section-tab-button').forEach(btn => {
@@ -2407,6 +2413,13 @@ function showSection(section) {
     if (activeBossIdx !== -1 && filtered.includes(allBosses[activeBossIdx])) renderBossCard(allBosses[activeBossIdx]);
     else if (filtered.length > 0) selectBoss(allBosses.indexOf(filtered[0]));
     else renderWelcome('bosses');
+} else if (section === 'profile') {
+  // Ocultar sidebar
+  if (sidebarElem) sidebarElem.style.display = 'none';
+  if (window._closeDrawer) window._closeDrawer();
+  wikiContainer.style.display = 'block';
+  tierListContainer.style.display = 'none';
+  renderProfile(); // <-- llamamos a la función que crearemos
 }
 }
 
@@ -2438,6 +2451,130 @@ function showTierList() {
       showTierList();
     });
   });
+}
+
+// ============================================================
+// ===================== PERFIL DE JUGADOR ====================
+// ============================================================
+
+// Función para renderizar la sección de perfil
+function renderProfile() {
+  // Guardamos el HTML del formulario y área de resultados
+  const profileHTML = `
+    <div style="max-width: 600px; margin: 0 auto; padding: 1rem;">
+      <h2 style="color: var(--accent); font-family: 'Rajdhani', sans-serif; text-align: center; margin-bottom: 1.5rem;">🔍 Buscar Perfil de Jugador</h2>
+      <p style="color: var(--text-dim); text-align: center; font-size: 0.85rem; margin-bottom: 1rem;">
+        Ingresa tu UID para ver los personajes que tienes en tu escaparate.<br>
+        <span style="color: var(--text-mid); font-size: 0.75rem;">⚠️ Asegúrate de que tu perfil sea <strong>público</strong> en el juego.</span>
+      </p>
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem;">
+        <input type="text" id="uid-input" placeholder="Ej: 184551462" style="flex: 1; min-width: 180px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 0.5rem 0.8rem; border-radius: 4px; font-family: 'Share Tech Mono', monospace; font-size: 0.9rem;">
+        <select id="region-select" style="background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 0.5rem; border-radius: 4px;">
+          <option value="prod_gf_eu">Europa</option>
+          <option value="prod_gf_us">América</option>
+          <option value="prod_gf_jp">Asia</option>
+          <option value="prod_gf_sa">Sudamérica</option>
+        </select>
+        <button id="search-player-btn" style="background: var(--accent); color: var(--bg); border: none; padding: 0.5rem 1.5rem; border-radius: 4px; cursor: pointer; font-weight: bold;">Buscar</button>
+      </div>
+      <div id="player-result" style="margin-top: 1rem;">
+        <!-- Aquí se mostrarán los resultados -->
+      </div>
+    </div>
+  `;
+  wikiContainer.innerHTML = profileHTML;
+
+  // Agregar evento al botón de búsqueda
+  document.getElementById('search-player-btn').addEventListener('click', function() {
+    const uid = document.getElementById('uid-input').value.trim();
+    if (!uid) {
+      document.getElementById('player-result').innerHTML = `<p style="color: var(--red);">Por favor ingresa un UID válido.</p>`;
+      return;
+    }
+    // Usamos un proxy CORS para evitar bloqueos (puedes cambiarlo si tienes tu propio proxy)
+    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+    const apiUrl = `https://api.enka.network/api/zzz/uid/${uid}`;
+    const finalUrl = proxyUrl + apiUrl;
+    
+    // Mostrar mensaje de carga
+    document.getElementById('player-result').innerHTML = `<div style="text-align: center; color: var(--text-dim);"><div class="spinner" style="margin: 0 auto 0.5rem;"></div>Cargando perfil...</div>`;
+
+    fetch(finalUrl)
+      .then(response => {
+        if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+        return response.json();
+      })
+      .then(data => renderPlayerProfile(data))
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('player-result').innerHTML = `
+          <p style="color: var(--red);">
+            ❌ No se pudo obtener el perfil.<br>
+            <span style="font-size: 0.8rem; color: var(--text-dim);">
+              Verifica que el UID sea correcto y que el perfil sea público.<br>
+              Si el problema persiste, puede deberse a un bloqueo CORS (prueba con otro navegador o más tarde).
+            </span>
+          </p>
+        `;
+      });
+  });
+
+  // También permitir buscar al presionar Enter en el input
+  document.getElementById('uid-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') document.getElementById('search-player-btn').click();
+  });
+}
+
+// Función para renderizar los datos del perfil
+function renderPlayerProfile(data) {
+  if (!data || !data.player) {
+    document.getElementById('player-result').innerHTML = `<p style="color: var(--red);">No se encontraron datos del jugador.</p>`;
+    return;
+  }
+
+  const player = data.player;
+  const characters = data.characters || [];
+
+  let html = `
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem;">
+      <!-- Cabecera del jugador -->
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+        <img src="${player.profile_picture || ''}" style="width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--accent); background: var(--surface2);" onerror="this.style.display='none'">
+        <div>
+          <h3 style="color: var(--text-bright); font-family: 'Rajdhani', sans-serif; font-size: 1.4rem;">${player.nickname || 'Sin nombre'}</h3>
+          <p style="color: var(--text-dim); font-size: 0.85rem;">Nivel ${player.level || '?'} · UID: ${player.uid || ''}</p>
+        </div>
+      </div>
+  `;
+
+  if (characters.length === 0) {
+    html += `<p style="color: var(--text-dim); text-align: center;">Este jugador no tiene personajes en su escaparate.</p>`;
+  } else {
+    html += `<div style="display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center;">`;
+    characters.forEach(char => {
+      const charName = char.name || 'Desconocido';
+      const charIcon = char.icon || '';
+      const rarity = char.rarity || 'A';
+      const rarityColor = rarity === 'S' ? 'var(--rank-s)' : 'var(--rank-a)';
+      html += `
+        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem; text-align: center; width: 90px;">
+          <img src="${charIcon}" style="width: 56px; height: 56px; border-radius: 50%; border: 2px solid ${rarityColor}; margin-bottom: 0.25rem;" onerror="this.style.display='none'">
+          <div style="font-size: 0.7rem; color: var(--text-bright); font-weight: 600;">${charName}</div>
+          <div style="font-size: 0.6rem; color: var(--text-dim);">Nv. ${char.level || '?'}</div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+  }
+
+  html += `
+      <div style="margin-top: 1rem; text-align: center; font-size: 0.7rem; color: var(--text-dim);">
+        Datos obtenidos de <a href="https://enka.network" target="_blank" style="color: var(--accent);">Enka Network</a>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('player-result').innerHTML = html;
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2561,6 +2698,9 @@ document.querySelectorAll('.mbn-btn').forEach(btn => {
     btn.classList.add('active');
   });
 });
+
+
+
 </script>
 </body>
 </html>
