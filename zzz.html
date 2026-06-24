@@ -949,6 +949,27 @@
   font-weight: 400;
 }
 
+/* ─── Calificación de daño ─── */
+.score-badge {
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin-left: 0.5rem;
+  line-height: 1.4;
+  font-family: 'Rajdhani', sans-serif;
+  vertical-align: middle;
+}
+.score-badge.D { background: rgba(51, 51, 51, 0.2); color: #643815; border: 1px solid #030303; }
+.score-badge.C { background: rgba(70, 69, 69, 0.2); color: #ff6b1a; border: 1px solid #080808; }
+.score-badge.B { background: rgba(20, 20, 20, 0.2); color: #3059dd; border: 1px solid #0a0a0a; }
+.score-badge.A { background: rgba(54, 54, 54, 0.2); color: #a430c7; border: 1px solid #0a0a0a; }
+.score-badge.Aplus { background: rgba(15, 15, 15, 0.2); color: #eaee1e; border: 1px solid #070707; }
+.score-badge.S { background: rgba(46, 46, 46, 0.2); color: #ddff44; border: 1px solid #050505; }
+.score-badge.Splus { background: rgba(63, 63, 63, 0.2); color: #b3e7ff; border: 1px solid #000000; }
+.score-badge.ZZZ { background: rgba(56, 56, 56, 0.25); color: #f50000; border: 2px solid #000000; box-shadow: 0 0 12px rgba(46, 46, 46, 0.3); }
+
 </style>
 </head>
 <body>
@@ -1582,7 +1603,7 @@ const damageCalcHTML = `
   <div class="calc-tabs" id="calc-tabs-${c.nombre}">
     <button class="calc-tab active" data-rol="atacante">Atacante</button>
     <button class="calc-tab" data-rol="anomalo">Anomalo</button>
-    <button class="calc-tab" data-rol="disruptivo">Disruptivo</button>
+    <button class="calc-tab" data-rol="disruptor">Disruptor</button>
   </div>
 
   <!-- Panel Atacante -->
@@ -1603,9 +1624,16 @@ const damageCalcHTML = `
       <label>DAÑO CRIT (%)</label>
       <input type="number" id="crit-dmg-${c.nombre}" value="150" step="5">
     </div>
+    <div class="calc-field">
+      <label>PERFORACIÓN (%)</label>
+      <input type="number" id="perfo-${c.nombre}" value="10" step="1">
+    </div>
     <div class="calc-result" id="result-atacante-${c.nombre}">
-      <div class="score">—</div>
-      <div class="detail">Introduce valores para calcular</div>
+      <div class="score">
+        <span id="score-number-atacante-${c.nombre}">—</span>
+        <span class="score-badge" id="score-badge-atacante-${c.nombre}">—</span>
+      </div>
+      <div class="detail" id="score-detail-atacante-${c.nombre}">Introduce valores para calcular</div>
     </div>
   </div>
 
@@ -1628,16 +1656,19 @@ const damageCalcHTML = `
       <input type="number" id="tasa-${c.nombre}" value="20" step="1">
     </div>
     <div class="calc-result" id="result-anomalo-${c.nombre}">
-      <div class="score">—</div>
-      <div class="detail">Introduce valores para calcular</div>
+      <div class="score">
+        <span id="score-number-anomalo-${c.nombre}">—</span>
+        <span class="score-badge" id="score-badge-anomalo-${c.nombre}">—</span>
+      </div>
+      <div class="detail" id="score-detail-anomalo-${c.nombre}">Introduce valores para calcular</div>
     </div>
   </div>
 
-  <!-- Panel Disruptivo -->
-  <div class="calc-panel" data-rol="disruptivo" id="panel-disruptivo-${c.nombre}">
+  <!-- Panel Disruptor -->
+  <div class="calc-panel" data-rol="disruptor" id="panel-disruptor-${c.nombre}">
     <div class="calc-field">
-      <label>VIDA</label>
-      <input type="number" id="vida-${c.nombre}" value="40000" step="100">
+      <label>FUERZA</label>
+      <input type="number" id="fuerza-${c.nombre}" value="3000" step="10">
     </div>
     <div class="calc-field">
       <label>BONO (%)</label>
@@ -1651,9 +1682,16 @@ const damageCalcHTML = `
       <label>DAÑO CRIT (%)</label>
       <input type="number" id="crit-dmg-dis-${c.nombre}" value="150" step="5">
     </div>
-    <div class="calc-result" id="result-disruptivo-${c.nombre}">
-      <div class="score">—</div>
-      <div class="detail">Introduce valores para calcular</div>
+    <div class="calc-field">
+      <label>PERFORACIÓN (%)</label>
+      <input type="number" id="perfo-dis-${c.nombre}" value="10" step="1">
+    </div>
+    <div class="calc-result" id="result-disruptor-${c.nombre}">
+      <div class="score">
+        <span id="score-number-disruptor-${c.nombre}">—</span>
+        <span class="score-badge" id="score-badge-disruptor-${c.nombre}">—</span>
+      </div>
+      <div class="detail" id="score-detail-disruptor-${c.nombre}">Introduce valores para calcular</div>
     </div>
   </div>
 </div>
@@ -1721,6 +1759,17 @@ function getVal(id) {
   return el ? parseFloat(el.value) || 0 : 0;
 }
 
+function getScoreLetter(score) {
+  if (score < 5000) return { letter: 'D', class: 'D' };
+  if (score < 7500) return { letter: 'C', class: 'C' };
+  if (score < 10000) return { letter: 'B', class: 'B' };
+  if (score < 12500) return { letter: 'A', class: 'A' };
+  if (score < 15000) return { letter: 'A+', class: 'Aplus' };
+  if (score < 20000) return { letter: 'S', class: 'S' };
+  if (score < 22500) return { letter: 'S+', class: 'Splus' };
+  return { letter: 'ZZZ', class: 'ZZZ' };
+}
+
 function updateResult(panelType, resultId) {
   let score = 0;
   let detail = '';
@@ -1731,43 +1780,63 @@ function updateResult(panelType, resultId) {
     const bono = getVal(`bono-${c.nombre}`);
     const critRate = getVal(`crit-rate-${c.nombre}`);
     const critDmg = getVal(`crit-dmg-${c.nombre}`);
+    const perfo = getVal(`perfo-${c.nombre}`);
+    
     const critFactor = 1 + (critRate / 100) * (critDmg / 100);
-    score = atk * (1 + bono / 100) * critFactor;
-    formula = `ATQ × (1 + Bono/100) × (1 + Prob×DañoCrit/10000)`;
-    detail = `(ATQ ${atk} · Bono ${bono}% · CR ${critRate}% / CD ${critDmg}%)`;
+    const bonoPerfoFactor = 1 + (bono / 100) + (perfo / 110);
+    score = atk * critFactor * bonoPerfoFactor;
+    
+    formula = `ATQ × (1 + Prob×DañoCrit/10000) × (1 + Bono/100 + Perf/110)`;
+    detail = `(ATQ ${atk} · Bono ${bono}% · CR ${critRate}% / CD ${critDmg}% · Perf ${perfo}%)`;
   } else if (panelType === 'anomalo') {
     const atk = getVal(`atk-anom-${c.nombre}`);
     const bono = getVal(`bono-anom-${c.nombre}`);
     const maestria = getVal(`maestria-${c.nombre}`);
     const tasa = getVal(`tasa-${c.nombre}`);
-    const anomFactor = (1 + maestria / 100) * (tasa / 100);
-    score = atk * (1 + bono / 100) * anomFactor;
-    formula = `ATQ × (1 + Bono/100) × ((1 + Maestria/100) × Tasa/100)`;
+    
+    const factor = 1 + (bono + maestria + tasa) / 200;
+    score = atk * factor;
+    
+    formula = `ATQ × (1 + (Bono + Maestria + Tasa) / 200)`;
     detail = `(ATQ ${atk} · Bono ${bono}% · MA ${maestria} · Tasa ${tasa}%)`;
-  } else if (panelType === 'disruptivo') {
-    const vida = getVal(`vida-${c.nombre}`);
+  } else if (panelType === 'disruptor') {
+    const fuerza = getVal(`fuerza-${c.nombre}`);
     const bono = getVal(`bono-dis-${c.nombre}`);
     const critRate = getVal(`crit-rate-dis-${c.nombre}`);
     const critDmg = getVal(`crit-dmg-dis-${c.nombre}`);
+    const perfo = getVal(`perfo-dis-${c.nombre}`);
+    
     const critFactor = 1 + (critRate / 100) * (critDmg / 100);
-    score = (vida / 6) * (1 + bono / 100) * critFactor;
-    formula = `(Vida/6) × (1 + Bono/100) × (1 + Prob×DañoCrit/10000)`;
-    detail = `(Vida ${vida} · Bono ${bono}% · CR ${critRate}% / CD ${critDmg}%)`;
+    const bonoPerfoFactor = 1 + (bono / 100) + (perfo / 110);
+    score = fuerza * critFactor * bonoPerfoFactor;
+    
+    formula = `Fuerza × (1 + Prob×DañoCrit/10000) × (1 + Bono/100 + Perf/110)`;
+    detail = `(Fuerza ${fuerza} · Bono ${bono}% · CR ${critRate}% / CD ${critDmg}% · Perf ${perfo}%)`;
   }
 
+  // Obtener los elementos del resultado
   const resultEl = document.getElementById(resultId);
-  if (resultEl) {
-    if (score > 0) {
-      resultEl.innerHTML = `
-        <div class="score">${score.toFixed(0)}</div>
-        <div class="detail">${formula} → ${detail}</div>
-      `;
-    } else {
-      resultEl.innerHTML = `
-        <div class="score">—</div>
-        <div class="detail">Introduce valores para calcular</div>
-      `;
+  if (!resultEl) return;
+
+  const numberSpan = document.getElementById(`score-number-${panelType}-${c.nombre}`);
+  const badgeSpan = document.getElementById(`score-badge-${panelType}-${c.nombre}`);
+  const detailSpan = document.getElementById(`score-detail-${panelType}-${c.nombre}`);
+
+  if (score > 0) {
+    const letter = getScoreLetter(score);
+    if (numberSpan) numberSpan.textContent = Math.round(score).toLocaleString();
+    if (badgeSpan) {
+      badgeSpan.textContent = letter.letter;
+      badgeSpan.className = `score-badge ${letter.class}`;
     }
+    if (detailSpan) detailSpan.textContent = `${formula} → ${detail}`;
+  } else {
+    if (numberSpan) numberSpan.textContent = '—';
+    if (badgeSpan) {
+      badgeSpan.textContent = '—';
+      badgeSpan.className = 'score-badge';
+    }
+    if (detailSpan) detailSpan.textContent = 'Introduce valores para calcular';
   }
 }
 
@@ -1793,7 +1862,7 @@ if (tabsContainer) {
 }
 
 // Eventos de input para cada panel
-['atacante', 'anomalo', 'disruptivo'].forEach(rol => {
+['atacante', 'anomalo', 'disruptor'].forEach(rol => {
   const panel = document.getElementById(`panel-${rol}-${c.nombre}`);
   if (panel) {
     panel.querySelectorAll('input').forEach(input => {
