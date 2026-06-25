@@ -1,4 +1,3 @@
-// auth.js
 // ===================== AUTENTICACIÓN =====================
 
 function showAuthModal() {
@@ -11,69 +10,54 @@ function hideAuthModal() {
   if (modal) modal.style.display = 'none';
 }
 
-// Registrar usuario
 function registerUser(email, password) {
   auth.createUserWithEmailAndPassword(email, password)
-    .then(userCredential => {
+    .then(() => {
       hideAuthModal();
-      updateUserUI(userCredential.user);
+      updateUserUI(auth.currentUser);
     })
-    .catch(error => {
-      alert('Error al registrar: ' + error.message);
-    });
+    .catch(error => alert('Error al registrar: ' + error.message));
 }
 
-// Login
 function loginUser(email, password) {
   auth.signInWithEmailAndPassword(email, password)
-    .then(userCredential => {
+    .then(() => {
       hideAuthModal();
-      updateUserUI(userCredential.user);
+      updateUserUI(auth.currentUser);
     })
-    .catch(error => {
-      alert('Error al iniciar sesión: ' + error.message);
-    });
+    .catch(error => alert('Error al iniciar sesión: ' + error.message));
 }
 
-// Logout
 function logoutUser() {
-  auth.signOut().then(() => {
-    updateUserUI(null);
-  });
+  auth.signOut().then(() => updateUserUI(null));
 }
 
-// Actualizar UI según usuario logueado
 function updateUserUI(user) {
   const authStatus = document.getElementById('auth-status');
   const authBtn = document.getElementById('auth-btn');
+  const profileLink = document.getElementById('profile-link');
   if (!authStatus || !authBtn) return;
 
   if (user) {
-    authStatus.innerHTML = `👤 ${user.email}`;
+    authStatus.textContent = `👤 ${user.email}`;
     authBtn.textContent = 'Cerrar sesión';
     authBtn.onclick = logoutUser;
-    // Mostrar enlace a perfil
-    const profileLink = document.getElementById('profile-link');
     if (profileLink) profileLink.style.display = 'inline';
   } else {
     authStatus.textContent = 'No logueado';
-    authBtn.textContent = 'Iniciar sesión / Registrarse';
+    authBtn.textContent = 'Iniciar sesión';
     authBtn.onclick = showAuthModal;
-    const profileLink = document.getElementById('profile-link');
     if (profileLink) profileLink.style.display = 'none';
   }
 }
 
-// Verificar estado de autenticación al cargar cada página
-auth.onAuthStateChanged(user => {
-  updateUserUI(user);
-});
+// Observador de autenticación
+auth.onAuthStateChanged(user => updateUserUI(user));
 
-// Eventos del modal
+// Configurar eventos después de cargar el DOM
 document.addEventListener('DOMContentLoaded', function() {
-  // Botón de login/register en el modal
+  // Asignar el evento al botón de login
   const loginBtn = document.getElementById('login-btn');
-  const registerBtn = document.getElementById('register-btn');
   if (loginBtn) {
     loginBtn.addEventListener('click', () => {
       const email = document.getElementById('login-email').value;
@@ -81,6 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
       loginUser(email, password);
     });
   }
+
+  const registerBtn = document.getElementById('register-btn');
   if (registerBtn) {
     registerBtn.addEventListener('click', () => {
       const email = document.getElementById('register-email').value;
@@ -93,6 +79,23 @@ document.addEventListener('DOMContentLoaded', function() {
       registerUser(email, password);
     });
   }
+
+  // Cambiar entre pestañas del modal
+  const tabs = document.querySelectorAll('.auth-tab');
+  const panels = {
+    login: document.getElementById('auth-login'),
+    register: document.getElementById('auth-register')
+  };
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      tabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      const target = this.dataset.tab;
+      panels.login.style.display = target === 'login' ? 'block' : 'none';
+      panels.register.style.display = target === 'register' ? 'block' : 'none';
+    });
+  });
+
   // Cerrar modal al hacer clic fuera
   const modal = document.getElementById('auth-modal');
   if (modal) {
@@ -100,6 +103,9 @@ document.addEventListener('DOMContentLoaded', function() {
       if (e.target === modal) hideAuthModal();
     });
   }
+
+  // Inicializar UI
+  updateUserUI(auth.currentUser);
 });
 
 // Cambio de tabs en el modal

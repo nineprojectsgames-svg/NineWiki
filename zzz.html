@@ -989,7 +989,7 @@
   </div>
   <div class="header-right">
   <input type="text" id="search-input" placeholder="Buscar…" />
-  <button id="mobile-menu-btn" style="display:none; ...">☰</button>
+  <button id="mobile-menu-btn" style="display:none;">☰</button>
   <span id="auth-status" style="font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:var(--text-dim);">No logueado</span>
   <a id="profile-link" href="perfil.html" style="display:none; color:var(--accent); text-decoration:none; font-size:0.8rem;">Mi Perfil</a>
   <button id="auth-btn" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.3rem 0.8rem; border-radius:3px; cursor:pointer; font-size:0.75rem;">Iniciar sesión</button>
@@ -1042,6 +1042,61 @@
     <span class="mbn-label">Perfil</span>
   </button>
 </nav>
+
+// Mobile bottom nav
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+document.querySelectorAll('.mbn-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const section = btn.dataset.section;
+    showSection(section);
+    document.querySelectorAll('.mbn-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+</nav>
+
+<!-- Modal de Autenticación -->
+<div id="auth-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+  <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:2rem; max-width:400px; width:90%;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+      <h2 style="color:var(--accent); font-family:'Rajdhani',sans-serif;">Acceso</h2>
+      <button onclick="document.getElementById('auth-modal').style.display='none'" style="background:none; border:none; color:var(--text-dim); font-size:1.5rem; cursor:pointer;">✕</button>
+    </div>
+    <!-- Tabs -->
+    <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border);">
+      <button id="tab-login" class="auth-tab active" data-tab="login" style="background:none; border:none; padding:0.5rem 1rem; color:var(--text); cursor:pointer; font-weight:600;">Iniciar sesión</button>
+      <button id="tab-register" class="auth-tab" data-tab="register" style="background:none; border:none; padding:0.5rem 1rem; color:var(--text-dim); cursor:pointer; font-weight:600;">Registrarse</button>
+    </div>
+    <!-- Login -->
+    <div id="auth-login" class="auth-panel">
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Email</label>
+        <input id="login-email" type="email" placeholder="tu@email.com" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Contraseña</label>
+        <input id="login-password" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <button id="login-btn" style="width:100%; background:var(--accent); color:var(--bg); border:none; padding:0.6rem; border-radius:4px; cursor:pointer; font-weight:bold;">Iniciar sesión</button>
+    </div>
+    <!-- Register -->
+    <div id="auth-register" class="auth-panel" style="display:none;">
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Email</label>
+        <input id="register-email" type="email" placeholder="tu@email.com" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Contraseña</label>
+        <input id="register-password" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Confirmar contraseña</label>
+        <input id="register-confirm" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <button id="register-btn" style="width:100%; background:var(--accent); color:var(--bg); border:none; padding:0.6rem; border-radius:4px; cursor:pointer; font-weight:bold;">Registrarse</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ══════════════════════════════════════════════════════════
@@ -1699,6 +1754,15 @@ const bangbuHTML = rawBangbus.length ? rawBangbus.map(bangbuChain => {
   </div>
 </div>`;
 
+// Dentro de renderChar, después de la definición de damageCalcHTML
+const saveBuildHTML = `
+<div style="margin-top:1.2rem; display:${auth.currentUser ? 'block' : 'none'};" id="save-build-section-${c.nombre}">
+  <button id="save-build-btn-${c.nombre}" style="background:var(--accent); color:var(--bg); border:none; padding:0.5rem 1.5rem; border-radius:4px; cursor:pointer; font-weight:bold;">💾 Guardar Build</button>
+  <span style="font-size:0.75rem; color:var(--text-dim); margin-left:0.8rem;">Guarda esta build en tu perfil</span>
+  <div id="save-status-${c.nombre}" style="margin-top:0.5rem; font-size:0.85rem;"></div>
+</div>
+`;
+
   // ═══════ HTML FINAL ═══════
   wikiContainer.innerHTML = `
   <div class="char-card">
@@ -1746,7 +1810,60 @@ const bangbuHTML = rawBangbus.length ? rawBangbus.map(bangbuChain => {
       ${tipsHTML}
     </div>
     ${damageCalcHTML}
+    ${saveBuildHTML}
   </div>`;
+
+// Después de asignar wikiContainer.innerHTML
+const saveBtn = document.getElementById(`save-build-btn-${c.nombre}`);
+if (saveBtn) {
+  saveBtn.addEventListener('click', function() {
+    const user = auth.currentUser;
+    if (!user) {
+      document.getElementById(`save-status-${c.nombre}`).innerHTML = '<span style="color:var(--red);">Debes iniciar sesión para guardar.</span>';
+      showAuthModal();
+      return;
+    }
+    // Obtener valores actuales de la calculadora (si existen)
+    const atk = document.getElementById(`atk-${c.nombre}`)?.value || 2000;
+    const bono = document.getElementById(`bono-${c.nombre}`)?.value || 80;
+    const critRate = document.getElementById(`crit-rate-${c.nombre}`)?.value || 60;
+    const critDmg = document.getElementById(`crit-dmg-${c.nombre}`)?.value || 150;
+    const perfo = document.getElementById(`perfo-${c.nombre}`)?.value || 10;
+    // También podemos obtener los valores de anomalo y disruptor, pero guardamos los de atacante por simplicidad
+    // Calcular score
+    const critFactor = 1 + (critRate / 100) * (critDmg / 100);
+    const bonoPerfoFactor = 1 + (bono / 100) + (perfo / 110);
+    const score = atk * critFactor * bonoPerfoFactor;
+
+    // Arma seleccionada (simulamos: tomamos la primera arma de la lista)
+    const armas = c.w_engines ? c.w_engines.split('>').map(s=>s.trim()) : [];
+    const arma = armas.length > 0 ? armas[0] : 'N/A';
+
+    // Sets (similares, tomamos el primero)
+    const setsRaw = c.sets_discos ? c.sets_discos.split('>').map(s=>s.trim()) : [];
+    const sets = setsRaw.length > 0 ? setsRaw[0] : 'N/A';
+
+    const buildData = {
+      nombre: c.nombre,
+      stats: { atk, bono, critRate, critDmg, perfo },
+      arma: arma,
+      sets: sets,
+      score: Math.round(score),
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    const statusDiv = document.getElementById(`save-status-${c.nombre}`);
+    statusDiv.innerHTML = '<span style="color:var(--text-dim);">Guardando...</span>';
+    db.collection('users').doc(user.uid).collection('builds')
+      .add(buildData)
+      .then(() => {
+        statusDiv.innerHTML = '<span style="color:var(--green);">✅ Build guardada correctamente.</span>';
+      })
+      .catch(err => {
+        statusDiv.innerHTML = `<span style="color:var(--red);">Error: ${err.message}</span>`;
+      });
+  });
+}
 
   // ═══════ Lógica de la calculadora (sin cambios) ═══════
   function getVal(id) {
@@ -3141,78 +3258,6 @@ function setupDescriptionListeners() {
 }
 
 init();
-
-// Mobile bottom nav
-document.querySelectorAll('.mbn-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const section = btn.dataset.section;
-    showSection(section);
-    document.querySelectorAll('.mbn-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
-
-<!-- Modal de Autenticación -->
-<div id="auth-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
-  <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:2rem; max-width:400px; width:90%;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-      <h2 style="color:var(--accent); font-family:'Rajdhani',sans-serif;">Acceso</h2>
-      <button onclick="document.getElementById('auth-modal').style.display='none'" style="background:none; border:none; color:var(--text-dim); font-size:1.5rem; cursor:pointer;">✕</button>
-    </div>
-    <!-- Tabs -->
-    <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border);">
-      <button id="tab-login" class="auth-tab active" data-tab="login" style="background:none; border:none; padding:0.5rem 1rem; color:var(--text); cursor:pointer; font-weight:600;">Iniciar sesión</button>
-      <button id="tab-register" class="auth-tab" data-tab="register" style="background:none; border:none; padding:0.5rem 1rem; color:var(--text-dim); cursor:pointer; font-weight:600;">Registrarse</button>
-    </div>
-    <!-- Login -->
-    <div id="auth-login" class="auth-panel">
-      <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Email</label>
-        <input id="login-email" type="email" placeholder="tu@email.com" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
-      </div>
-      <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Contraseña</label>
-        <input id="login-password" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
-      </div>
-      <button id="login-btn" style="width:100%; background:var(--accent); color:var(--bg); border:none; padding:0.6rem; border-radius:4px; cursor:pointer; font-weight:bold;">Iniciar sesión</button>
-    </div>
-    <!-- Register -->
-    <div id="auth-register" class="auth-panel" style="display:none;">
-      <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Email</label>
-        <input id="register-email" type="email" placeholder="tu@email.com" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
-      </div>
-      <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Contraseña</label>
-        <input id="register-password" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
-      </div>
-      <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Confirmar contraseña</label>
-        <input id="register-confirm" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
-      </div>
-      <button id="register-btn" style="width:100%; background:var(--accent); color:var(--bg); border:none; padding:0.6rem; border-radius:4px; cursor:pointer; font-weight:bold;">Registrarse</button>
-    </div>
-  </div>
-</div>
-
-// Cambio de tabs en el modal
-document.addEventListener('DOMContentLoaded', function() {
-  const tabs = document.querySelectorAll('.auth-tab');
-  const panels = {
-    login: document.getElementById('auth-login'),
-    register: document.getElementById('auth-register')
-  };
-  tabs.forEach(tab => {
-    tab.addEventListener('click', function() {
-      tabs.forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-      const target = this.dataset.tab;
-      Object.keys(panels).forEach(key => {
-        panels[key].style.display = key === target ? 'block' : 'none';
-      });
-    });
-  });
-});
 
 </script>
 </body>

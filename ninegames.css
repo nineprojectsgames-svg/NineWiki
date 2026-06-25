@@ -299,3 +299,25 @@ body::before {
   .page-main { padding: 2rem 1rem 3rem; }
   .hero { padding: 2.5rem 0.5rem 2rem; }
 }
+
+/* Modal de autenticación */
+#auth-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+#auth-modal .auth-tab.active {
+  border-bottom: 2px solid var(--accent);
+  color: var(--accent);
+}
+#auth-modal .auth-panel {
+  display: block;
+}
+#auth-modal .auth-panel[style*="display:none"] {
+  display: none;
+}
