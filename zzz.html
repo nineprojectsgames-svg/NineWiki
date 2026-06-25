@@ -1015,88 +1015,7 @@
 </main>
 </div>
 
-<!-- Mobile bottom nav -->
-<nav class="mobile-bottom-nav" id="mobile-bottom-nav">
-  <button class="mbn-btn active" data-section="home">
-    <span class="mbn-icon">🏠</span>
-    <span class="mbn-label">Inicio</span>
-  </button>
-  <button class="mbn-btn" data-section="characters">
-    <span class="mbn-icon">⚡</span>
-    <span class="mbn-label">Personajes</span>
-  </button>
-  <button class="mbn-btn" data-section="tierlist">
-    <span class="mbn-icon">📊</span>
-    <span class="mbn-label">Tier List</span>
-  </button>
-  <button class="mbn-btn" data-section="bangboos">
-    <span class="mbn-icon">🤖</span>
-    <span class="mbn-label">Bangboos</span>
-  </button>
-  <button class="mbn-btn" data-section="bosses">
-    <span class="mbn-icon">👹</span>
-    <span class="mbn-label">Jefes</span>
-  </button>
-  <button class="mbn-btn" data-section="profile">
-    <span class="mbn-icon">👤</span>
-    <span class="mbn-label">Perfil</span>
-  </button>
-</nav>
 
-// Mobile bottom nav
-<nav class="mobile-bottom-nav" id="mobile-bottom-nav">
-document.querySelectorAll('.mbn-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const section = btn.dataset.section;
-    showSection(section);
-    document.querySelectorAll('.mbn-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
-</nav>
-
-<!-- Modal de Autenticación -->
-<div id="auth-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
-  <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:2rem; max-width:400px; width:90%;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-      <h2 style="color:var(--accent); font-family:'Rajdhani',sans-serif;">Acceso</h2>
-      <button onclick="document.getElementById('auth-modal').style.display='none'" style="background:none; border:none; color:var(--text-dim); font-size:1.5rem; cursor:pointer;">✕</button>
-    </div>
-    <!-- Tabs -->
-    <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border);">
-      <button id="tab-login" class="auth-tab active" data-tab="login" style="background:none; border:none; padding:0.5rem 1rem; color:var(--text); cursor:pointer; font-weight:600;">Iniciar sesión</button>
-      <button id="tab-register" class="auth-tab" data-tab="register" style="background:none; border:none; padding:0.5rem 1rem; color:var(--text-dim); cursor:pointer; font-weight:600;">Registrarse</button>
-    </div>
-    <!-- Login -->
-    <div id="auth-login" class="auth-panel">
-      <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Email</label>
-        <input id="login-email" type="email" placeholder="tu@email.com" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
-      </div>
-      <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Contraseña</label>
-        <input id="login-password" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
-      </div>
-      <button id="login-btn" style="width:100%; background:var(--accent); color:var(--bg); border:none; padding:0.6rem; border-radius:4px; cursor:pointer; font-weight:bold;">Iniciar sesión</button>
-    </div>
-    <!-- Register -->
-    <div id="auth-register" class="auth-panel" style="display:none;">
-      <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Email</label>
-        <input id="register-email" type="email" placeholder="tu@email.com" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
-      </div>
-      <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Contraseña</label>
-        <input id="register-password" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
-      </div>
-      <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Confirmar contraseña</label>
-        <input id="register-confirm" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
-      </div>
-      <button id="register-btn" style="width:100%; background:var(--accent); color:var(--bg); border:none; padding:0.6rem; border-radius:4px; cursor:pointer; font-weight:bold;">Registrarse</button>
-    </div>
-  </div>
-</div>
 
 <script>
 // ══════════════════════════════════════════════════════════
@@ -3260,5 +3179,84 @@ function setupDescriptionListeners() {
 init();
 
 </script>
+
+<!-- Mobile bottom nav -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+  <button class="mbn-btn active" data-section="home">
+    <span class="mbn-icon">🏠</span>
+    <span class="mbn-label">Inicio</span>
+  </button>
+  <button class="mbn-btn" data-section="characters">
+    <span class="mbn-icon">⚡</span>
+    <span class="mbn-label">Personajes</span>
+  </button>
+  <button class="mbn-btn" data-section="tierlist">
+    <span class="mbn-icon">📊</span>
+    <span class="mbn-label">Tier List</span>
+  </button>
+  <button class="mbn-btn" data-section="bangboos">
+    <span class="mbn-icon">🤖</span>
+    <span class="mbn-label">Bangboos</span>
+  </button>
+  <button class="mbn-btn" data-section="bosses">
+    <span class="mbn-icon">👹</span>
+    <span class="mbn-label">Jefes</span>
+  </button>
+  <button class="mbn-btn" data-section="profile">
+    <span class="mbn-icon">👤</span>
+    <span class="mbn-label">Perfil</span>
+  </button>
+</nav>
+
+<!-- Modal de Autenticación -->
+<div id="auth-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+  <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:2rem; max-width:400px; width:90%;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+      <h2 style="color:var(--accent); font-family:'Rajdhani',sans-serif;">Acceso</h2>
+      <button onclick="document.getElementById('auth-modal').style.display='none'" style="background:none; border:none; color:var(--text-dim); font-size:1.5rem; cursor:pointer;">✕</button>
+    </div>
+    <!-- Tabs -->
+    <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border);">
+      <button id="tab-login" class="auth-tab active" data-tab="login" style="background:none; border:none; padding:0.5rem 1rem; color:var(--text); cursor:pointer; font-weight:600;">Iniciar sesión</button>
+      <button id="tab-register" class="auth-tab" data-tab="register" style="background:none; border:none; padding:0.5rem 1rem; color:var(--text-dim); cursor:pointer; font-weight:600;">Registrarse</button>
+    </div>
+    <!-- Login -->
+    <div id="auth-login" class="auth-panel">
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Email</label>
+        <input id="login-email" type="email" placeholder="tu@email.com" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Contraseña</label>
+        <input id="login-password" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <button id="login-btn" style="width:100%; background:var(--accent); color:var(--bg); border:none; padding:0.6rem; border-radius:4px; cursor:pointer; font-weight:bold;">Iniciar sesión</button>
+    </div>
+    <!-- Register -->
+    <div id="auth-register" class="auth-panel" style="display:none;">
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Email</label>
+        <input id="register-email" type="email" placeholder="tu@email.com" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Contraseña</label>
+        <input id="register-password" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Confirmar contraseña</label>
+        <input id="register-confirm" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <button id="register-btn" style="width:100%; background:var(--accent); color:var(--bg); border:none; padding:0.6rem; border-radius:4px; cursor:pointer; font-weight:bold;">Registrarse</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase y autenticación -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
+
 </body>
 </html>

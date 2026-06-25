@@ -1,5 +1,4 @@
-// ===================== AUTENTICACIÓN =====================
-
+// auth.js
 function showAuthModal() {
   const modal = document.getElementById('auth-modal');
   if (modal) modal.style.display = 'flex';
@@ -52,11 +51,13 @@ function updateUserUI(user) {
 }
 
 // Observador de autenticación
-auth.onAuthStateChanged(user => updateUserUI(user));
+auth.onAuthStateChanged(user => {
+  updateUserUI(user);
+});
 
 // Configurar eventos después de cargar el DOM
 document.addEventListener('DOMContentLoaded', function() {
-  // Asignar el evento al botón de login
+  // Login
   const loginBtn = document.getElementById('login-btn');
   if (loginBtn) {
     loginBtn.addEventListener('click', () => {
@@ -66,6 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+  // Register
   const registerBtn = document.getElementById('register-btn');
   if (registerBtn) {
     registerBtn.addEventListener('click', () => {
@@ -80,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Cambiar entre pestañas del modal
+  // Cambiar pestañas del modal
   const tabs = document.querySelectorAll('.auth-tab');
   const panels = {
     login: document.getElementById('auth-login'),
@@ -104,25 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Inicializar UI
+  // Inicializar UI (por si ya hay usuario)
   updateUserUI(auth.currentUser);
-});
-
-// Cambio de tabs en el modal
-document.addEventListener('DOMContentLoaded', function() {
-  const tabs = document.querySelectorAll('.auth-tab');
-  const panels = {
-    login: document.getElementById('auth-login'),
-    register: document.getElementById('auth-register')
-  };
-  tabs.forEach(tab => {
-    tab.addEventListener('click', function() {
-      tabs.forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-      const target = this.dataset.tab;
-      Object.keys(panels).forEach(key => {
-        panels[key].style.display = key === target ? 'block' : 'none';
-      });
-    });
-  });
 });
