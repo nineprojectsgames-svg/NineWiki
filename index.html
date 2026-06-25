@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nine Games — Wikis, Builds & Guías</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Nine Games</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ninegames.css">
 </head>
 <body>
@@ -15,114 +15,91 @@
     <a href="index.html" class="nav-link active">Inicio</a>
     <a href="wikis.html" class="nav-link">Wikis</a>
   </nav>
+
+<div style="margin-left:auto; display:flex; align-items:center; gap:0.8rem;">
+  <span id="auth-status" style="font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:var(--text-dim);">No logueado</span>
+  <a id="profile-link" href="perfil.html" style="display:none; color:var(--accent); text-decoration:none; font-size:0.8rem;">Mi Perfil</a>
+  <button id="auth-btn" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.3rem 0.8rem; border-radius:3px; cursor:pointer; font-size:0.75rem;">Iniciar sesión</button>
+</div>
+
 </header>
 
 <main>
-
-  <!-- HERO -->
   <section class="hero">
-    <div class="hero-glow"></div>
-    <div class="hero-eyebrow">
-      <span class="dot"></span>
-      Guías · Builds · Tier Lists
-    </div>
+    <div class="hero-badge">GUÍAS · BUILDS · TIER LISTS</div>
     <h1 class="hero-title">NINE<span>GAMES</span></h1>
-    <p class="hero-sub">Recursos, wikis y herramientas para tus juegos favoritos. Todo en un solo lugar, siempre actualizado.</p>
+    <p class="hero-sub">Recursos, wikis y herramientas para tus juegos favoritos. Todo en un solo lugar.</p>
     <div class="hero-actions">
-      <a href="wikis.html" class="btn btn-primary">
-        <span>⚡</span> Explorar Wikis
-      </a>
-      <a href="zzz.html" class="btn btn-secondary">
-        <span>📖</span> Wiki de ZZZ
-      </a>
+      <a href="wikis.html" class="btn btn-primary">Explorar Wikis</a>
+      <a href="zzz.html" class="btn btn-secondary">Wiki de ZZZ</a>
     </div>
   </section>
 
-  <div class="page-main">
-
-    <!-- STATS -->
-    <div class="site-stats">
-      <div class="stat-item">
-        <div class="stat-val">1</div>
-        <div class="stat-label">Wikis activas</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-val" id="stat-chars">—</div>
-        <div class="stat-label">Personajes en ZZZ</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-val">Live</div>
-        <div class="stat-label">Datos en tiempo real</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-val">0$</div>
-        <div class="stat-label">Costo de acceso</div>
-      </div>
-    </div>
-
-    <!-- FEATURES -->
-    <div class="section-divider"><h2>¿Qué encontrás acá?</h2></div>
+  <section class="page-main">
     <div class="features">
       <div class="feature-card">
-        <span class="feature-icon">📖</span>
-        <h2 class="feature-title">Wikis por personaje</h2>
-        <p class="feature-desc">Builds detalladas con W-Engines, sets de discos, stats, compañeros y Bangbús recomendados para cada agente.</p>
+        <div class="feature-icon">📖</div>
+        <h2 class="feature-title">Wikis de juegos</h2>
+        <p class="feature-desc">Guías detalladas con builds, puntuaciones, tier lists y consejos para cada personaje.</p>
       </div>
       <div class="feature-card">
-        <span class="feature-icon">📊</span>
-        <h2 class="feature-title">Tier lists interactivas</h2>
-        <p class="feature-desc">Rankings automáticos por puntaje y tier lists personalizables que podés arrastrar y reorganizar a tu gusto.</p>
+        <div class="feature-icon">📊</div>
+        <h2 class="feature-title">Tier lists</h2>
+        <p class="feature-desc">Rankings automáticos por puntuación y listas personalizables que puedes reorganizar.</p>
       </div>
       <div class="feature-card">
-        <span class="feature-icon">⚡</span>
-        <h2 class="feature-title">Sistema de puntuaciones</h2>
-        <p class="feature-desc">Cada personaje calificado en Utilidad, Build Value, Pull Value, Facilidad de Gameplay, F2P Friendly y más.</p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">🔄</span>
+        <div class="feature-icon">🔄</div>
         <h2 class="feature-title">Siempre actualizado</h2>
-        <p class="feature-desc">Los datos se cargan en vivo desde Google Sheets. Cualquier cambio en la planilla se refleja al instante.</p>
+        <p class="feature-desc">Los datos se cargan en vivo desde Google Sheets.</p>
       </div>
     </div>
-
-    <!-- WIKIS DISPONIBLES -->
-    <div class="section-divider" style="margin-top: 3rem;"><h2>Wikis disponibles</h2></div>
-    <div class="wiki-grid">
-      <a href="zzz.html" class="wiki-card available">
-        <span class="wiki-card-tag">● Disponible</span>
-        <h2 class="wiki-card-title">Zenless Zone Zero</h2>
-        <p class="wiki-card-desc">Builds completas por personaje: W-Engines, discos, stats, compañeros, Bangbús, dupes y tier list interactiva.</p>
-        <span class="wiki-card-meta">→ Abrir wiki</span>
-      </a>
-      <div class="wiki-card coming-soon">
-        <span class="wiki-card-tag soon">Próximamente</span>
-        <h2 class="wiki-card-title">Más juegos</h2>
-        <p class="wiki-card-desc">Nuevas wikis se irán sumando. ¿Tenés un juego en mente? Mandá sugerencias.</p>
-        <span class="wiki-card-meta" style="color: var(--text-dim)">En desarrollo</span>
-      </div>
-    </div>
-
-  </div>
+  </section>
 </main>
 
-<footer class="site-footer">NINE GAMES — 2026 &nbsp;·&nbsp; Hecho con ♥ para la comunidad gamer</footer>
+<footer class="site-footer">NINE GAMES — 2026</footer>
 
-<script>
-// Intentar mostrar cantidad de chars de ZZZ
-(async () => {
-  try {
-    const SHEET_ID = '1hvggH2H5F27AyvaQnZs9CAPu6V78TZBa2SKq445Jad8';
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Zenless%20Builds`;
-    const r = await fetch(url);
-    const text = await r.text();
-    // Count non-empty data columns from first row
-    const firstLine = text.split('\n')[0];
-    const cols = firstLine.split(',').slice(1).filter(c => c.replace(/"/g,'').trim() !== '');
-    const el = document.getElementById('stat-chars');
-    if (el && cols.length > 0) el.textContent = cols.length;
-  } catch(e) {}
-})();
-</script>
+<!-- Modal de Autenticación -->
+<div id="auth-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+  <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:2rem; max-width:400px; width:90%;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+      <h2 style="color:var(--accent); font-family:'Rajdhani',sans-serif;">Acceso</h2>
+      <button onclick="document.getElementById('auth-modal').style.display='none'" style="background:none; border:none; color:var(--text-dim); font-size:1.5rem; cursor:pointer;">✕</button>
+    </div>
+    <!-- Tabs -->
+    <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border);">
+      <button id="tab-login" class="auth-tab active" data-tab="login" style="background:none; border:none; padding:0.5rem 1rem; color:var(--text); cursor:pointer; font-weight:600;">Iniciar sesión</button>
+      <button id="tab-register" class="auth-tab" data-tab="register" style="background:none; border:none; padding:0.5rem 1rem; color:var(--text-dim); cursor:pointer; font-weight:600;">Registrarse</button>
+    </div>
+    <!-- Login -->
+    <div id="auth-login" class="auth-panel">
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Email</label>
+        <input id="login-email" type="email" placeholder="tu@email.com" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Contraseña</label>
+        <input id="login-password" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <button id="login-btn" style="width:100%; background:var(--accent); color:var(--bg); border:none; padding:0.6rem; border-radius:4px; cursor:pointer; font-weight:bold;">Iniciar sesión</button>
+    </div>
+    <!-- Register -->
+    <div id="auth-register" class="auth-panel" style="display:none;">
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Email</label>
+        <input id="register-email" type="email" placeholder="tu@email.com" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Contraseña</label>
+        <input id="register-password" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Confirmar contraseña</label>
+        <input id="register-confirm" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <button id="register-btn" style="width:100%; background:var(--accent); color:var(--bg); border:none; padding:0.6rem; border-radius:4px; cursor:pointer; font-weight:bold;">Registrarse</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

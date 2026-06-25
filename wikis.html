@@ -4,73 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wikis | Nine Games</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ninegames.css">
-<style>
-  .wiki-card-img {
-    width: 100%; height: 100px;
-    object-fit: cover;
-    border-radius: 2px;
-    opacity: .55;
-    margin-bottom: .25rem;
-    background: var(--surface2);
-    display: block;
-  }
-  .wiki-card-img-placeholder {
-    width: 100%; height: 80px;
-    background: linear-gradient(135deg, var(--surface2), var(--surface3));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2rem;
-    margin-bottom: .25rem;
-    border-radius: 2px;
-  }
-
-  .filter-bar {
-    display: flex; align-items: center; gap: .65rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-  }
-  .filter-chip {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .68rem; letter-spacing: .07em;
-    padding: .28rem .75rem;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text-dim);
-    border-radius: 2px;
-    cursor: pointer;
-    transition: all .15s;
-  }
-  .filter-chip:hover, .filter-chip.active {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: var(--accent-dim);
-  }
-
-  .coming-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: .85rem;
-    margin-top: 1.5rem;
-  }
-  .coming-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 1.1rem 1.2rem;
-    display: flex; align-items: center; gap: .75rem;
-    opacity: .45;
-  }
-  .coming-item .ci-icon { font-size: 1.3rem; }
-  .coming-item .ci-name {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: .95rem; font-weight: 600;
-    color: var(--text-bright);
-  }
-  .coming-item .ci-tag {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: .6rem; color: var(--text-dim);
-  }
-</style>
 </head>
 <body>
 
@@ -80,51 +15,82 @@
     <a href="index.html" class="nav-link">Inicio</a>
     <a href="wikis.html" class="nav-link active">Wikis</a>
   </nav>
+
+<div style="margin-left:auto; display:flex; align-items:center; gap:0.8rem;">
+  <span id="auth-status" style="font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:var(--text-dim);">No logueado</span>
+  <a id="profile-link" href="perfil.html" style="display:none; color:var(--accent); text-decoration:none; font-size:0.8rem;">Mi Perfil</a>
+  <button id="auth-btn" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.3rem 0.8rem; border-radius:3px; cursor:pointer; font-size:0.75rem;">Iniciar sesión</button>
+</div>
+
 </header>
 
 <main class="page-main">
-
   <div class="page-heading">
-    <h1>Wikis</h1>
-    <p>Elegí un juego para ver builds, puntuaciones y tier lists actualizadas en tiempo real.</p>
+    <h1>WIKIS</h1>
+    <p>Elegí un juego para ver builds, puntuaciones y tier lists.</p>
   </div>
 
-  <!-- DISPONIBLES -->
-  <div class="section-divider"><h2>Disponibles ahora</h2></div>
   <div class="wiki-grid">
     <a href="zzz.html" class="wiki-card available">
-      <div class="wiki-card-img-placeholder">⚡</div>
-      <span class="wiki-card-tag">● En vivo</span>
+      <span class="wiki-card-tag">Disponible</span>
       <h2 class="wiki-card-title">Zenless Zone Zero</h2>
-      <p class="wiki-card-desc">Builds completas por agente: W-Engines, sets de discos, stats recomendadas, compañeros de equipo, Bangbús y tier list interactiva con drag & drop.</p>
-      <span class="wiki-card-meta">→ Abrir wiki</span>
+      <p class="wiki-card-desc">Wiki de builds con puntuaciones por personaje, W-Engines, sets de discos, compañeros, Bangbús y tier list interactiva.</p>
+      <span class="wiki-card-meta">→ ABRIR WIKI</span>
     </a>
-  </div>
 
-  <!-- PRÓXIMAMENTE -->
-  <div class="section-divider" style="margin-top: 3rem;"><h2>Próximamente</h2></div>
-  <div class="coming-grid">
-    <div class="coming-item">
-      <span class="ci-icon">🌸</span>
-      <div><div class="ci-name">Honkai Star Rail</div><div class="ci-tag">Pronto</div></div>
-    </div>
-    <div class="coming-item">
-      <span class="ci-icon">💧</span>
-      <div><div class="ci-name">Genshin Impact</div><div class="ci-tag">Pronto</div></div>
-    </div>
-    <div class="coming-item">
-      <span class="ci-icon">🔮</span>
-      <div><div class="ci-name">Wuthering Waves</div><div class="ci-tag">Pronto</div></div>
-    </div>
-    <div class="coming-item">
-      <span class="ci-icon">⚔️</span>
-      <div><div class="ci-name">Otro juego</div><div class="ci-tag">¿Sugerís uno?</div></div>
+    <div class="wiki-card coming-soon">
+      <span class="wiki-card-tag soon">Próximamente</span>
+      <h2 class="wiki-card-title">Más juegos</h2>
+      <p class="wiki-card-desc">Nuevas wikis se irán agregando acá. ¿Tenés algún juego en mente?</p>
+      <span class="wiki-card-meta">EN DESARROLLO</span>
     </div>
   </div>
-
 </main>
 
 <footer class="site-footer">NINE GAMES — 2026</footer>
+
+<!-- Modal de Autenticación -->
+<div id="auth-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+  <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:2rem; max-width:400px; width:90%;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+      <h2 style="color:var(--accent); font-family:'Rajdhani',sans-serif;">Acceso</h2>
+      <button onclick="document.getElementById('auth-modal').style.display='none'" style="background:none; border:none; color:var(--text-dim); font-size:1.5rem; cursor:pointer;">✕</button>
+    </div>
+    <!-- Tabs -->
+    <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border);">
+      <button id="tab-login" class="auth-tab active" data-tab="login" style="background:none; border:none; padding:0.5rem 1rem; color:var(--text); cursor:pointer; font-weight:600;">Iniciar sesión</button>
+      <button id="tab-register" class="auth-tab" data-tab="register" style="background:none; border:none; padding:0.5rem 1rem; color:var(--text-dim); cursor:pointer; font-weight:600;">Registrarse</button>
+    </div>
+    <!-- Login -->
+    <div id="auth-login" class="auth-panel">
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Email</label>
+        <input id="login-email" type="email" placeholder="tu@email.com" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Contraseña</label>
+        <input id="login-password" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <button id="login-btn" style="width:100%; background:var(--accent); color:var(--bg); border:none; padding:0.6rem; border-radius:4px; cursor:pointer; font-weight:bold;">Iniciar sesión</button>
+    </div>
+    <!-- Register -->
+    <div id="auth-register" class="auth-panel" style="display:none;">
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Email</label>
+        <input id="register-email" type="email" placeholder="tu@email.com" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Contraseña</label>
+        <input id="register-password" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Confirmar contraseña</label>
+        <input id="register-confirm" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <button id="register-btn" style="width:100%; background:var(--accent); color:var(--bg); border:none; padding:0.6rem; border-radius:4px; cursor:pointer; font-weight:bold;">Registrarse</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

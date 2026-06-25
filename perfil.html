@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Perfil | Nine Games</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="ninegames.css">
+  <!-- Firebase y auth -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="auth.js"></script>
+  <style>
+    .build-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+    .build-card .build-info { flex: 1; min-width: 200px; }
+    .build-card .build-stats { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 0.85rem; color: var(--text-dim); }
+    .build-card .build-stats span { background: var(--surface2); padding: 0.2rem 0.6rem; border-radius: 3px; }
+    .progress-bar { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; margin-top: 0.5rem; }
+    .progress-bar .fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s; }
+    .delete-btn { background: rgba(255,62,94,0.15); border: 1px solid rgba(255,62,94,0.3); color: var(--red); padding: 0.3rem 0.8rem; border-radius: 3px; cursor: pointer; }
+    .delete-btn:hover { background: rgba(255,62,94,0.25); }
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <a href="index.html" class="logo">NINE<span>GAMES</span></a>
+  <nav class="site-nav">
+    <a href="index.html" class="nav-link">Inicio</a>
+    <a href="wikis.html" class="nav-link active">Wikis</a>
+  </nav>
+  <div style="margin-left:auto; display:flex; align-items:center; gap:0.8rem;">
+    <span id="auth-status" style="font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:var(--text-dim);">No logueado</span>
+    <a id="profile-link" href="perfil.html" style="display:none; color:var(--accent); text-decoration:none; font-size:0.8rem;">Mi Perfil</a>
+    <button id="auth-btn" style="background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.3rem 0.8rem; border-radius:3px; cursor:pointer; font-size:0.75rem;">Iniciar sesión</button>
+  </div>
+</header>
+
+<main class="page-main">
+  <h1 style="color:var(--text-bright); font-family:'Rajdhani',sans-serif; margin-bottom:1.5rem;">Mis Personajes (ZZZ)</h1>
+  <div id="builds-container">
+    <p style="color:var(--text-dim);">Cargando tus personajes...</p>
+  </div>
+</main>
+
+<footer class="site-footer">NINE GAMES — 2026</footer>
+
+<!-- Modal de autenticación (incluir aquí el mismo HTML del modal) -->
+<!-- ... pegar el modal de autenticación aquí ... -->
+
+<script>
+  // Cargar builds del usuario actual
+  function loadUserBuilds() {
+    const user = auth.currentUser;
+    const container = document.getElementById('builds-container');
+    if (!user) {
+      container.innerHTML = `<p style="color:var(--text-dim);">Debes iniciar sesión para ver tus personajes. <button onclick="showAuthModal()" style="background:var(--accent); color:var(--bg); border:none; padding:0.3rem 1rem; border-radius:3px; cursor:pointer;">Iniciar sesión</button></p>`;
+      return;
+    }
+    container.innerHTML = '<p style="color:var(--text-dim);">Cargando...</p>';
+    db.collection('users').doc(user.uid).collection('builds')
+      .get()
+      .then(snapshot => {
+        if (snapshot.empty) {
+          container.innerHTML = `<p style="color:var(--text-dim);">Aún no has guardado ningún personaje. Ve a la <a href="zzz.html" style="color:var(--accent);">wiki de ZZZ</a> y guarda tus builds.</p>`;
+          return;
+        }
+        let html = '';
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const score = data.score || '?';
+          const nombre = data.nombre || 'Sin nombre';
+          const stats = data.stats || {};
+          const arma = data.arma || 'N/A';
+          const sets = data.sets || 'N/A';
+          // Calcular progreso (simplificado: comparar con stats básicas/ideales si existen)
+          // Podemos mostrar barras de progreso para cada stat si las tenemos
+          const progressHtml = `
+            <div class="build-card">
+              <div class="build-info">
+                <strong style="color:var(--text-bright); font-size:1.1rem;">${nombre}</strong>
+                <div class="build-stats">
+                  <span>ATQ ${stats.atk || '?'}</span>
+                  <span>Bono ${stats.bono || '?'}%</span>
+                  <span>CR ${stats.critRate || '?'}%</span>
+                  <span>CD ${stats.critDmg || '?'}%</span>
+                  <span>Perf ${stats.perfo || '?'}%</span>
+                </div>
+                <div style="margin-top:0.3rem; font-size:0.85rem; color:var(--text-dim);">
+                  Arma: ${arma} | Sets: ${sets}
+                </div>
+                <div class="progress-bar"><div class="fill" style="width:${Math.min(score / 20000 * 100, 100)}%;"></div></div>
+                <div style="font-size:0.75rem; color:var(--text-dim);">Score: <span style="color:var(--accent); font-weight:bold;">${score}</span></div>
+              </div>
+              <button class="delete-btn" data-id="${doc.id}">Eliminar</button>
+            </div>
+          `;
+          html += progressHtml;
+        });
+        container.innerHTML = html;
+        // Eventos eliminar
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            if (confirm('¿Eliminar esta build?')) {
+              db.collection('users').doc(user.uid).collection('builds').doc(id).delete()
+                .then(() => loadUserBuilds())
+                .catch(err => alert('Error al eliminar: ' + err.message));
+            }
+          });
+        });
+      })
+      .catch(err => {
+        container.innerHTML = `<p style="color:var(--red);">Error al cargar: ${err.message}</p>`;
+      });
+  }
+
+  // Cargar al iniciar y cuando cambie el usuario
+  auth.onAuthStateChanged(user => {
+    if (user) loadUserBuilds();
+    else loadUserBuilds(); // mostrar mensaje de "no logueado"
+  });
+
+  // También cargar cuando la página esté lista
+  document.addEventListener('DOMContentLoaded', loadUserBuilds);
+</script>
+</body>
+</html>
