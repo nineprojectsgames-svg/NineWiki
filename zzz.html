@@ -1684,11 +1684,28 @@ const bangbuHTML = rawBangbus.length ? rawBangbus.map(bangbuChain => {
 // Dentro de renderChar, después de la definición de damageCalcHTML
 const saveBuildHTML = `
 <div style="margin-top:1.2rem; display:${auth.currentUser ? 'block' : 'none'};" id="save-build-section-${c.nombre}">
+  <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
+    <div style="flex:1; min-width:120px;">
+      <label style="display:block; font-size:0.7rem; color:var(--text-dim);">W-Engine</label>
+      <select id="save-arma-${c.nombre}" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.3rem; border-radius:3px;">
+        ${armas.length ? armas.map(a => `<option value="${a}">${a}</option>`).join('') : '<option>N/A</option>'}
+      </select>
+    </div>
+    <div style="flex:1; min-width:120px;">
+      <label style="display:block; font-size:0.7rem; color:var(--text-dim);">Sets de Discos</label>
+      <select id="save-sets-${c.nombre}" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.3rem; border-radius:3px;">
+        ${setsList.length ? setsList.map(s => `<option value="${s}">${s}</option>`).join('') : '<option>N/A</option>'}
+      </select>
+    </div>
+  </div>
   <button id="save-build-btn-${c.nombre}" style="background:var(--accent); color:var(--bg); border:none; padding:0.5rem 1.5rem; border-radius:4px; cursor:pointer; font-weight:bold;">💾 Guardar Build</button>
   <span style="font-size:0.75rem; color:var(--text-dim); margin-left:0.8rem;">Guarda esta build en tu perfil</span>
   <div id="save-status-${c.nombre}" style="margin-top:0.5rem; font-size:0.85rem;"></div>
 </div>
 `;
+
+const armas = c.w_engines ? c.w_engines.split('>').map(s => s.trim()).filter(Boolean) : [];
+const setsList = c.sets_discos ? c.sets_discos.split('>').map(s => s.trim()).filter(Boolean) : [];
 
   // ═══════ HTML FINAL ═══════
   wikiContainer.innerHTML = `
@@ -1762,23 +1779,46 @@ if (saveBtn) {
     const bonoPerfoFactor = 1 + (bono / 100) + (perfo / 110);
     const score = atk * critFactor * bonoPerfoFactor;
 
-    // Arma seleccionada (simulamos: tomamos la primera arma de la lista)
-    const armas = c.w_engines ? c.w_engines.split('>').map(s=>s.trim()) : [];
-    const arma = armas.length > 0 ? armas[0] : 'N/A';
+    const armaSelect = document.getElementById(`save-arma-${c.nombre}`);
+    const setsSelect = document.getElementById(`save-sets-${c.nombre}`);
 
     // Sets (similares, tomamos el primero)
     const setsRaw = c.sets_discos ? c.sets_discos.split('>').map(s=>s.trim()) : [];
     const sets = setsRaw.length > 0 ? setsRaw[0] : 'N/A';
 
-    const buildData = {
-      nombre: c.nombre,
-      stats: { atk, bono, critRate, critDmg, perfo },
-      arma: arma,
-      sets: sets,
-      score: Math.round(score),
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    };
+// Función para parsear strings de stats como "ATQ:1800|CRIT Rate:70%"
+function parseStatsString(str) {
+  if (!str) return {};
+  const obj = {};
+  str.split('|').forEach(part => {
+    const [key, val] = part.split(':');
+    if (key && val) {
+      // Limpiar caracteres no numéricos para obtener el valor numérico
+      const cleanVal = parseFloat(val.replace(/[^0-9.]/g, ''));
+      if (!isNaN(cleanVal)) {
+        obj[key.trim()] = cleanVal;
+      }
+    }
+  });
+  return obj;
+}
 
+    // Dentro del evento click de saveBtn, reemplaza todo el bloque de buildData
+    const buildData = {
+  nombre: c.nombre,
+  imagen: c.imagen || '',  // Guardamos la imagen
+  stats: { atk, bono, critRate, critDmg, perfo },
+  arma: arma,
+  sets: sets,
+  score: Math.round(score),
+  // Guardamos las listas completas para los desplegables
+  armas_disponibles: c.w_engines ? c.w_engines.split('>').map(s=>s.trim()) : [],
+  sets_disponibles: c.sets_discos ? c.sets_discos.split('>').map(s=>s.trim()) : [],
+  // Guardamos stats básicas e ideales parseadas
+  stats_basicas: parseStatsString(c.stats_basicas),
+  stats_ideales: parseStatsString(c.stats_ideales),
+  timestamp: firebase.firestore.FieldValue.serverTimestamp()
+};
     const statusDiv = document.getElementById(`save-status-${c.nombre}`);
     statusDiv.innerHTML = '<span style="color:var(--text-dim);">Guardando...</span>';
     db.collection('users').doc(user.uid).collection('builds')

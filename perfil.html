@@ -6,31 +6,189 @@
   <title>Mi Perfil | Nine Games</title>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="ninegames.css">
-  <!-- Firebase y auth -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="firebase-config.js"></script>
-  <script src="auth.js"></script>
   <style>
+    /* Estilos específicos para perfil */
     .build-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      align-items: center;
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
     }
-    .build-card .build-info { flex: 1; min-width: 200px; }
-    .build-card .build-stats { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 0.85rem; color: var(--text-dim); }
-    .build-card .build-stats span { background: var(--surface2); padding: 0.2rem 0.6rem; border-radius: 3px; }
-    .progress-bar { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; margin-top: 0.5rem; }
-    .progress-bar .fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s; }
-    .delete-btn { background: rgba(255,62,94,0.15); border: 1px solid rgba(255,62,94,0.3); color: var(--red); padding: 0.3rem 0.8rem; border-radius: 3px; cursor: pointer; }
-    .delete-btn:hover { background: rgba(255,62,94,0.25); }
+    .build-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .build-header img {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      object-fit: cover;
+    }
+    .build-header h3 {
+      color: var(--text-bright);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.3rem;
+      margin: 0;
+    }
+    .build-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.8rem;
+      margin: 1rem 0;
+    }
+    .stat-item {
+      background: var(--surface2);
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    .stat-item label {
+      display: block;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .stat-item input {
+      width: 100%;
+      background: var(--surface);
+      border: none;
+      color: var(--text-bright);
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.2rem 0;
+      outline: none;
+      font-family: 'Barlow', sans-serif;
+    }
+    .stat-item input:focus {
+      border-bottom: 1px solid var(--accent);
+    }
+    .select-item {
+      background: var(--surface2);
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    .select-item label {
+      display: block;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .select-item select {
+      width: 100%;
+      background: var(--surface);
+      border: none;
+      color: var(--text-bright);
+      font-size: 0.85rem;
+      padding: 0.2rem 0;
+      outline: none;
+      font-family: 'Barlow', sans-serif;
+      cursor: pointer;
+    }
+    .select-item select option {
+      background: var(--surface2);
+      color: var(--text);
+    }
+    .progress-section {
+      margin: 0.8rem 0;
+    }
+    .progress-item {
+      margin-bottom: 0.4rem;
+    }
+    .progress-item .label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+    .progress-item .label .value {
+      color: var(--text-bright);
+    }
+    .progress-bar {
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 0.1rem;
+      position: relative;
+    }
+    .progress-bar .fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+    .progress-bar .basic-marker {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 2px;
+      background: var(--accent2);
+      z-index: 2;
+    }
+    .progress-bar .ideal-marker {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 2px;
+      background: var(--accent3);
+      z-index: 2;
+    }
+    .build-actions {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn-save {
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      padding: 0.4rem 1.2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn-save:hover {
+      opacity: 0.8;
+    }
+    .btn-delete {
+      background: rgba(255,62,94,0.15);
+      border: 1px solid rgba(255,62,94,0.3);
+      color: var(--red);
+      padding: 0.4rem 1.2rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-delete:hover {
+      background: rgba(255,62,94,0.25);
+    }
+    .build-score {
+      font-size: 1.2rem;
+      color: var(--accent);
+      font-weight: bold;
+      margin-left: auto;
+    }
+    .status-msg {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+    .status-msg.success { color: var(--green); }
+    .status-msg.error { color: var(--red); }
+    .loading-spinner {
+      text-align: center;
+      color: var(--text-dim);
+      padding: 2rem;
+    }
   </style>
 </head>
 <body>
@@ -56,84 +214,331 @@
 
 <footer class="site-footer">NINE GAMES — 2026</footer>
 
-<!-- Modal de autenticación (incluir aquí el mismo HTML del modal) -->
-<!-- ... pegar el modal de autenticación aquí ... -->
+<!-- Modal de autenticación -->
+<div id="auth-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+  <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:2rem; max-width:400px; width:90%;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+      <h2 style="color:var(--accent); font-family:'Rajdhani',sans-serif;">Acceso</h2>
+      <button onclick="document.getElementById('auth-modal').style.display='none'" style="background:none; border:none; color:var(--text-dim); font-size:1.5rem; cursor:pointer;">✕</button>
+    </div>
+    <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border);">
+      <button id="tab-login" class="auth-tab active" data-tab="login" style="background:none; border:none; padding:0.5rem 1rem; color:var(--text); cursor:pointer; font-weight:600;">Iniciar sesión</button>
+      <button id="tab-register" class="auth-tab" data-tab="register" style="background:none; border:none; padding:0.5rem 1rem; color:var(--text-dim); cursor:pointer; font-weight:600;">Registrarse</button>
+    </div>
+    <div id="auth-login" class="auth-panel">
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Email</label>
+        <input id="login-email" type="email" placeholder="tu@email.com" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Contraseña</label>
+        <input id="login-password" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <button id="login-btn" style="width:100%; background:var(--accent); color:var(--bg); border:none; padding:0.6rem; border-radius:4px; cursor:pointer; font-weight:bold;">Iniciar sesión</button>
+    </div>
+    <div id="auth-register" class="auth-panel" style="display:none;">
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Email</label>
+        <input id="register-email" type="email" placeholder="tu@email.com" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Contraseña</label>
+        <input id="register-password" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:0.3rem;">Confirmar contraseña</label>
+        <input id="register-confirm" type="password" placeholder="••••••••" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem; border-radius:4px;">
+      </div>
+      <button id="register-btn" style="width:100%; background:var(--accent); color:var(--bg); border:none; padding:0.6rem; border-radius:4px; cursor:pointer; font-weight:bold;">Registrarse</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase y autenticación -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
 
 <script>
-  // Cargar builds del usuario actual
-  function loadUserBuilds() {
-    const user = auth.currentUser;
-    const container = document.getElementById('builds-container');
-    if (!user) {
-      container.innerHTML = `<p style="color:var(--text-dim);">Debes iniciar sesión para ver tus personajes. <button onclick="showAuthModal()" style="background:var(--accent); color:var(--bg); border:none; padding:0.3rem 1rem; border-radius:3px; cursor:pointer;">Iniciar sesión</button></p>`;
-      return;
-    }
-    container.innerHTML = '<p style="color:var(--text-dim);">Cargando...</p>';
-    db.collection('users').doc(user.uid).collection('builds')
-      .get()
-      .then(snapshot => {
-        if (snapshot.empty) {
-          container.innerHTML = `<p style="color:var(--text-dim);">Aún no has guardado ningún personaje. Ve a la <a href="zzz.html" style="color:var(--accent);">wiki de ZZZ</a> y guarda tus builds.</p>`;
-          return;
-        }
-        let html = '';
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const score = data.score || '?';
-          const nombre = data.nombre || 'Sin nombre';
-          const stats = data.stats || {};
-          const arma = data.arma || 'N/A';
-          const sets = data.sets || 'N/A';
-          // Calcular progreso (simplificado: comparar con stats básicas/ideales si existen)
-          // Podemos mostrar barras de progreso para cada stat si las tenemos
-          const progressHtml = `
-            <div class="build-card">
-              <div class="build-info">
-                <strong style="color:var(--text-bright); font-size:1.1rem;">${nombre}</strong>
-                <div class="build-stats">
-                  <span>ATQ ${stats.atk || '?'}</span>
-                  <span>Bono ${stats.bono || '?'}%</span>
-                  <span>CR ${stats.critRate || '?'}%</span>
-                  <span>CD ${stats.critDmg || '?'}%</span>
-                  <span>Perf ${stats.perfo || '?'}%</span>
-                </div>
-                <div style="margin-top:0.3rem; font-size:0.85rem; color:var(--text-dim);">
-                  Arma: ${arma} | Sets: ${sets}
-                </div>
-                <div class="progress-bar"><div class="fill" style="width:${Math.min(score / 20000 * 100, 100)}%;"></div></div>
-                <div style="font-size:0.75rem; color:var(--text-dim);">Score: <span style="color:var(--accent); font-weight:bold;">${score}</span></div>
-              </div>
-              <button class="delete-btn" data-id="${doc.id}">Eliminar</button>
-            </div>
-          `;
-          html += progressHtml;
-        });
-        container.innerHTML = html;
-        // Eventos eliminar
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-          btn.addEventListener('click', function() {
-            const id = this.dataset.id;
-            if (confirm('¿Eliminar esta build?')) {
-              db.collection('users').doc(user.uid).collection('builds').doc(id).delete()
-                .then(() => loadUserBuilds())
-                .catch(err => alert('Error al eliminar: ' + err.message));
-            }
-          });
-        });
-      })
-      .catch(err => {
-        container.innerHTML = `<p style="color:var(--red);">Error al cargar: ${err.message}</p>`;
-      });
+// ============================================================
+// PERFIL - Cargar, editar y eliminar builds
+// ============================================================
+
+// Función para calcular el score con la fórmula de atacante (igual que en zzz)
+function calculateScore(stats) {
+  const { atk, bono, critRate, critDmg, perfo } = stats;
+  const critFactor = 1 + (critRate / 100) * (critDmg / 100);
+  const bonoPerfoFactor = 1 + (bono / 100) + (perfo / 110);
+  return Math.round(atk * critFactor * bonoPerfoFactor);
+}
+
+// Renderizar una build con opciones de edición
+function renderBuild(doc, container) {
+  const data = doc.data();
+  const stats = data.stats || { atk: 2000, bono: 80, critRate: 60, critDmg: 150, perfo: 10 };
+  const armas = data.armas_disponibles || [];
+  const sets = data.sets_disponibles || [];
+  const statsBasicas = data.stats_basicas || {};
+  const statsIdeales = data.stats_ideales || {};
+  const imagen = data.imagen || '';
+
+  // Determinar arma seleccionada (por nombre, o índice 0 si no coincide)
+  let selectedArma = data.arma || (armas.length > 0 ? armas[0] : 'N/A');
+  let selectedSet = data.sets || (sets.length > 0 ? sets[0] : 'N/A');
+
+  // Crear un ID único para esta build (el doc.id)
+  const buildId = doc.id;
+
+  // Contenedor de la tarjeta
+  const card = document.createElement('div');
+  card.className = 'build-card';
+  card.dataset.buildId = buildId;
+
+  // Cabecera
+  const headerDiv = document.createElement('div');
+  headerDiv.className = 'build-header';
+  headerDiv.innerHTML = `
+    <img src="${imagen}" alt="${data.nombre}" onerror="this.style.display='none'">
+    <h3>${data.nombre}</h3>
+    <span class="build-score">Score: <span id="score-display-${buildId}">${data.score || '?'}</span></span>
+  `;
+  card.appendChild(headerDiv);
+
+  // Estadísticas editables
+  const statsGrid = document.createElement('div');
+  statsGrid.className = 'build-stats-grid';
+  const statFields = [
+    { key: 'atk', label: 'ATQ', default: stats.atk || 2000 },
+    { key: 'bono', label: 'Bono (%)', default: stats.bono || 80 },
+    { key: 'critRate', label: 'Prob Crit (%)', default: stats.critRate || 60 },
+    { key: 'critDmg', label: 'Daño Crit (%)', default: stats.critDmg || 150 },
+    { key: 'perfo', label: 'Perforación (%)', default: stats.perfo || 10 }
+  ];
+  statFields.forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'stat-item';
+    div.innerHTML = `
+      <label>${f.label}</label>
+      <input type="number" id="stat-${buildId}-${f.key}" value="${f.default}" step="${f.key === 'atk' ? 10 : 1}">
+    `;
+    statsGrid.appendChild(div);
+  });
+  card.appendChild(statsGrid);
+
+  // Selectores de arma y sets
+  const selectorsDiv = document.createElement('div');
+  selectorsDiv.style.display = 'flex';
+  selectorsDiv.style.gap = '1rem';
+  selectorsDiv.style.flexWrap = 'wrap';
+  selectorsDiv.style.margin = '0.5rem 0';
+
+  // Arma
+  const armaDiv = document.createElement('div');
+  armaDiv.className = 'select-item';
+  armaDiv.style.flex = '1';
+  armaDiv.innerHTML = `
+    <label>Arma</label>
+    <select id="arma-${buildId}">
+      ${armas.map(a => `<option value="${a}" ${a === selectedArma ? 'selected' : ''}>${a}</option>`).join('')}
+      ${armas.length === 0 ? '<option value="N/A">N/A</option>' : ''}
+    </select>
+  `;
+  selectorsDiv.appendChild(armaDiv);
+
+  // Sets
+  const setsDiv = document.createElement('div');
+  setsDiv.className = 'select-item';
+  setsDiv.style.flex = '1';
+  setsDiv.innerHTML = `
+    <label>Sets de Discos</label>
+    <select id="sets-${buildId}">
+      ${sets.map(s => `<option value="${s}" ${s === selectedSet ? 'selected' : ''}>${s}</option>`).join('')}
+      ${sets.length === 0 ? '<option value="N/A">N/A</option>' : ''}
+    </select>
+  `;
+  selectorsDiv.appendChild(setsDiv);
+  card.appendChild(selectorsDiv);
+
+  // Barras de progreso (comparativa con básicas/ideales)
+  const progressSection = document.createElement('div');
+  progressSection.className = 'progress-section';
+  const allStatsKeys = ['atk', 'bono', 'critRate', 'critDmg', 'perfo'];
+  const labelsMap = {
+    atk: 'ATQ',
+    bono: 'Bono',
+    critRate: 'Prob Crit',
+    critDmg: 'Daño Crit',
+    perfo: 'Perforación'
+  };
+  allStatsKeys.forEach(key => {
+    const currentVal = stats[key] || 0;
+    const basicVal = statsBasicas[key] || 0;
+    const idealVal = statsIdeales[key] || 0;
+    const maxVal = Math.max(currentVal, basicVal, idealVal, 1);
+    const pctCurrent = (currentVal / maxVal) * 100;
+    const pctBasic = (basicVal / maxVal) * 100;
+    const pctIdeal = (idealVal / maxVal) * 100;
+
+    const item = document.createElement('div');
+    item.className = 'progress-item';
+    item.innerHTML = `
+      <div class="label">
+        <span>${labelsMap[key] || key}</span>
+        <span class="value">${currentVal} ${basicVal > 0 ? '| B: ' + basicVal : ''} ${idealVal > 0 ? '| I: ' + idealVal : ''}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="fill" style="width:${Math.min(pctCurrent, 100)}%;"></div>
+        ${basicVal > 0 ? `<div class="basic-marker" style="left:${Math.min(pctBasic, 100)}%;"></div>` : ''}
+        ${idealVal > 0 ? `<div class="ideal-marker" style="left:${Math.min(pctIdeal, 100)}%;"></div>` : ''}
+      </div>
+    `;
+    progressSection.appendChild(item);
+  });
+  card.appendChild(progressSection);
+
+  // Botones de acción
+  const actionsDiv = document.createElement('div');
+  actionsDiv.className = 'build-actions';
+  actionsDiv.innerHTML = `
+    <button class="btn-save" data-id="${buildId}">💾 Guardar cambios</button>
+    <button class="btn-delete" data-id="${buildId}">🗑️ Eliminar</button>
+    <span class="status-msg" id="status-${buildId}"></span>
+  `;
+  card.appendChild(actionsDiv);
+
+  container.appendChild(card);
+
+  // --- Eventos ---
+
+  // Función para obtener todos los valores actuales
+  function getCurrentValues() {
+    const newStats = {};
+    statFields.forEach(f => {
+      const input = document.getElementById(`stat-${buildId}-${f.key}`);
+      newStats[f.key] = parseFloat(input.value) || 0;
+    });
+    const arma = document.getElementById(`arma-${buildId}`).value;
+    const sets = document.getElementById(`sets-${buildId}`).value;
+    const score = calculateScore(newStats);
+    return { stats: newStats, arma, sets, score };
   }
 
-  // Cargar al iniciar y cuando cambie el usuario
-  auth.onAuthStateChanged(user => {
-    if (user) loadUserBuilds();
-    else loadUserBuilds(); // mostrar mensaje de "no logueado"
+  // Actualizar score en la interfaz
+  function updateScoreDisplay() {
+    const values = getCurrentValues();
+    const scoreSpan = document.getElementById(`score-display-${buildId}`);
+    if (scoreSpan) scoreSpan.textContent = values.score;
+  }
+
+  // Evento de cambio en inputs y selects para actualizar score en tiempo real
+  const allInputs = card.querySelectorAll('input, select');
+  allInputs.forEach(el => {
+    el.addEventListener('input', updateScoreDisplay);
+    el.addEventListener('change', updateScoreDisplay);
   });
 
-  // También cargar cuando la página esté lista
-  document.addEventListener('DOMContentLoaded', loadUserBuilds);
+  // Guardar cambios
+  const saveBtn = card.querySelector('.btn-save');
+  saveBtn.addEventListener('click', function() {
+    const values = getCurrentValues();
+    const user = auth.currentUser;
+    if (!user) {
+      document.getElementById(`status-${buildId}`).textContent = 'Debes iniciar sesión.';
+      return;
+    }
+    const statusEl = document.getElementById(`status-${buildId}`);
+    statusEl.textContent = 'Guardando...';
+    statusEl.className = 'status-msg';
+
+    const updateData = {
+      stats: values.stats,
+      arma: values.arma,
+      sets: values.sets,
+      score: values.score,
+      // Mantener los otros campos (nombre, imagen, armas_disponibles, etc.)
+    };
+
+    db.collection('users').doc(user.uid).collection('builds').doc(buildId)
+      .update(updateData)
+      .then(() => {
+        statusEl.textContent = '✅ Cambios guardados.';
+        statusEl.className = 'status-msg success';
+        // Actualizar el score mostrado (ya se actualiza en tiempo real)
+      })
+      .catch(err => {
+        statusEl.textContent = '❌ Error: ' + err.message;
+        statusEl.className = 'status-msg error';
+        console.error(err);
+      });
+  });
+
+  // Eliminar build
+  const deleteBtn = card.querySelector('.btn-delete');
+  deleteBtn.addEventListener('click', function() {
+    const user = auth.currentUser;
+    if (!user) return;
+    if (!confirm('¿Eliminar esta build?')) return;
+    const statusEl = document.getElementById(`status-${buildId}`);
+    statusEl.textContent = 'Eliminando...';
+    statusEl.className = 'status-msg';
+    db.collection('users').doc(user.uid).collection('builds').doc(buildId)
+      .delete()
+      .then(() => {
+        card.remove();
+      })
+      .catch(err => {
+        statusEl.textContent = '❌ Error: ' + err.message;
+        statusEl.className = 'status-msg error';
+        console.error(err);
+      });
+  });
+
+  // Inicializar score
+  updateScoreDisplay();
+}
+
+// Cargar todas las builds del usuario
+function loadUserBuilds() {
+  const user = auth.currentUser;
+  const container = document.getElementById('builds-container');
+  if (!user) {
+    container.innerHTML = `<p style="color:var(--text-dim);">Debes iniciar sesión para ver tus personajes. <button onclick="showAuthModal()" style="background:var(--accent); color:var(--bg); border:none; padding:0.3rem 1rem; border-radius:3px; cursor:pointer;">Iniciar sesión</button></p>`;
+    return;
+  }
+  container.innerHTML = '<div class="loading-spinner">Cargando tus builds...</div>';
+
+  db.collection('users').doc(user.uid).collection('builds')
+    .orderBy('timestamp', 'desc')
+    .get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        container.innerHTML = `<p style="color:var(--text-dim);">Aún no has guardado ningún personaje. Ve a la <a href="zzz.html" style="color:var(--accent);">wiki de ZZZ</a> y guarda tus builds.</p>`;
+        return;
+      }
+      container.innerHTML = ''; // Limpiar
+      snapshot.forEach(doc => {
+        renderBuild(doc, container);
+      });
+    })
+    .catch(err => {
+      container.innerHTML = `<p style="color:var(--red);">Error al cargar: ${err.message}</p>`;
+      console.error(err);
+    });
+}
+
+// Observador de autenticación para recargar al iniciar/cerrar sesión
+auth.onAuthStateChanged(user => {
+  if (user) {
+    loadUserBuilds();
+  } else {
+    loadUserBuilds(); // mostrar mensaje de "no logueado"
+  }
+});
+
+// Cargar al iniciar la página
+document.addEventListener('DOMContentLoaded', loadUserBuilds);
 </script>
 </body>
 </html>
