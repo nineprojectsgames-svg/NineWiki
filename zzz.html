@@ -1240,6 +1240,22 @@ function necClass(val) {
   return `nec-${idx+1}`;
 }
 
+// Función para parsear strings de stats como "ATQ:1800|CRIT Rate:70%"
+function parseStatsString(str) {
+  if (!str) return {};
+  const obj = {};
+  str.split('|').forEach(part => {
+    const [key, val] = part.split(':');
+    if (key && val) {
+      const cleanVal = parseFloat(val.replace(/[^0-9.]/g, ''));
+      if (!isNaN(cleanVal)) {
+        obj[key.trim()] = cleanVal;
+      }
+    }
+  });
+  return obj;
+}
+
 function splitPipe(str) {
   if (!str) return [];
   return str.split('|').map(s => s.trim()).filter(Boolean);
@@ -1438,124 +1454,104 @@ function renderChar(c) {
             </div>`;
   }).join('');
 
-const engines = c.w_engines ? c.w_engines.split('>').map(s => s.trim()).filter(Boolean) : [];
-const engineHTML = engines.length ? engines.map((e, i) => {
-  const bestClass = i === 0 ? 'weapon-item best' : 'weapon-item';
-  const sep = i < engines.length - 1 ? '<span class="weapon-sep">›</span>' : '';
-  if (isImageUrl(e)) {
-  const borderStyle = i === 0 ? '2px solid var(--accent)' : '1px solid var(--border)';
-  return `<img src="${e}" alt="w-engine" style="width:48px;height:48px;border-radius:8px;border:${borderStyle};margin:0.2rem;background:var(--surface2);" onerror="this.style.display='none'">${sep}`;
- }
-  return '<span class="' + bestClass + '">' + e + '</span>' + sep;
-}).join('') : '<span class="empty-val">Sin datos</span>';
-
-const setsRaw = (c.sets_discos || '').split('>').map(s => s.trim()).filter(Boolean);
-const setsHTML = setsRaw.length ? setsRaw.map((block, blockIdx) => {
-  // Dentro de cada bloque, separamos las dos partes: 4p y 2p
-  // El formato esperado es: "4 [set1] 2 [set2]" o también podría ser "4 [set1] 2 [set2]" con URLs o textos
-  // Usamos una expresión regular para encontrar números al inicio de cada parte
-  const parts = [];
-  let remaining = block;
-  // Buscar patrones como "4 " luego cualquier cosa hasta el siguiente " 2 " o hasta el final
-  const match4 = remaining.match(/^(\d+)\s+(.+?)(?=\s+\d+\s+|$)/);
-  if (match4) {
-    const count4 = match4[1];
-    let content4 = match4[2].trim();
-    remaining = remaining.substring(match4[0].length).trim();
-    // Ahora buscar "2 " y el resto
-    const match2 = remaining.match(/^(\d+)\s+(.+)$/);
-    if (match2) {
-      const count2 = match2[1];
-      let content2 = match2[2].trim();
-      parts.push({ count: count4, content: content4 });
-      parts.push({ count: count2, content: content2 });
-    } else {
-      // Si no hay segundo número, asumimos que solo hay un set (caso poco común pero posible)
-      parts.push({ count: count4, content: content4 });
+  const engines = c.w_engines ? c.w_engines.split('>').map(s => s.trim()).filter(Boolean) : [];
+  const engineHTML = engines.length ? engines.map((e, i) => {
+    const bestClass = i === 0 ? 'weapon-item best' : 'weapon-item';
+    const sep = i < engines.length - 1 ? '<span class="weapon-sep">›</span>' : '';
+    if (isImageUrl(e)) {
+      const borderStyle = i === 0 ? '2px solid var(--accent)' : '1px solid var(--border)';
+      return `<img src="${e}" alt="w-engine" style="width:48px;height:48px;border-radius:8px;border:${borderStyle};margin:0.2rem;background:var(--surface2);" onerror="this.style.display='none'">${sep}`;
     }
-  } else {
-    // Si no hay números al inicio, tratamos el bloque completo como un solo set (para compatibilidad)
-    parts.push({ count: (blockIdx+1).toString(), content: block });
-  }
-  
-  // Generar HTML para cada parte
-  const partsHtml = parts.map(part => {
-    const { count, content } = part;
-    let innerHtml = '';
-    if (isImageUrl(content)) {
-      const safeUrl = content.replace(/"/g, '&quot;');
-      innerHtml = `<div style="display: flex; flex-direction: column; align-items: center;">
-  <img src="${content}" alt="set disco" style="width:48px;height:48px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);" onerror="this.style.display='none'">
-  <span style="font-size:0.65rem;margin-top:0.2rem;">${count}p</span>
-</div>`;
-    } else {
-      innerHtml = `<span class="rank-num">${count}</span><span>${content}</span>`;
-    }
-    return innerHtml;
-  }).join('');
-  
-  // Envolver la combinación en un div con clase disk-set (para mantener estilo)
-  return `<div class="disk-set" style="display: flex; gap: 1rem; align-items: center; justify-content: space-around;">${partsHtml}</div>`;
-}).join('') : '<span class="empty-val">Sin datos</span>';
+    return '<span class="' + bestClass + '">' + e + '</span>' + sep;
+  }).join('') : '<span class="empty-val">Sin datos</span>';
 
-// Mejores Compañeros con soporte para | (separador de compañeros) y > (prioridad dentro de cada compañero)
-const rawCompanions = c.mejores_compas ? c.mejores_compas.split('|').map(s => s.trim()).filter(Boolean) : [];
-const compasHTML = rawCompanions.length ? rawCompanions.map(companionChain => {
-  // Dividir por > para obtener las opciones en orden de prioridad
-  const options = companionChain.split('>').map(s => s.trim()).filter(Boolean);
-  const optionsHtml = options.map((opt, idx) => {
-    let name = opt;
-    let reasonText = '';
-    
-    // Si no es URL, separar por primer guión para razón
-    if (!isImageUrl(name)) {
-      const hyphenIndex = name.indexOf('-');
-      if (hyphenIndex !== -1) {
-        reasonText = name.substring(hyphenIndex + 1).trim();
-        name = name.substring(0, hyphenIndex).trim();
+  const setsRaw = (c.sets_discos || '').split('>').map(s => s.trim()).filter(Boolean);
+  const setsHTML = setsRaw.length ? setsRaw.map((block, blockIdx) => {
+    const parts = [];
+    let remaining = block;
+    const match4 = remaining.match(/^(\d+)\s+(.+?)(?=\s+\d+\s+|$)/);
+    if (match4) {
+      const count4 = match4[1];
+      let content4 = match4[2].trim();
+      remaining = remaining.substring(match4[0].length).trim();
+      const match2 = remaining.match(/^(\d+)\s+(.+)$/);
+      if (match2) {
+        const count2 = match2[1];
+        let content2 = match2[2].trim();
+        parts.push({ count: count4, content: content4 });
+        parts.push({ count: count2, content: content2 });
+      } else {
+        parts.push({ count: count4, content: content4 });
       }
+    } else {
+      parts.push({ count: (blockIdx+1).toString(), content: block });
     }
-    
-    let imageHtml = '';
-    let displayName = name;
-    if (isImageUrl(name)) {
-      const safeName = name.replace(/"/g, '&quot;');
-      imageHtml = `<img src="${name}" alt="compañero" data-text="${safeName}" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); margin-right: 0.3rem;" onerror="this.onerror=null; this.outerHTML = '<span>' + this.getAttribute('data-text') + '</span>';">`;
-      displayName = '';
-    }
-    
-    // Mostrar imagen/texto y razón
-    let html = `<span style="display: inline-flex; align-items: center; gap: 0.2rem;">${imageHtml}<span>${displayName}${displayName && reasonText ? ' ' : ''}<span class="reason">${reasonText}</span></span></span>`;
-    return html;
-  }).join(' <span style="color: var(--accent2); font-weight: bold;">→</span> ');
-  
-  return `<div class="info-row"><div class="info-val" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">${optionsHtml}</div></div>`;
-}).join('') : '<div class="info-row"><div class="info-val empty-val">Sin datos</div></div>';
-
-const rawBangbus = c.mejor_bangbu ? c.mejor_bangbu.split('|').map(s => s.trim()).filter(Boolean) : [];
-const bangbuHTML = rawBangbus.length ? rawBangbus.map(bangbuChain => {
-  const options = bangbuChain.split('>').map(s => s.trim()).filter(Boolean);
-  const optionsHtml = options.map((opt, idx) => {
-    let name = opt;
-    let reasonText = '';
-    if (!isImageUrl(name)) {
-      const hyphenIndex = name.indexOf('-');
-      if (hyphenIndex !== -1) {
-        reasonText = name.substring(hyphenIndex + 1).trim();
-        name = name.substring(0, hyphenIndex).trim();
+    const partsHtml = parts.map(part => {
+      const { count, content } = part;
+      let innerHtml = '';
+      if (isImageUrl(content)) {
+        const safeUrl = content.replace(/"/g, '&quot;');
+        innerHtml = `<div style="display: flex; flex-direction: column; align-items: center;">
+          <img src="${content}" alt="set disco" style="width:48px;height:48px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);" onerror="this.style.display='none'">
+          <span style="font-size:0.65rem;margin-top:0.2rem;">${count}p</span>
+        </div>`;
+      } else {
+        innerHtml = `<span class="rank-num">${count}</span><span>${content}</span>`;
       }
-    }
-    let imageHtml = '';
-    let displayName = name;
-    if (isImageUrl(name)) {
-      const safeName = name.replace(/"/g, '&quot;');
-      imageHtml = `<img src="${name}" alt="bangbu" data-text="${safeName}" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); margin-right: 0.3rem;" onerror="this.onerror=null; this.outerHTML = '<span>' + this.getAttribute('data-text') + '</span>';">`;
-      displayName = '';
-    }
-    return `<span style="display: inline-flex; align-items: center; gap: 0.2rem;">${imageHtml}<span>${displayName}${displayName && reasonText ? ' ' : ''}<span class="reason">${reasonText}</span></span></span>`;
-  }).join(' <span style="color: var(--accent2); font-weight: bold;">→</span> ');
-  return `<div class="info-row"><div class="info-val" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">${optionsHtml}</div></div>`;
-}).join('') : '<div class="info-row"><div class="info-val empty-val">Sin datos</div></div>';
+      return innerHtml;
+    }).join('');
+    return `<div class="disk-set" style="display: flex; gap: 1rem; align-items: center; justify-content: space-around;">${partsHtml}</div>`;
+  }).join('') : '<span class="empty-val">Sin datos</span>';
+
+  const rawCompanions = c.mejores_compas ? c.mejores_compas.split('|').map(s => s.trim()).filter(Boolean) : [];
+  const compasHTML = rawCompanions.length ? rawCompanions.map(companionChain => {
+    const options = companionChain.split('>').map(s => s.trim()).filter(Boolean);
+    const optionsHtml = options.map((opt) => {
+      let name = opt;
+      let reasonText = '';
+      if (!isImageUrl(name)) {
+        const hyphenIndex = name.indexOf('-');
+        if (hyphenIndex !== -1) {
+          reasonText = name.substring(hyphenIndex + 1).trim();
+          name = name.substring(0, hyphenIndex).trim();
+        }
+      }
+      let imageHtml = '';
+      let displayName = name;
+      if (isImageUrl(name)) {
+        const safeName = name.replace(/"/g, '&quot;');
+        imageHtml = `<img src="${name}" alt="compañero" data-text="${safeName}" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); margin-right: 0.3rem;" onerror="this.onerror=null; this.outerHTML = '<span>' + this.getAttribute('data-text') + '</span>';">`;
+        displayName = '';
+      }
+      return `<span style="display: inline-flex; align-items: center; gap: 0.2rem;">${imageHtml}<span>${displayName}${displayName && reasonText ? ' ' : ''}<span class="reason">${reasonText}</span></span></span>`;
+    }).join(' <span style="color: var(--accent2); font-weight: bold;">→</span> ');
+    return `<div class="info-row"><div class="info-val" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">${optionsHtml}</div></div>`;
+  }).join('') : '<div class="info-row"><div class="info-val empty-val">Sin datos</div></div>';
+
+  const rawBangbus = c.mejor_bangbu ? c.mejor_bangbu.split('|').map(s => s.trim()).filter(Boolean) : [];
+  const bangbuHTML = rawBangbus.length ? rawBangbus.map(bangbuChain => {
+    const options = bangbuChain.split('>').map(s => s.trim()).filter(Boolean);
+    const optionsHtml = options.map((opt) => {
+      let name = opt;
+      let reasonText = '';
+      if (!isImageUrl(name)) {
+        const hyphenIndex = name.indexOf('-');
+        if (hyphenIndex !== -1) {
+          reasonText = name.substring(hyphenIndex + 1).trim();
+          name = name.substring(0, hyphenIndex).trim();
+        }
+      }
+      let imageHtml = '';
+      let displayName = name;
+      if (isImageUrl(name)) {
+        const safeName = name.replace(/"/g, '&quot;');
+        imageHtml = `<img src="${name}" alt="bangbu" data-text="${safeName}" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); margin-right: 0.3rem;" onerror="this.onerror=null; this.outerHTML = '<span>' + this.getAttribute('data-text') + '</span>';">`;
+        displayName = '';
+      }
+      return `<span style="display: inline-flex; align-items: center; gap: 0.2rem;">${imageHtml}<span>${displayName}${displayName && reasonText ? ' ' : ''}<span class="reason">${reasonText}</span></span></span>`;
+    }).join(' <span style="color: var(--accent2); font-weight: bold;">→</span> ');
+    return `<div class="info-row"><div class="info-val" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">${optionsHtml}</div></div>`;
+  }).join('') : '<div class="info-row"><div class="info-val empty-val">Sin datos</div></div>';
 
   const dupes = splitPipe(c.mejores_dupes);
   const dupesHTML = dupes.length ? dupes.map(d => `<div class="dupe-item">${d}</div>`).join('') : '<span class="empty-val">Sin datos</span>';
@@ -1580,6 +1576,10 @@ const bangbuHTML = rawBangbus.length ? rawBangbus.map(bangbuChain => {
   ].filter(Boolean).join('');
 
   const rarezaClass = c.rareza ? `rareza-${c.rareza.toLowerCase()}` : '';
+
+  // ---- Definir armas y setsList ANTES de usarlos en el HTML ----
+  const armas = c.w_engines ? c.w_engines.split('>').map(s => s.trim()).filter(Boolean) : [];
+  const setsList = c.sets_discos ? c.sets_discos.split('>').map(s => s.trim()).filter(Boolean) : [];
 
   // ═══════ Panel de cálculo de daño con tooltip ═══════
   const damageCalcHTML = `
@@ -1681,31 +1681,27 @@ const bangbuHTML = rawBangbus.length ? rawBangbus.map(bangbuChain => {
   </div>
 </div>`;
 
-// Dentro de renderChar, después de la definición de damageCalcHTML
-const saveBuildHTML = `
+  // Dentro de renderChar, después de la definición de damageCalcHTML
+  const saveBuildHTML = `
 <div style="margin-top:1.2rem; display:${auth.currentUser ? 'block' : 'none'};" id="save-build-section-${c.nombre}">
   <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
     <div style="flex:1; min-width:120px;">
       <label style="display:block; font-size:0.7rem; color:var(--text-dim);">W-Engine</label>
       <select id="save-arma-${c.nombre}" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.3rem; border-radius:3px;">
-        ${armas.length ? armas.map(a => `<option value="${a}">${a}</option>`).join('') : '<option>N/A</option>'}
+        ${armas.length ? armas.map(a => `<option value="${a}">${a}</option>`).join('') : '<option value="N/A">N/A</option>'}
       </select>
     </div>
     <div style="flex:1; min-width:120px;">
       <label style="display:block; font-size:0.7rem; color:var(--text-dim);">Sets de Discos</label>
       <select id="save-sets-${c.nombre}" style="width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.3rem; border-radius:3px;">
-        ${setsList.length ? setsList.map(s => `<option value="${s}">${s}</option>`).join('') : '<option>N/A</option>'}
+        ${setsList.length ? setsList.map(s => `<option value="${s}">${s}</option>`).join('') : '<option value="N/A">N/A</option>'}
       </select>
     </div>
   </div>
   <button id="save-build-btn-${c.nombre}" style="background:var(--accent); color:var(--bg); border:none; padding:0.5rem 1.5rem; border-radius:4px; cursor:pointer; font-weight:bold;">💾 Guardar Build</button>
   <span style="font-size:0.75rem; color:var(--text-dim); margin-left:0.8rem;">Guarda esta build en tu perfil</span>
   <div id="save-status-${c.nombre}" style="margin-top:0.5rem; font-size:0.85rem;"></div>
-</div>
-`;
-
-const armas = c.w_engines ? c.w_engines.split('>').map(s => s.trim()).filter(Boolean) : [];
-const setsList = c.sets_discos ? c.sets_discos.split('>').map(s => s.trim()).filter(Boolean) : [];
+</div>`;
 
   // ═══════ HTML FINAL ═══════
   wikiContainer.innerHTML = `
@@ -1756,81 +1752,6 @@ const setsList = c.sets_discos ? c.sets_discos.split('>').map(s => s.trim()).fil
     ${damageCalcHTML}
     ${saveBuildHTML}
   </div>`;
-
-// Después de asignar wikiContainer.innerHTML
-const saveBtn = document.getElementById(`save-build-btn-${c.nombre}`);
-if (saveBtn) {
-  saveBtn.addEventListener('click', function() {
-    const user = auth.currentUser;
-    if (!user) {
-      document.getElementById(`save-status-${c.nombre}`).innerHTML = '<span style="color:var(--red);">Debes iniciar sesión para guardar.</span>';
-      showAuthModal();
-      return;
-    }
-    // Obtener valores actuales de la calculadora (si existen)
-    const atk = document.getElementById(`atk-${c.nombre}`)?.value || 2000;
-    const bono = document.getElementById(`bono-${c.nombre}`)?.value || 80;
-    const critRate = document.getElementById(`crit-rate-${c.nombre}`)?.value || 60;
-    const critDmg = document.getElementById(`crit-dmg-${c.nombre}`)?.value || 150;
-    const perfo = document.getElementById(`perfo-${c.nombre}`)?.value || 10;
-    // También podemos obtener los valores de anomalo y disruptor, pero guardamos los de atacante por simplicidad
-    // Calcular score
-    const critFactor = 1 + (critRate / 100) * (critDmg / 100);
-    const bonoPerfoFactor = 1 + (bono / 100) + (perfo / 110);
-    const score = atk * critFactor * bonoPerfoFactor;
-
-    const armaSelect = document.getElementById(`save-arma-${c.nombre}`);
-    const setsSelect = document.getElementById(`save-sets-${c.nombre}`);
-
-    // Sets (similares, tomamos el primero)
-    const setsRaw = c.sets_discos ? c.sets_discos.split('>').map(s=>s.trim()) : [];
-    const sets = setsRaw.length > 0 ? setsRaw[0] : 'N/A';
-
-// Función para parsear strings de stats como "ATQ:1800|CRIT Rate:70%"
-function parseStatsString(str) {
-  if (!str) return {};
-  const obj = {};
-  str.split('|').forEach(part => {
-    const [key, val] = part.split(':');
-    if (key && val) {
-      // Limpiar caracteres no numéricos para obtener el valor numérico
-      const cleanVal = parseFloat(val.replace(/[^0-9.]/g, ''));
-      if (!isNaN(cleanVal)) {
-        obj[key.trim()] = cleanVal;
-      }
-    }
-  });
-  return obj;
-}
-
-    // Dentro del evento click de saveBtn, reemplaza todo el bloque de buildData
-    const buildData = {
-  nombre: c.nombre,
-  imagen: c.imagen || '',  // Guardamos la imagen
-  stats: { atk, bono, critRate, critDmg, perfo },
-  arma: arma,
-  sets: sets,
-  score: Math.round(score),
-  // Guardamos las listas completas para los desplegables
-  armas_disponibles: c.w_engines ? c.w_engines.split('>').map(s=>s.trim()) : [],
-  sets_disponibles: c.sets_discos ? c.sets_discos.split('>').map(s=>s.trim()) : [],
-  // Guardamos stats básicas e ideales parseadas
-  stats_basicas: parseStatsString(c.stats_basicas),
-  stats_ideales: parseStatsString(c.stats_ideales),
-  timestamp: firebase.firestore.FieldValue.serverTimestamp()
-};
-    const statusDiv = document.getElementById(`save-status-${c.nombre}`);
-    statusDiv.innerHTML = '<span style="color:var(--text-dim);">Guardando...</span>';
-    db.collection('users').doc(user.uid).collection('builds')
-      .add(buildData)
-      .then(() => {
-        statusDiv.innerHTML = '<span style="color:var(--green);">✅ Build guardada correctamente.</span>';
-      })
-      .catch(err => {
-        statusDiv.innerHTML = `<span style="color:var(--red);">Error: ${err.message}</span>`;
-      });
-  });
-}
 
   // ═══════ Lógica de la calculadora (sin cambios) ═══════
   function getVal(id) {
@@ -1954,6 +1875,60 @@ function parseStatsString(str) {
       requestAnimationFrame(() => { el.style.width = w; });
     });
   });
+
+  // ═══════ Guardar Build con selección de arma y sets ═══════
+  const saveBtn = document.getElementById(`save-build-btn-${c.nombre}`);
+  if (saveBtn) {
+    saveBtn.addEventListener('click', function() {
+      const user = auth.currentUser;
+      if (!user) {
+        document.getElementById(`save-status-${c.nombre}`).innerHTML = '<span style="color:var(--red);">Debes iniciar sesión para guardar.</span>';
+        showAuthModal();
+        return;
+      }
+      // Obtener valores actuales de la calculadora (si existen)
+      const atk = document.getElementById(`atk-${c.nombre}`)?.value || 2000;
+      const bono = document.getElementById(`bono-${c.nombre}`)?.value || 80;
+      const critRate = document.getElementById(`crit-rate-${c.nombre}`)?.value || 60;
+      const critDmg = document.getElementById(`crit-dmg-${c.nombre}`)?.value || 150;
+      const perfo = document.getElementById(`perfo-${c.nombre}`)?.value || 10;
+      
+      const critFactor = 1 + (critRate / 100) * (critDmg / 100);
+      const bonoPerfoFactor = 1 + (bono / 100) + (perfo / 110);
+      const score = atk * critFactor * bonoPerfoFactor;
+
+      const armaSelect = document.getElementById(`save-arma-${c.nombre}`);
+      const setsSelect = document.getElementById(`save-sets-${c.nombre}`);
+      const arma = armaSelect ? armaSelect.value : 'N/A';
+      const sets = setsSelect ? setsSelect.value : 'N/A';
+
+      const buildData = {
+        nombre: c.nombre,
+        imagen: c.imagen || '',
+        stats: { atk, bono, critRate, critDmg, perfo },
+        arma: arma,
+        sets: sets,
+        score: Math.round(score),
+        armas_disponibles: c.w_engines ? c.w_engines.split('>').map(s=>s.trim()) : [],
+        sets_disponibles: c.sets_discos ? c.sets_discos.split('>').map(s=>s.trim()) : [],
+        stats_basicas: parseStatsString(c.stats_basicas),
+        stats_ideales: parseStatsString(c.stats_ideales),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      const statusDiv = document.getElementById(`save-status-${c.nombre}`);
+      statusDiv.innerHTML = '<span style="color:var(--text-dim);">Guardando...</span>';
+      db.collection('users').doc(user.uid).collection('builds')
+        .add(buildData)
+        .then(() => {
+          statusDiv.innerHTML = '<span style="color:var(--green);">✅ Build guardada correctamente.</span>';
+        })
+        .catch(err => {
+          statusDiv.innerHTML = `<span style="color:var(--red);">Error: ${err.message}</span>`;
+          console.error(err);
+        });
+    });
+  }
 }
 
 function renderWelcome(section) {
