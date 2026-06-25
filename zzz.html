@@ -779,7 +779,6 @@
   .rank-label { width: auto; min-width: 0; flex: 1; font-size: .76rem; }
   .rank-bar-track { width: 80px; flex: none; }
   .rank-value { width: 18px; font-size: .7rem; }
-  .info-icon { display: none; } /* en mobile quitamos los ⓘ inline */
 
   /* Stats grids */
   .stats-grid { grid-template-columns: 1fr 1fr 1fr; gap: .35rem; }
@@ -1596,8 +1595,8 @@ const bangbuHTML = rawBangbus.length ? rawBangbus.map(bangbuChain => {
 
   const rarezaClass = c.rareza ? `rareza-${c.rareza.toLowerCase()}` : '';
 
-// ═══════ Panel de cálculo de daño ═══════
-const damageCalcHTML = `
+  // ═══════ Panel de cálculo de daño con tooltip ═══════
+  const damageCalcHTML = `
 <div class="damage-calc">
   <div class="panel-title">⚔️ Calculadora de Daño <span class="info-icon" data-tip="Introduce las estadísticas de tu personaje (incluyendo bonos obtenibles en combate) para obtener una puntuación aproximada de su rendimiento. No refleja el 100% de la funcionalidad dentro del juego.">ⓘ</span></div>
   <div class="calc-tabs" id="calc-tabs-${c.nombre}">
@@ -1694,9 +1693,9 @@ const damageCalcHTML = `
       <div class="detail" id="score-detail-disruptor-${c.nombre}">Introduce valores para calcular</div>
     </div>
   </div>
-</div>
-`;
+</div>`;
 
+  // ═══════ HTML FINAL ═══════
   wikiContainer.innerHTML = `
   <div class="char-card">
     <div class="char-header">
@@ -1736,13 +1735,130 @@ const damageCalcHTML = `
     </div>
     <div class="grid-2">
       <div class="panel"><div class="panel-title">Stats Básicas <span class="info-icon" data-tip="Estadísticas mínimas requeridas para que el personaje cumpla su función correctamente.">ⓘ</span></div>${renderStats(c.stats_basicas, false)}</div>
-<div class="panel"><div class="panel-title">Stats Ideales <span class="info-icon" data-tip="Estadísticas deseadas para que el personaje destaque y tenga un rendimiento sobresaliente.">ⓘ</span></div>${renderStats(c.stats_ideales, true)}</div>
+      <div class="panel"><div class="panel-title">Stats Ideales <span class="info-icon" data-tip="Estadísticas deseadas para que el personaje destaque y tenga un rendimiento sobresaliente.">ⓘ</span></div>${renderStats(c.stats_ideales, true)}</div>
     </div>
-    <div class="panel" style="margin-bottom:2rem"><div class="panel-title">Consejos &amp; Habilidades</div>${tipsHTML}</div>
-    ${damageCalcHTML}   <!-- <-- AQUÍ LO AÑADES -->
+    <div class="panel" style="margin-bottom:2rem">
+      <div class="panel-title">Consejos &amp; Habilidades <span class="info-icon" data-tip="Consejos útiles para sacar el máximo provecho al personaje, incluyendo rotaciones, trucos y estrategias.">ⓘ</span></div>
+      ${tipsHTML}
+    </div>
+    ${damageCalcHTML}
   </div>`;
 
+  // ═══════ Lógica de la calculadora (sin cambios) ═══════
+  function getVal(id) {
+    const el = document.getElementById(id);
+    return el ? parseFloat(el.value) || 0 : 0;
+  }
 
+  function getScoreLetter(score) {
+    if (score < 5000) return { letter: 'D', class: 'D' };
+    if (score < 7500) return { letter: 'C', class: 'C' };
+    if (score < 10000) return { letter: 'B', class: 'B' };
+    if (score < 12500) return { letter: 'A', class: 'A' };
+    if (score < 15000) return { letter: 'A+', class: 'Aplus' };
+    if (score < 20000) return { letter: 'S', class: 'S' };
+    if (score < 22500) return { letter: 'S+', class: 'Splus' };
+    return { letter: 'ZZZ', class: 'ZZZ' };
+  }
+
+  function updateResult(panelType, resultId) {
+    let score = 0, detail = '', formula = '';
+    if (panelType === 'atacante') {
+      const atk = getVal(`atk-${c.nombre}`);
+      const bono = getVal(`bono-${c.nombre}`);
+      const critRate = getVal(`crit-rate-${c.nombre}`);
+      const critDmg = getVal(`crit-dmg-${c.nombre}`);
+      const perfo = getVal(`perfo-${c.nombre}`);
+      const critFactor = 1 + (critRate / 100) * (critDmg / 100);
+      const bonoPerfoFactor = 1 + (bono / 100) + (perfo / 110);
+      score = atk * critFactor * bonoPerfoFactor;
+      formula = `ATQ × (1 + Prob×DañoCrit/10000) × (1 + Bono/100 + Perf/110)`;
+      detail = `(ATQ ${atk} · Bono ${bono}% · CR ${critRate}% / CD ${critDmg}% · Perf ${perfo}%)`;
+    } else if (panelType === 'anomalo') {
+      const atk = getVal(`atk-anom-${c.nombre}`);
+      const bono = getVal(`bono-anom-${c.nombre}`);
+      const maestria = getVal(`maestria-${c.nombre}`);
+      const tasa = getVal(`tasa-${c.nombre}`);
+      const factor = 1 + (bono + maestria + tasa) / 200;
+      score = atk * factor;
+      formula = `ATQ × (1 + (Bono + Maestria + Tasa) / 200)`;
+      detail = `(ATQ ${atk} · Bono ${bono}% · MA ${maestria} · Tasa ${tasa}%)`;
+    } else if (panelType === 'disruptor') {
+      const fuerza = getVal(`fuerza-${c.nombre}`);
+      const bono = getVal(`bono-dis-${c.nombre}`);
+      const critRate = getVal(`crit-rate-dis-${c.nombre}`);
+      const critDmg = getVal(`crit-dmg-dis-${c.nombre}`);
+      const perfo = getVal(`perfo-dis-${c.nombre}`);
+      const critFactor = 1 + (critRate / 100) * (critDmg / 100);
+      const bonoPerfoFactor = 1 + (bono / 100) + (perfo / 110);
+      score = fuerza * critFactor * bonoPerfoFactor;
+      formula = `Fuerza × (1 + Prob×DañoCrit/10000) × (1 + Bono/100 + Perf/110)`;
+      detail = `(Fuerza ${fuerza} · Bono ${bono}% · CR ${critRate}% / CD ${critDmg}% · Perf ${perfo}%)`;
+    }
+
+    const resultEl = document.getElementById(resultId);
+    if (!resultEl) return;
+    const numberSpan = document.getElementById(`score-number-${panelType}-${c.nombre}`);
+    const badgeSpan = document.getElementById(`score-badge-${panelType}-${c.nombre}`);
+    const detailSpan = document.getElementById(`score-detail-${panelType}-${c.nombre}`);
+
+    if (score > 0) {
+      const letter = getScoreLetter(score);
+      if (numberSpan) numberSpan.textContent = Math.round(score).toLocaleString();
+      if (badgeSpan) {
+        badgeSpan.textContent = letter.letter;
+        badgeSpan.className = `score-badge ${letter.class}`;
+      }
+      if (detailSpan) detailSpan.textContent = `${formula} → ${detail}`;
+    } else {
+      if (numberSpan) numberSpan.textContent = '—';
+      if (badgeSpan) {
+        badgeSpan.textContent = '—';
+        badgeSpan.className = 'score-badge';
+      }
+      if (detailSpan) detailSpan.textContent = 'Introduce valores para calcular';
+    }
+  }
+
+  // Eventos de pestañas
+  const tabsContainer = document.getElementById(`calc-tabs-${c.nombre}`);
+  if (tabsContainer) {
+    tabsContainer.querySelectorAll('.calc-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        tabsContainer.querySelectorAll('.calc-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        const rol = this.dataset.rol;
+        const parent = this.closest('.damage-calc');
+        parent.querySelectorAll('.calc-panel').forEach(p => p.classList.remove('active'));
+        const panel = parent.querySelector(`.calc-panel[data-rol="${rol}"]`);
+        if (panel) panel.classList.add('active');
+        const resultId = `result-${rol}-${c.nombre}`;
+        updateResult(rol, resultId);
+      });
+    });
+  }
+
+  // Eventos de inputs
+  ['atacante', 'anomalo', 'disruptor'].forEach(rol => {
+    const panel = document.getElementById(`panel-${rol}-${c.nombre}`);
+    if (panel) {
+      panel.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', function() {
+          const resultId = `result-${rol}-${c.nombre}`;
+          updateResult(rol, resultId);
+        });
+      });
+    }
+  });
+
+  // Calcular inicialmente (mostrar algo)
+  setTimeout(() => {
+    updateResult('atacante', `result-atacante-${c.nombre}`);
+    updateResult('anomalo', `result-anomalo-${c.nombre}`);
+    updateResult('disruptor', `result-disruptor-${c.nombre}`);
+  }, 0);
+
+  // Animación de barras
   requestAnimationFrame(() => {
     document.querySelectorAll('.rank-bar-fill').forEach(el => {
       const w = el.style.width;
@@ -1750,133 +1866,6 @@ const damageCalcHTML = `
       requestAnimationFrame(() => { el.style.width = w; });
     });
   });
-
-// ═══════ Lógica de la calculadora ═══════
-const nombreId = c.nombre.replace(/\s/g, '');
-
-function getVal(id) {
-  const el = document.getElementById(id);
-  return el ? parseFloat(el.value) || 0 : 0;
-}
-
-function getScoreLetter(score) {
-  if (score < 5000) return { letter: 'D', class: 'D' };
-  if (score < 7500) return { letter: 'C', class: 'C' };
-  if (score < 10000) return { letter: 'B', class: 'B' };
-  if (score < 12500) return { letter: 'A', class: 'A' };
-  if (score < 15000) return { letter: 'A+', class: 'Aplus' };
-  if (score < 20000) return { letter: 'S', class: 'S' };
-  if (score < 22500) return { letter: 'S+', class: 'Splus' };
-  return { letter: 'ZZZ', class: 'ZZZ' };
-}
-
-function updateResult(panelType, resultId) {
-  let score = 0;
-  let detail = '';
-  let formula = '';
-
-  if (panelType === 'atacante') {
-    const atk = getVal(`atk-${c.nombre}`);
-    const bono = getVal(`bono-${c.nombre}`);
-    const critRate = getVal(`crit-rate-${c.nombre}`);
-    const critDmg = getVal(`crit-dmg-${c.nombre}`);
-    const perfo = getVal(`perfo-${c.nombre}`);
-    
-    const critFactor = 1 + (critRate / 100) * (critDmg / 100);
-    const bonoPerfoFactor = 1 + (bono / 100) + (perfo / 110);
-    score = atk * critFactor * bonoPerfoFactor;
-    
-    formula = `ATQ × (1 + Prob×DañoCrit/10000) × (1 + Bono/100 + Perf/110)`;
-    detail = `(ATQ ${atk} · Bono ${bono}% · CR ${critRate}% / CD ${critDmg}% · Perf ${perfo}%)`;
-  } else if (panelType === 'anomalo') {
-    const atk = getVal(`atk-anom-${c.nombre}`);
-    const bono = getVal(`bono-anom-${c.nombre}`);
-    const maestria = getVal(`maestria-${c.nombre}`);
-    const tasa = getVal(`tasa-${c.nombre}`);
-    
-    const factor = 1 + (bono + maestria + tasa) / 200;
-    score = atk * factor;
-    
-    formula = `ATQ × (1 + (Bono + Maestria + Tasa) / 200)`;
-    detail = `(ATQ ${atk} · Bono ${bono}% · MA ${maestria} · Tasa ${tasa}%)`;
-  } else if (panelType === 'disruptor') {
-    const fuerza = getVal(`fuerza-${c.nombre}`);
-    const bono = getVal(`bono-dis-${c.nombre}`);
-    const critRate = getVal(`crit-rate-dis-${c.nombre}`);
-    const critDmg = getVal(`crit-dmg-dis-${c.nombre}`);
-    const perfo = getVal(`perfo-dis-${c.nombre}`);
-    
-    const critFactor = 1 + (critRate / 100) * (critDmg / 100);
-    const bonoPerfoFactor = 1 + (bono / 100) + (perfo / 110);
-    score = fuerza * critFactor * bonoPerfoFactor;
-    
-    formula = `Fuerza × (1 + Prob×DañoCrit/10000) × (1 + Bono/100 + Perf/110)`;
-    detail = `(Fuerza ${fuerza} · Bono ${bono}% · CR ${critRate}% / CD ${critDmg}% · Perf ${perfo}%)`;
-  }
-
-  // Obtener los elementos del resultado
-  const resultEl = document.getElementById(resultId);
-  if (!resultEl) return;
-
-  const numberSpan = document.getElementById(`score-number-${panelType}-${c.nombre}`);
-  const badgeSpan = document.getElementById(`score-badge-${panelType}-${c.nombre}`);
-  const detailSpan = document.getElementById(`score-detail-${panelType}-${c.nombre}`);
-
-  if (score > 0) {
-    const letter = getScoreLetter(score);
-    if (numberSpan) numberSpan.textContent = Math.round(score).toLocaleString();
-    if (badgeSpan) {
-      badgeSpan.textContent = letter.letter;
-      badgeSpan.className = `score-badge ${letter.class}`;
-    }
-    if (detailSpan) detailSpan.textContent = `${formula} → ${detail}`;
-  } else {
-    if (numberSpan) numberSpan.textContent = '—';
-    if (badgeSpan) {
-      badgeSpan.textContent = '—';
-      badgeSpan.className = 'score-badge';
-    }
-    if (detailSpan) detailSpan.textContent = 'Introduce valores para calcular';
-  }
-}
-
-// Eventos para pestañas
-const tabsContainer = document.getElementById(`calc-tabs-${c.nombre}`);
-if (tabsContainer) {
-  tabsContainer.querySelectorAll('.calc-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      // Cambiar pestaña activa
-      tabsContainer.querySelectorAll('.calc-tab').forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-      const rol = this.dataset.rol;
-      // Mostrar panel correspondiente
-      const parent = this.closest('.damage-calc');
-      parent.querySelectorAll('.calc-panel').forEach(p => p.classList.remove('active'));
-      const panel = parent.querySelector(`.calc-panel[data-rol="${rol}"]`);
-      if (panel) panel.classList.add('active');
-      // Actualizar resultado del panel activo
-      const resultId = `result-${rol}-${c.nombre}`;
-      updateResult(rol, resultId);
-    });
-  });
-}
-
-// Eventos de input para cada panel
-['atacante', 'anomalo', 'disruptor'].forEach(rol => {
-  const panel = document.getElementById(`panel-${rol}-${c.nombre}`);
-  if (panel) {
-    panel.querySelectorAll('input').forEach(input => {
-      input.addEventListener('input', function() {
-        const resultId = `result-${rol}-${c.nombre}`;
-        updateResult(rol, resultId);
-      });
-    });
-  }
-});
-
-// Calcular inicialmente (para mostrar algo)
-updateResult('atacante', `result-atacante-${c.nombre}`);
-
 }
 
 function renderWelcome(section) {
@@ -3034,8 +3023,11 @@ window.characterMap = buildCharacterMap(charRows);
 let activePopup = null;
 
 function showDescription(text, event) {
-  // Cerrar popup previo
-  if (activePopup) activePopup.remove();
+  // Cerrar popup previo si existe
+  if (activePopup) {
+    activePopup.remove();
+    activePopup = null;
+  }
 
   // Crear popup
   const popup = document.createElement('div');
@@ -3043,91 +3035,102 @@ function showDescription(text, event) {
   popup.innerHTML = `<button class="close-popup">✕</button><div>${text}</div>`;
   document.body.appendChild(popup);
 
-  // Posicionar usando pageX/pageY (incluye scroll)
-  let x = event.pageX + 12;  // offset a la derecha
-  let y = event.pageY + 8;   // offset abajo
-
-  // Ocultar inicialmente para evitar parpadeos
+  // Ocultar inicialmente
   popup.style.opacity = '0';
 
-  // Usar requestAnimationFrame para esperar a que el navegador calcule el tamaño
+  // Usamos requestAnimationFrame para medir el popup después de renderizar
   requestAnimationFrame(() => {
+    // Obtener dimensiones reales del popup
     const rect = popup.getBoundingClientRect();
     const width = rect.width || 260;
     const height = rect.height || 100;
 
+    // Obtener coordenadas del cursor RELATIVAS AL VIEWPORT (clientX/clientY)
+    // y sumar scroll para convertirlas en absolutas (position: fixed usa viewport)
+    const x = event.clientX + 12;   // offset a la derecha
+    const y = event.clientY + 8;    // offset abajo
+
+    // Ajustar para que no se salga del viewport
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
 
-    // Ajustar para que no se salga por la derecha
-    if (x + width > scrollX + viewportWidth) {
-      x = scrollX + viewportWidth - width - 10;
+    let left = x;
+    let top = y;
+
+    // Si se sale por la derecha
+    if (left + width > viewportWidth) {
+      left = viewportWidth - width - 10;
     }
-    // Ajustar para que no se salga por la izquierda
-    if (x < scrollX) {
-      x = scrollX + 10;
+    // Si se sale por la izquierda
+    if (left < 10) {
+      left = 10;
     }
-    // Ajustar para que no se salga por abajo
-    if (y + height > scrollY + viewportHeight) {
-      y = scrollY + viewportHeight - height - 10;
+    // Si se sale por abajo
+    if (top + height > viewportHeight) {
+      top = viewportHeight - height - 10;
     }
-    // Ajustar para que no se salga por arriba
-    if (y < scrollY) {
-      y = scrollY + 10;
+    // Si se sale por arriba
+    if (top < 10) {
+      top = 10;
     }
 
-    // Aplicar posición y hacer visible
-    popup.style.left = x + 'px';
-    popup.style.top = y + 'px';
+    // Aplicar posición (fixed, relativo al viewport)
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
     popup.style.opacity = '1';
     popup.classList.add('visible');
   });
 
   activePopup = popup;
 
-  // --- Cerrar popup ---
-  popup.querySelector('.close-popup').addEventListener('click', (e) => {
+  // --- Cerrar popup con botón X ---
+  popup.querySelector('.close-popup').addEventListener('click', function(e) {
     e.stopPropagation();
     popup.remove();
     activePopup = null;
   });
 
-  // Clic fuera del popup
-  const closeHandler = (e) => {
+  // --- Cerrar al hacer clic/tocar fuera del popup ---
+  // Usamos un solo handler con un delay para evitar que se cierre al abrir
+  const closeHandler = function(e) {
+    // Si el clic fue fuera del popup y no en el elemento que lo abrió
     if (!popup.contains(e.target) && e.target !== event.target) {
       popup.remove();
       activePopup = null;
       document.removeEventListener('click', closeHandler);
     }
   };
-  setTimeout(() => document.addEventListener('click', closeHandler), 0);
+
+  // Añadir el handler con un pequeño retraso para que no se active inmediatamente
+  setTimeout(() => {
+    document.addEventListener('click', closeHandler);
+  }, 50);
 }
 
 // Delegación de eventos para emojis e iconos de información
 function setupDescriptionListeners() {
   document.addEventListener('click', function(e) {
-    // Buscar el elemento más cercano que tenga la clase 'info-icon' o 'emoji-badge'
+    // Buscar el elemento más cercano con clase 'info-icon' o 'emoji-badge'
     const target = e.target.closest('.info-icon') || e.target.closest('.emoji-badge');
     if (!target) return;
- 
+
     // Si es info-icon
     if (target.classList.contains('info-icon')) {
       const tip = target.getAttribute('data-tip');
       if (tip) {
-        showDescription(tip, e);
+        // Evitar que el evento se propague y cause cierres no deseados
         e.preventDefault();
         e.stopPropagation();
+        showDescription(tip, e);
       }
     }
     // Si es emoji-badge
     else if (target.classList.contains('emoji-badge')) {
       const desc = target.getAttribute('data-desc');
       if (desc) {
-        showDescription(desc, e);
         e.preventDefault();
         e.stopPropagation();
+        showDescription(desc, e);
       }
     }
   });
