@@ -1599,7 +1599,7 @@ const bangbuHTML = rawBangbus.length ? rawBangbus.map(bangbuChain => {
 // ═══════ Panel de cálculo de daño ═══════
 const damageCalcHTML = `
 <div class="damage-calc">
-  <div class="panel-title">⚔️ Calculadora de Daño</div>
+  <div class="panel-title">⚔️ Calculadora de Daño <span class="info-icon" data-tip="Introduce las estadísticas de tu personaje (incluyendo bonos obtenibles en combate) para obtener una puntuación aproximada de su rendimiento. No refleja el 100% de la funcionalidad dentro del juego.">ⓘ</span></div>
   <div class="calc-tabs" id="calc-tabs-${c.nombre}">
     <button class="calc-tab active" data-rol="atacante">Atacante</button>
     <button class="calc-tab" data-rol="anomalo">Anomalo</button>
@@ -1711,22 +1711,22 @@ const damageCalcHTML = `
     <div class="grid-2">
       <div class="panel"><div class="panel-title">Puntuaciones</div><div class="rank-list">${scoreRows}</div></div>
       <div class="panel">
-        <div class="panel-title">Necesidades</div>
+        <div class="panel-title">Necesidades <span class="info-icon" data-tip="Indica qué tanta prioridad tiene el personaje por su mejor W-Engine (arma signature) y sus copias (dupes) para funcionar correctamente.">ⓘ</span></div>
         <div class="info-row"><div class="info-key">W-Engine (arma signature)</div><div class="info-val"><span class="necessity ${necClass(c.nec_arma||'nada')}">${c.nec_arma||'—'}</span></div></div>
         <div class="info-row"><div class="info-key">Dupes / Copias</div><div class="info-val"><span class="necessity ${necClass(c.nec_dupes||'nada')}">${c.nec_dupes||'—'}</span></div></div>
         <br><div class="panel-title">Mejores Dupes</div>${dupesHTML}
       </div>
     </div>
     <div class="grid-2">
-      <div class="panel"><div class="panel-title">Mejores Compañeros</div>${compasHTML}</div>
-      <div class="panel"><div class="panel-title">Mejor Bangbú</div>${bangbuHTML}</div>
+      <div class="panel"><div class="panel-title">Mejores Compañeros <span class="info-icon" data-tip="Agentes con los que tiene mejores sinergias. El orden es de izquierda a derecha (mejor a peor) y de arriba a abajo son categorías diferentes.">ⓘ</span></div>${compasHTML}</div>
+      <div class="panel"><div class="panel-title">Mejor Bangbú <span class="info-icon" data-tip="Bangboos que más combinan o benefician a este agente en su equipo.">ⓘ</span></div>${bangbuHTML}</div>
     </div>
     <div class="grid-2">
-      <div class="panel"><div class="panel-title">W-Engines</div><div class="weapon-chain">${engineHTML}</div></div>
-      <div class="panel"><div class="panel-title">Sets de Discos</div>${setsHTML}</div>
+      <div class="panel"><div class="panel-title">W-Engines <span class="info-icon" data-tip="Mejores W-Engines ordenados de izquierda (mejor) a derecha (peor) en casos generales.">ⓘ</span></div><div class="weapon-chain">${engineHTML}</div></div>
+      <div class="panel"><div class="panel-title">Sets de Discos <span class="info-icon" data-tip="Sets de discos recomendados, ordenados de más recomendado (arriba) a alternativas (abajo).">ⓘ</span></div>${setsHTML}</div>
     </div>
     <div class="panel" style="margin-bottom:1.2rem">
-      <div class="panel-title">Stats de Discos</div>
+      <div class="panel-title">Stats de Discos <span class="info-icon" data-tip="Estadísticas recomendadas para cada Slot de Disco. Las Subestadísticas están ordenadas de izquierda (más importante) a derecha (menos importante).">ⓘ</span></div>
       <div class="stats-grid">
         <div class="stat-cell"><div class="slot-label">SLOT 4</div><div class="stat-name">${c.disco_slot4||'—'}</div></div>
         <div class="stat-cell"><div class="slot-label">SLOT 5</div><div class="stat-name">${c.disco_slot5||'—'}</div></div>
@@ -1735,8 +1735,8 @@ const damageCalcHTML = `
       ${subsHTML ? `<div style="margin-top:.75rem"><div class="info-key" style="margin-bottom:.3rem">SUBSTATS PRIORITARIAS</div>${subsHTML}</div>` : ''}
     </div>
     <div class="grid-2">
-      <div class="panel"><div class="panel-title">Stats Básicas</div>${renderStats(c.stats_basicas, false)}</div>
-      <div class="panel"><div class="panel-title">Stats Ideales</div>${renderStats(c.stats_ideales, true)}</div>
+      <div class="panel"><div class="panel-title">Stats Básicas <span class="info-icon" data-tip="Estadísticas mínimas requeridas para que el personaje cumpla su función correctamente.">ⓘ</span></div>${renderStats(c.stats_basicas, false)}</div>
+<div class="panel"><div class="panel-title">Stats Ideales <span class="info-icon" data-tip="Estadísticas deseadas para que el personaje destaque y tenga un rendimiento sobresaliente.">ⓘ</span></div>${renderStats(c.stats_ideales, true)}</div>
     </div>
     <div class="panel" style="margin-bottom:2rem"><div class="panel-title">Consejos &amp; Habilidades</div>${tipsHTML}</div>
     ${damageCalcHTML}   <!-- <-- AQUÍ LO AÑADES -->
@@ -2480,7 +2480,7 @@ function generateAutoTierList() {
   ];
 
   let html = `<div class="tier-mode-selector">
-    <button class="tier-auto-btn active">📊 Por promedio</button>
+    <button class="tier-auto-btn active">📊 Por promedio <span class="info-icon" data-tip="La Tier List se genera automáticamente en base al promedio de las puntuaciones de cada personaje." style="font-size:0.7rem; margin-left:0.3rem;">ⓘ</span></button>
     <button class="tier-custom-btn">✏️ Personalizada</button>
   </div>`;
 
@@ -3034,43 +3034,67 @@ window.characterMap = buildCharacterMap(charRows);
 let activePopup = null;
 
 function showDescription(text, event) {
-  // Cerrar popup previo si existe
+  // Cerrar popup previo
   if (activePopup) activePopup.remove();
-  
+
+  // Crear popup
   const popup = document.createElement('div');
   popup.className = 'description-popup';
   popup.innerHTML = `<button class="close-popup">✕</button><div>${text}</div>`;
   document.body.appendChild(popup);
-  
-  // Posicionar cerca del elemento pulsado
-  const rect = event.target.getBoundingClientRect();
-  let left = rect.left + window.scrollX;
-  let top = rect.bottom + window.scrollY + 8;
-  
-  // Evitar que se salga por la derecha
-  const popupWidth = 260;
-  if (left + popupWidth > window.innerWidth) {
-    left = window.innerWidth - popupWidth - 10;
-  }
-  // Evitar que se salga por abajo
-  const popupHeight = popup.offsetHeight;
-  if (top + popupHeight > window.scrollY + window.innerHeight) {
-    top = rect.top + window.scrollY - popupHeight - 8;
-  }
-  
-  popup.style.left = left + 'px';
-  popup.style.top = top + 'px';
-  setTimeout(() => popup.classList.add('visible'), 10);
+
+  // Posicionar usando pageX/pageY (incluye scroll)
+  let x = event.pageX + 12;  // offset a la derecha
+  let y = event.pageY + 8;   // offset abajo
+
+  // Ocultar inicialmente para evitar parpadeos
+  popup.style.opacity = '0';
+
+  // Usar requestAnimationFrame para esperar a que el navegador calcule el tamaño
+  requestAnimationFrame(() => {
+    const rect = popup.getBoundingClientRect();
+    const width = rect.width || 260;
+    const height = rect.height || 100;
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+
+    // Ajustar para que no se salga por la derecha
+    if (x + width > scrollX + viewportWidth) {
+      x = scrollX + viewportWidth - width - 10;
+    }
+    // Ajustar para que no se salga por la izquierda
+    if (x < scrollX) {
+      x = scrollX + 10;
+    }
+    // Ajustar para que no se salga por abajo
+    if (y + height > scrollY + viewportHeight) {
+      y = scrollY + viewportHeight - height - 10;
+    }
+    // Ajustar para que no se salga por arriba
+    if (y < scrollY) {
+      y = scrollY + 10;
+    }
+
+    // Aplicar posición y hacer visible
+    popup.style.left = x + 'px';
+    popup.style.top = y + 'px';
+    popup.style.opacity = '1';
+    popup.classList.add('visible');
+  });
+
   activePopup = popup;
-  
-  // Cerrar con el botón X
+
+  // --- Cerrar popup ---
   popup.querySelector('.close-popup').addEventListener('click', (e) => {
     e.stopPropagation();
     popup.remove();
     activePopup = null;
   });
-  
-  // Cerrar al hacer clic fuera del popup
+
+  // Clic fuera del popup
   const closeHandler = (e) => {
     if (!popup.contains(e.target) && e.target !== event.target) {
       popup.remove();
@@ -3084,20 +3108,27 @@ function showDescription(text, event) {
 // Delegación de eventos para emojis e iconos de información
 function setupDescriptionListeners() {
   document.addEventListener('click', function(e) {
-    let target = e.target;
-    // Emojis
-    if (target.classList && target.classList.contains('emoji-badge')) {
-      const desc = target.getAttribute('data-desc');
-      if (desc) showDescription(desc, e);
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    // Iconos de información
-    else if (target.classList && target.classList.contains('info-icon')) {
+    // Buscar el elemento más cercano que tenga la clase 'info-icon' o 'emoji-badge'
+    const target = e.target.closest('.info-icon') || e.target.closest('.emoji-badge');
+    if (!target) return;
+ 
+    // Si es info-icon
+    if (target.classList.contains('info-icon')) {
       const tip = target.getAttribute('data-tip');
-      if (tip) showDescription(tip, e);
-      e.preventDefault();
-      e.stopPropagation();
+      if (tip) {
+        showDescription(tip, e);
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
+    // Si es emoji-badge
+    else if (target.classList.contains('emoji-badge')) {
+      const desc = target.getAttribute('data-desc');
+      if (desc) {
+        showDescription(desc, e);
+        e.preventDefault();
+        e.stopPropagation();
+      }
     }
   });
 }
