@@ -997,6 +997,14 @@
 </div>
 
 </header>
+
+<!-- Firebase y autenticación -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
+
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
 <div class="layout">
 <aside class="sidebar">
@@ -3178,6 +3186,16 @@ function setupDescriptionListeners() {
 
 init();
 
+// Mobile bottom nav
+document.querySelectorAll('.mbn-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const section = btn.dataset.section;
+    showSection(section);
+    document.querySelectorAll('.mbn-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
 </script>
 
 <!-- Mobile bottom nav -->
@@ -3251,12 +3269,7 @@ init();
   </div>
 </div>
 
-<!-- Firebase y autenticación -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
-<script src="auth.js"></script>
+
 
 </body>
 </html>
